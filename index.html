@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CastleWise — Project Calculators & Home Records</title>
+<meta name="description" content="Measure once. Shop once. Remember everything. 11 project calculators plus a Home Binder for every model number, filter size, and paint code in your house.">
+<meta property="og:title" content="CastleWise — Project Calculators & Home Records">
+<meta property="og:description" content="Measure once. Shop once. Remember everything.">
+<meta property="og:image" content="https://d8j0ntlcm91z4.cloudfront.net/user_3FhoDFj8NgEBiXU1x0R0F1i91cM/hf_20260715_044405_8247de70-e125-4f46-904d-218d253cac04.png">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Mono:wght@400;500;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ECEAE4; --ink:#21242A; --accent:#2B5EA7; --green:#1C7A4C;
+    --teal:#4A8E86; --crimson:#A63A3A; --paper:#FBFAF6; --line:#D8D4CA;
+    --tape:#F5C518; --mute:#6B6A64; --faint:#8A887F;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--ink);font-family:'Public Sans',sans-serif;line-height:1.5;}
+  .display{font-family:'Big Shoulders Display',sans-serif;font-weight:800;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 20px;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:'Big Shoulders Display',sans-serif;font-weight:800;
+    letter-spacing:.06em;font-size:18px;padding:13px 26px;border:2px solid var(--ink);border-radius:6px;
+    box-shadow:0 4px 0 rgba(33,36,42,.9);text-decoration:none;transition:transform .12s,box-shadow .12s;cursor:pointer;}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(33,36,42,.9);}
+  .btn:active{transform:translateY(1px);box-shadow:0 2px 0 rgba(33,36,42,.9);}
+  .btn-blue{background:var(--accent);color:var(--paper);}
+  .btn-ink{background:var(--ink);color:var(--paper);}
+  @media (prefers-reduced-motion: reduce){.btn{transition:none;}}
+
+  header{background:var(--ink);position:sticky;top:0;z-index:40;}
+  .header-in{display:flex;align-items:center;gap:10px;padding:13px 0;}
+  .wordmark{color:var(--paper);font-size:25px;letter-spacing:.08em;}
+  .topnav{margin-left:auto;display:flex;gap:20px;}
+  .topnav a{color:rgba(251,250,246,.75);text-decoration:none;font-size:13.5px;font-weight:600;}
+  .topnav a:hover{color:var(--paper);}
+  @media(max-width:760px){.topnav{display:none;}}
+  a:focus-visible,.btn:focus-visible{outline:3px solid var(--tape);outline-offset:2px;}
+  .header-in .cta{margin-left:16px;font-size:14px;padding:8px 16px;box-shadow:none;background:var(--accent);color:var(--paper);}
+  .ruler{height:14px;background:var(--tape);display:flex;align-items:flex-end;overflow:hidden;}
+  .ruler i{flex-shrink:0;width:1.5px;margin-left:9px;background:var(--ink);display:block;}
+
+  /* ---- HERO: centered headline + phone (Flighty/Partiful pattern) ---- */
+  .hero{text-align:center;padding:72px 0 0;position:relative;overflow:hidden;}
+  .hero .eyebrow{justify-content:center;}
+  .hero h1{font-size:clamp(56px,10vw,116px);line-height:.9;letter-spacing:.01em;}
+  .hero h1 .blue{color:var(--accent);}
+  .hero .sub{margin:18px auto 0;font-size:clamp(15px,2.2vw,18px);font-weight:600;color:var(--mute);max-width:46ch;}
+  .hero .cta-row{margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .hero .soon{display:block;margin-top:12px;font-size:12px;color:var(--faint);}
+
+  /* phone mockup with live ticket UI */
+  .phone-stage{margin-top:56px;display:flex;justify-content:center;position:relative;}
+  .phone-stage::before{content:"";position:absolute;inset:auto 0 0 0;height:55%;
+    background:var(--accent);border-top:2px solid var(--ink);}
+  .phone{position:relative;width:340px;max-width:88vw;background:var(--ink);border-radius:44px;
+    padding:12px;box-shadow:0 14px 0 rgba(33,36,42,.35);}
+  .phone-screen{background:var(--bg);border-radius:34px;overflow:hidden;}
+    .app-bar{background:var(--ink);color:var(--paper);display:flex;align-items:center;gap:7px;padding:9px 14px;}
+  .app-bar .display{font-size:16px;letter-spacing:.08em;}
+  .app-bar .pill{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:700;
+    background:var(--green);color:var(--paper);border-radius:3px;padding:2px 5px;letter-spacing:.1em;}
+  .mini-ruler{height:8px;background:var(--tape);display:flex;align-items:flex-end;overflow:hidden;}
+  .mini-ruler i{flex-shrink:0;width:1px;margin-left:6px;background:var(--ink);display:block;}
+
+  .ticket{background:var(--paper);border:2px solid var(--ink);border-radius:4px;
+    box-shadow:0 4px 0 rgba(33,36,42,.9);margin:16px 14px 26px;text-align:left;}
+  .t-head{display:flex;justify-content:space-between;padding:11px 15px 9px;border-bottom:2px dashed var(--line);
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;}
+  .t-head b{letter-spacing:.2em;}
+  .t-head span{color:var(--faint);}
+  .t-main{display:flex;justify-content:space-between;align-items:flex-end;padding:15px;}
+  .t-num{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:52px;line-height:1;}
+  .t-unit{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--crimson);margin-top:5px;}
+  .stamp{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:15px;color:var(--green);
+    border:2.5px solid var(--green);border-radius:4px;padding:1px 8px;transform:rotate(-6deg);opacity:.85;}
+  .t-rows{padding:0 15px 11px;font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .t-rows div{display:flex;justify-content:space-between;padding:5px 0;border-top:1px dotted var(--line);}
+  .t-rows div:first-child{border-top:2px dashed var(--line);}
+  .t-rows span{color:var(--mute);}
+  .t-add{display:flex;gap:6px;border-top:2px dashed var(--line);padding:11px 15px;}
+  .t-add .field{flex:1;border:2px solid var(--line);border-radius:4px;background:#fff;
+    font-size:11px;color:var(--faint);padding:7px 9px;}
+  .t-add .go{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:12px;letter-spacing:.05em;
+    background:var(--accent);color:var(--paper);border:2px solid var(--ink);border-radius:4px;padding:7px 10px;white-space:nowrap;}
+
+  section{padding:76px 0 0;}
+  .eyebrow{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;
+    font-weight:700;letter-spacing:.22em;color:var(--accent);}
+  h2{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:clamp(34px,5vw,54px);letter-spacing:.02em;margin-top:6px;}
+  .lede{color:var(--mute);font-size:16px;margin-top:8px;max-width:58ch;}
+
+  /* ---- BENTO: Slush-style color blocks ---- */
+  .bento{display:grid;grid-template-columns:repeat(3,1fr);gap:26px 20px;margin-top:36px;}
+  @media(max-width:860px){.bento{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.bento{grid-template-columns:1fr;}}
+  .slab{display:flex;flex-direction:column;}
+  .slab-art{border:2px solid var(--ink);border-radius:16px;box-shadow:0 5px 0 rgba(33,36,42,.9);
+    min-height:250px;display:flex;align-items:center;justify-content:center;padding:26px 22px;overflow:hidden;position:relative;}
+  .slab h3{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:24px;letter-spacing:.03em;margin-top:16px;}
+  .slab p{font-size:13.5px;color:var(--mute);margin-top:4px;max-width:34ch;}
+
+  .ui-frag{border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:var(--paper);
+    width:100%;max-width:290px;box-shadow:0 5px 0 rgba(33,36,42,.55);}
+  .frag-bar{display:flex;align-items:center;gap:8px;padding:9px 12px;color:#fff;
+    font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:14px;letter-spacing:.06em;}
+  .frag-bar .buy{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;
+    background:rgba(255,255,255,.92);color:var(--ink);border-radius:3px;padding:2px 6px;}
+  .frag-row{display:flex;justify-content:space-between;background:var(--paper);padding:8px 12px;
+    border-top:1px dotted var(--line);font-size:12.5px;}
+  .frag-row .mono{font-size:12px;font-weight:700;}
+  .frag-row .u{color:var(--accent);font-weight:400;}
+
+  .rec{background:var(--paper);padding:10px 12px;border-top:1px dotted var(--line);text-align:left;}
+  .rec b{font-size:13px;}
+  .rec .mono{display:block;font-size:10.5px;color:var(--faint);margin-top:3px;line-height:1.6;}
+
+  .room-card{background:var(--paper);border:2px solid var(--ink);border-radius:8px;
+    box-shadow:0 5px 0 rgba(33,36,42,.55);width:100%;max-width:250px;padding:6px 14px;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  .room-card div{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dotted var(--line);}
+  .room-card div:first-child{border-top:none;}
+  .room-card .check{color:var(--green);font-weight:700;}
+
+  .export-stack{display:flex;flex-direction:column;gap:10px;width:100%;max-width:220px;}
+  .export-stack span{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:16px;letter-spacing:.06em;
+    color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:9px 14px;
+    box-shadow:0 4px 0 rgba(33,36,42,.55);display:flex;justify-content:space-between;align-items:center;}
+  .export-stack .lockmark{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--green);font-weight:700;}
+
+  .big-stamp{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:34px;color:var(--paper);
+    border:4px solid var(--paper);border-radius:8px;padding:6px 22px;transform:rotate(-7deg);}
+  .privacy-note{font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(251,250,246,.75);
+    position:absolute;bottom:16px;left:0;right:0;text-align:center;letter-spacing:.08em;}
+
+  /* ---- WALKTHROUGH ---- */
+  .walk{margin-top:40px;position:relative;}
+  .step{display:grid;grid-template-columns:64px 1fr minmax(240px,300px);gap:0 28px;padding:34px 0;position:relative;}
+  .step:not(:last-child)::before{content:"";position:absolute;left:31px;top:92px;bottom:-34px;width:2px;
+    background-image:linear-gradient(var(--faint) 55%, transparent 45%);background-size:2px 10px;}
+  .step-num{width:64px;height:64px;border:2.5px solid var(--ink);border-radius:8px;background:var(--paper);
+    box-shadow:0 4px 0 rgba(33,36,42,.9);display:flex;align-items:center;justify-content:center;
+    font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:26px;position:relative;z-index:1;}
+  .step-body h3{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:26px;letter-spacing:.03em;}
+  .step-body .k{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--accent);display:block;margin-bottom:4px;}
+  .step-body p{font-size:14.5px;color:var(--mute);margin-top:8px;max-width:52ch;}
+  .step-body p b{color:var(--ink);}
+  .step-art{display:flex;align-items:flex-start;justify-content:center;}
+  .step-art .ui-frag{max-width:300px;box-shadow:0 5px 0 rgba(33,36,42,.9);}
+  @media(max-width:820px){
+    .step{grid-template-columns:52px 1fr;}
+    .step-num{width:52px;height:52px;font-size:22px;}
+    .step:not(:last-child)::before{left:25px;top:78px;}
+    .step-art{grid-column:2;margin-top:18px;justify-content:flex-start;}
+  }
+
+  .mini-tiles{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;max-width:300px;}
+  .mini-tile{background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:8px 10px;
+    box-shadow:0 3px 0 rgba(33,36,42,.9);font-family:'Big Shoulders Display',sans-serif;font-weight:800;
+    font-size:13px;letter-spacing:.04em;}
+  .mini-tile i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:7px;vertical-align:baseline;}
+  .mini-tile.sel{outline:3px solid var(--accent);outline-offset:-1px;}
+
+  .input-frag{background:var(--paper);border:2px solid var(--ink);border-radius:8px;
+    box-shadow:0 5px 0 rgba(33,36,42,.9);width:100%;max-width:300px;padding:13px 14px;}
+  .input-frag label{display:block;font-size:9.5px;font-weight:700;letter-spacing:.12em;color:var(--mute);text-transform:uppercase;margin-top:9px;}
+  .input-frag label:first-child{margin-top:0;}
+  .input-frag .val{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:500;border:2px solid var(--ink);
+    border-radius:4px;padding:6px 9px;margin-top:3px;background:#fff;}
+  .input-frag .val.active{border-color:var(--accent);}
+  .input-frag .res{margin-top:12px;border-top:2px dashed var(--line);padding-top:10px;display:flex;
+    align-items:flex-end;justify-content:space-between;}
+  .input-frag .res .n{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:38px;line-height:1;}
+  .input-frag .res .u{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--crimson);}
+
+  .toast{background:var(--green);color:var(--paper);border:2px solid var(--ink);border-radius:6px;
+    box-shadow:0 4px 0 rgba(33,36,42,.9);font-family:'Big Shoulders Display',sans-serif;font-weight:800;
+    letter-spacing:.05em;font-size:15px;padding:10px 16px;margin-top:10px;display:inline-block;}
+
+  .paybar{background:var(--paper);border:2px solid var(--ink);border-radius:8px;box-shadow:0 5px 0 rgba(33,36,42,.9);
+    width:100%;max-width:300px;padding:14px;text-align:center;}
+  .paybar .pb-title{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:19px;letter-spacing:.05em;}
+  .paybar .pb-stamp{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.16em;background:var(--green);color:var(--paper);border-radius:3px;padding:3px 8px;margin-top:6px;}
+  .paybar .pb-btn{display:block;margin:16px auto 0;width:fit-content;font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:15px;
+    letter-spacing:.05em;background:var(--accent);color:var(--paper);border:2px solid var(--ink);border-radius:5px;padding:9px 14px;
+    box-shadow:0 3px 0 rgba(33,36,42,.9);}
+
+  /* chips */
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px;}
+  .chip{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:16px;letter-spacing:.05em;
+    padding:8px 15px;background:var(--paper);border:2px solid var(--ink);border-radius:4px;box-shadow:0 3px 0 rgba(33,36,42,.9);}
+  .chip b{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;}
+
+  /* pro */
+  .pro-card{margin-top:30px;padding:38px 40px;display:flex;flex-wrap:wrap;align-items:center;gap:28px;
+    background:var(--paper);border:2px solid var(--ink);border-radius:6px;box-shadow:0 4px 0 rgba(33,36,42,.9);}
+  .pro-price{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:76px;line-height:1;}
+  .pro-price small{font-size:22px;vertical-align:super;}
+  .nosub{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.18em;
+    background:var(--green);color:var(--paper);border-radius:4px;padding:5px 12px;margin-top:10px;}
+  .pro-feats{flex:1;min-width:260px;color:var(--mute);font-size:15px;}
+  .pro-feats b{color:var(--ink);}
+  .tiers{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media(max-width:640px){.tiers{grid-template-columns:1fr;}}
+  .t-label{font-size:11.5px;letter-spacing:.16em;color:var(--accent);}
+  .tiers ul{list-style:none;margin-top:8px;}
+  .tiers li{font-size:14px;color:var(--ink);padding:5px 0 5px 22px;position:relative;border-top:1px dotted var(--line);}
+  .tiers li:first-child{border-top:none;}
+  .tiers li::before{content:"\2713";position:absolute;left:0;color:var(--green);font-weight:700;}
+  .notify{display:block;margin-top:12px;font-size:12px;color:var(--mute);}
+
+  /* feature request */
+  .faq{margin-top:26px;max-width:760px;}
+  .faq details{background:var(--paper);border:2px solid var(--ink);border-radius:6px;
+    box-shadow:0 3px 0 rgba(33,36,42,.9);margin-top:12px;padding:0 20px;}
+  .faq summary{cursor:pointer;font-family:'Big Shoulders Display',sans-serif;font-weight:800;
+    font-size:20px;letter-spacing:.03em;padding:16px 0;list-style:none;position:relative;padding-right:34px;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary::after{content:"+";position:absolute;right:2px;top:50%;transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--accent);}
+  .faq details[open] summary::after{content:"\2013";}
+  .faq details p{font-size:14.5px;color:var(--mute);padding:0 0 18px;max-width:64ch;}
+  .ask{background:var(--accent);border:2px solid var(--ink);border-radius:6px;box-shadow:0 5px 0 rgba(33,36,42,.9);
+    margin-top:76px;padding:52px 44px;text-align:center;color:var(--paper);}
+  .ask h2{color:var(--paper);}
+  .ask .eyebrow{color:var(--tape);justify-content:center;}
+  .ask p{color:rgba(251,250,246,.85);max-width:52ch;margin:10px auto 0;font-size:16px;}
+  .ask .btn{margin-top:26px;background:var(--tape);color:var(--ink);}
+  .ask .mono-mail{display:block;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:rgba(251,250,246,.75);}
+  .ask .mono-mail a{color:var(--paper);}
+
+  footer{margin-top:76px;background:var(--ink);color:var(--faint);}
+  .foot-in{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:26px 0;font-size:13px;}
+  .foot-in .mono{font-size:12px;}
+  footer a{color:var(--paper);text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+  .privacy-flex{color:var(--tape);font-weight:700;}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"CastleWise",
+"operatingSystem":"iOS","applicationCategory":"UtilitiesApplication",
+"description":"Project calculators and home records for homeowners. Measure once, shop once, remember everything.",
+"offers":{"@type":"Offer","price":"0","priceCurrency":"USD",
+"description":"Free with a $4.99 one-time Pro upgrade. No subscription."}}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-in">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2B5EA7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg>
+    <span class="display wordmark">CASTLEWISE</span>
+    <nav class="topnav" aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#lineup">Calculators</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#ask">Suggest a feature</a>
+    </nav>
+    <a class="btn cta" href="#pricing">GET THE APP</a>
+  </div>
+</header>
+<div class="ruler r-big" aria-hidden="true"></div>
+
+<main>
+  <!-- HERO -->
+  <div class="hero wrap">
+    <div class="eyebrow">PROJECT CALCULATORS &amp; HOME RECORDS</div>
+    <h1 class="display">KNOW WHAT<br>TO <span class="blue">BUY.</span></h1>
+    <p class="sub">Measure once. Shop once. Remember everything. CastleWise is the owner's manual your house never came with.</p>
+    <div class="cta-row">
+      <a class="btn btn-ink" href="#" aria-label="Download on the App Store">&#63743;&nbsp; DOWNLOAD ON THE APP STORE</a>
+    </div>
+    <span class="soon mono">Coming soon to iPhone &amp; iPad · Free, with a $4.99 one-time Pro · <a href="mailto:features@castlewise.app?subject=Notify%20me%20at%20launch&body=Add%20me%20to%20the%20CastleWise%20launch%20list!" style="color:var(--accent);font-weight:700;">get notified at launch</a></span>
+  </div>
+
+  <div class="phone-stage">
+    <div class="phone" aria-hidden="true">
+      <div class="phone-screen">
+        <div class="app-bar">
+          <span class="display">CASTLEWISE</span>
+          <span class="pill">PRO</span>
+        </div>
+        <div class="mini-ruler r-mini"></div>
+        <div class="ticket">
+          <div class="t-head"><b>MATERIALS TICKET</b><span>PAINT</span></div>
+          <div class="t-main">
+            <div><div class="t-num">3</div><div class="t-unit">gallons</div></div>
+            <div class="stamp">EST.</div>
+          </div>
+          <div class="t-rows">
+            <div><span>Wall area</span><span>416 sq ft</span></div>
+            <div><span>Exact need</span><span>2.38 gal</span></div>
+          </div>
+          <div class="t-add">
+            <span class="field">Room name — e.g. "Bedroom 2"</span>
+            <span class="go">+ ADD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WALKTHROUGH -->
+  <section class="wrap">
+    <div class="eyebrow" id="how">START TO FINISH</div>
+    <h2>ONE SATURDAY. TWO ROOMS. ZERO SECOND TRIPS.</h2>
+    <p class="lede">Here's the whole app, walked through a real job: repainting the living room and hallway.</p>
+
+    <div class="walk">
+
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <span class="k">THE HUB</span>
+          <h3>PICK YOUR CALCULATOR</h3>
+          <p>Open CastleWise to a grid of eleven calculators — paint to concrete, mulch to moving boxes. Every one is <b>free, forever, no account</b>. Tap Paint.</p>
+        </div>
+        <div class="step-art">
+          <div class="mini-tiles">
+            <div class="mini-tile sel"><i style="background:#A63A3A"></i>PAINT</div>
+            <div class="mini-tile"><i style="background:#8A5BB8"></i>WALLPAPER</div>
+            <div class="mini-tile"><i style="background:#A9682C"></i>FLOORING</div>
+            <div class="mini-tile"><i style="background:#B8455B"></i>CARPET</div>
+            <div class="mini-tile"><i style="background:#3E7C3A"></i>MULCH &amp; SOIL</div>
+            <div class="mini-tile"><i style="background:#D48A1E"></i>INSULATION</div>
+            <div class="mini-tile"><i style="background:#5A9E32"></i>GRASS SEED</div>
+            <div class="mini-tile"><i style="background:#2B7FB8"></i>AIR COND.</div>
+            <div class="mini-tile"><i style="background:#7A6A52"></i>MOVING</div>
+            <div class="mini-tile"><i style="background:#5E6672"></i>CONCRETE</div>
+            <div class="mini-tile" style="grid-column:span 2"><i style="background:#4A8E86"></i>DRYWALL</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <span class="k">THE MATERIALS TICKET</span>
+          <h3>TYPE THE ROOM. WATCH THE TICKET.</h3>
+          <p>Enter length, width, and wall height. Tap steppers for doors, windows, and coats — the math <b>subtracts 21 sq ft per door and 15 per window</b>, applies your coat count, and divides by real coverage (350 sq ft per gallon). There's no calculate button: <b>the ticket updates live</b> as you type, showing the buy number big and the exact need underneath.</p>
+        </div>
+        <div class="step-art">
+          <div class="input-frag">
+            <label>Room length &middot; ft</label><div class="val">14</div>
+            <label>Room width &middot; ft</label><div class="val active">12</div>
+            <label>Coats</label><div class="val">2</div>
+            <div class="res"><div><div class="n">3</div><div class="u">gallons &middot; exact: 2.38 gal</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <span class="k">MULTI-ROOM</span>
+          <h3>NAME IT, SAVE IT, NEXT ROOM</h3>
+          <p>Type "Living room" and hit <b>Add to Project</b>. Change the dimensions to the hallway's, save again. Leave the name blank and it auto-labels Room 1, Room 2. Every calculator works this way — beds for mulch, zones for insulation, pours for concrete.</p>
+        </div>
+        <div class="step-art">
+          <div>
+            <div class="ui-frag">
+              <div class="t-add" style="border-top:none">
+                <span class="field">Hallway</span>
+                <span class="go">+ ADD</span>
+              </div>
+            </div>
+            <span class="toast">&#10003; ADDED — HALLWAY</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">04</div>
+        <div class="step-body">
+          <span class="k">THE PROJECT SHEET</span>
+          <h3>EVERY ROOM, ONE BUY LIST</h3>
+          <p>The Project Sheet groups saved rooms by calculator and <b>totals matching materials automatically</b> — so the living room's 3 gallons and the hallway's 2 become "BUY: 5 gallons" at the top. Room-level detail stays underneath for the aisle debates. Delete a room, and totals recalculate instantly. It all <b>persists between sessions</b>, so measure Tuesday, shop Saturday.</p>
+        </div>
+        <div class="step-art">
+          <div class="ui-frag">
+            <div class="frag-bar" style="background:#A63A3A">PAINT <span class="buy">BUY: 5 gallons</span></div>
+            <div class="frag-row"><span>Living room</span><span class="mono">3 <span class="u">gallons</span></span></div>
+            <div class="frag-row"><span>Hallway</span><span class="mono">2 <span class="u">gallons</span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">05</div>
+        <div class="step-body">
+          <span class="k">CASTLEWISE PRO &middot; $4.99 ONCE</span>
+          <h3>TAKE IT TO THE STORE</h3>
+          <p>Pro unlocks every way out of the app: <b>email the project</b> with the full pull sheet in the body and a CSV attached, <b>download the CSV</b> for a contractor or a spreadsheet, save a <b>store-ready pull sheet</b>, or copy it straight into Notes. One purchase, Family Sharing included, and it never renews — because it isn't a subscription.</p>
+        </div>
+        <div class="step-art">
+          <div class="paybar">
+            <div class="pb-title">CASTLEWISE PRO</div>
+            <div class="pb-stamp">NO SUBSCRIPTION. EVER.</div>
+            <span class="pb-btn">UNLOCK FOR $4.99 — ONCE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">06</div>
+        <div class="step-body">
+          <span class="k">THE HOME BINDER</span>
+          <h3>RECORD IT FOR FUTURE YOU</h3>
+          <p>Paint's on the wall — now save the color before you toss the can. The Binder's <b>ten curated categories</b> come with the right fields built in: color name and code for paint, filter size and MERV for HVAC, model and serial for appliances, replace-by dates for smoke detectors. Next year's touch-up takes thirty seconds instead of a scraping-chips-into-a-baggie trip. And if you ever file an insurance claim, <b>your whole inventory exports in one tap</b>.</p>
+        </div>
+        <div class="step-art">
+          <div class="ui-frag">
+            <div class="frag-bar" style="background:#A63A3A">PAINT &amp; FINISHES</div>
+            <div class="rec">
+              <b>Living room walls</b>
+              <span class="mono">Brand: Behr &middot; Color: Adirondack Blue &middot; Code: N480-5 &middot; Finish: Eggshell &middot; Painted: July 2026</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BENTO -->
+  <section class="wrap">
+    <div class="eyebrow">THE DETAILS</div>
+    <h2>BUILT LIKE A GOOD TOOL.</h2>
+    <div class="bento">
+
+      <div class="slab">
+        <div class="slab-art" style="background:#8A5BB8">
+          <div class="ui-frag">
+            <div class="frag-bar" style="background:#21242A">WALLPAPER <span class="buy">BUY: 9 rolls</span></div>
+            <div class="frag-row"><span>Bedroom 1</span><span class="mono">4 <span class="u">rolls</span></span></div>
+            <div class="frag-row"><span>Bedroom 2</span><span class="mono">3 <span class="u">rolls</span></span></div>
+            <div class="frag-row"><span>Hallway</span><span class="mono">2 <span class="u">rolls</span></span></div>
+          </div>
+        </div>
+        <h3>ONE BUY LIST FOR THE WHOLE PROJECT</h3>
+        <p>Every saved room totals into a single number at the register.</p>
+      </div>
+
+      <div class="slab">
+        <div class="slab-art" style="background:var(--tape)">
+          <div class="room-card">
+            <div><span>Bedroom 1</span><span class="check">&#10003;</span></div>
+            <div><span>Bedroom 2</span><span class="check">&#10003;</span></div>
+            <div><span>Hallway</span><span class="check">&#10003;</span></div>
+            <div><span>Bathroom</span><span style="color:var(--accent);font-weight:700">&hellip;</span></div>
+          </div>
+        </div>
+        <h3>RUN EVERY ROOM</h3>
+        <p>Name it, save it, change the numbers, save the next one.</p>
+      </div>
+
+      <div class="slab">
+        <div class="slab-art" style="background:var(--teal)">
+          <div class="ui-frag">
+            <div class="frag-bar" style="background:#21242A">HVAC &amp; FILTERS</div>
+            <div class="rec">
+              <b>Upstairs return</b>
+              <span class="mono">Filter size: 20&times;25&times;1 &middot; MERV: 11 &middot; Change every: 90 days &middot; Last changed: June 2026</span>
+            </div>
+          </div>
+        </div>
+        <h3>THE HOME BINDER</h3>
+        <p>Model numbers, filter sizes, paint codes &mdash; for stores, warranty calls, and insurance claims.</p>
+      </div>
+
+      <div class="slab">
+        <div class="slab-art" style="background:var(--accent)">
+          <div class="export-stack">
+            <span>CSV <i class="lockmark">PRO</i></span>
+            <span>PULL SHEET <i class="lockmark">PRO</i></span>
+            <span>EMAIL <i class="lockmark">PRO</i></span>
+          </div>
+        </div>
+        <h3>TAKE IT WITH YOU</h3>
+        <p>Email the project, hand a CSV to the contractor, or carry a store-ready pull sheet.</p>
+      </div>
+
+      <div class="slab">
+        <div class="slab-art" style="background:var(--crimson)">
+          <div class="ui-frag">
+            <div class="frag-bar" style="background:#21242A">CONCRETE <span class="buy">BUY: 23 bags</span></div>
+            <div class="frag-row"><span>Volume</span><span class="mono">12.5 <span class="u">cu ft</span></span></div>
+            <div class="frag-row"><span>With 10% extra</span><span class="mono">0.51 <span class="u">cu yd</span></span></div>
+          </div>
+        </div>
+        <h3>REAL-WORLD MATH</h3>
+        <p>Waste factors, pattern repeats, coats, bag volumes, BTU charts &mdash; baked in.</p>
+      </div>
+
+      <div class="slab">
+        <div class="slab-art" style="background:var(--ink)">
+          <div class="big-stamp">NO DATA<br>COLLECTED</div>
+          <div class="privacy-note">NO ACCOUNT &middot; NO TRACKING &middot; NO ADS</div>
+        </div>
+        <h3>YOURS, PRIVATELY</h3>
+        <p>Projects and records live on your device. Nowhere else.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CALCULATORS -->
+  <section class="wrap">
+    <div class="eyebrow" id="lineup">THE LINEUP</div>
+    <h2>ELEVEN CALCULATORS. TEN RECORD CATEGORIES.</h2>
+    <p class="lede">Everything a homeowner actually buys and everything a homeowner actually forgets.</p>
+    <div class="chips">
+      <span class="chip"><b style="background:#3E7C3A"></b>MULCH &amp; TOP SOIL</span>
+      <span class="chip"><b style="background:#A63A3A"></b>PAINT</span>
+      <span class="chip"><b style="background:#8A5BB8"></b>WALLPAPER</span>
+      <span class="chip"><b style="background:#A9682C"></b>FLOORING</span>
+      <span class="chip"><b style="background:#B8455B"></b>CARPET</span>
+      <span class="chip"><b style="background:#D48A1E"></b>INSULATION</span>
+      <span class="chip"><b style="background:#5A9E32"></b>GRASS SEED</span>
+      <span class="chip"><b style="background:#2B7FB8"></b>AIR CONDITIONING</span>
+      <span class="chip"><b style="background:#7A6A52"></b>MOVING BOXES</span>
+      <span class="chip"><b style="background:#5E6672"></b>CONCRETE</span>
+      <span class="chip"><b style="background:#4A8E86"></b>DRYWALL</span>
+    </div>
+    <div class="chips" style="margin-top:12px">
+      <span class="chip" style="font-size:14px"><b style="background:#2B5EA7"></b>APPLIANCES</span>
+      <span class="chip" style="font-size:14px"><b style="background:#4A8E86"></b>HVAC &amp; FILTERS</span>
+      <span class="chip" style="font-size:14px"><b style="background:#A63A3A"></b>PAINT &amp; FINISHES</span>
+      <span class="chip" style="font-size:14px"><b style="background:#A9682C"></b>FLOORING &amp; TILE</span>
+      <span class="chip" style="font-size:14px"><b style="background:#2B7FB8"></b>WATER &amp; PLUMBING</span>
+      <span class="chip" style="font-size:14px"><b style="background:#D48A1E"></b>BULBS &amp; BATTERIES</span>
+      <span class="chip" style="font-size:14px"><b style="background:#B8455B"></b>SAFETY DEVICES</span>
+      <span class="chip" style="font-size:14px"><b style="background:#3E7C3A"></b>EXTERIOR</span>
+      <span class="chip" style="font-size:14px"><b style="background:#5E6672"></b>SERVICE LOG</span>
+      <span class="chip" style="font-size:14px"><b style="background:#7A6A52"></b>EVERYTHING ELSE</span>
+    </div>
+  </section>
+
+  <!-- PRO -->
+  <section class="wrap" id="pricing">
+    <div class="eyebrow">CASTLEWISE PRO</div>
+    <h2>ONE PRICE. YOURS FOR GOOD.</h2>
+    <div class="pro-card">
+      <div>
+        <div class="pro-price"><small>$</small>4.99</div>
+        <div class="nosub">NO SUBSCRIPTION. EVER.</div>
+      </div>
+      <div class="pro-feats">
+        <div class="tiers">
+          <div>
+            <b class="mono t-label">FREE FOREVER</b>
+            <ul><li>All 11 calculators</li><li>Unlimited rooms &amp; zones</li><li>Project Sheet with buy totals</li><li>No account, no ads</li></ul>
+          </div>
+          <div>
+            <b class="mono t-label" style="color:var(--green)">PRO — $4.99 ONCE</b>
+            <ul><li>The Home Binder (10 categories)</li><li>Email project + CSV attached</li><li>CSV &amp; pull sheet downloads</li><li>Copy anywhere · Family Sharing</li></ul>
+          </div>
+        </div>
+        <a class="btn btn-ink" href="#" style="margin-top:20px" aria-label="Download CastleWise free on the App Store">&#63743;&nbsp; DOWNLOAD FREE</a>
+        <a class="notify mono" href="mailto:features@castlewise.app?subject=Notify%20me%20at%20launch&body=Add%20me%20to%20the%20CastleWise%20launch%20list!">Not out yet? Get notified at launch &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="wrap">
+    <div class="eyebrow" id="faq">QUESTIONS</div>
+    <h2>THE FIVE THINGS EVERYONE ASKS.</h2>
+    <div class="faq">
+      <details open>
+        <summary>Is it really a one-time purchase?</summary>
+        <p>Yes. $4.99, once, and Pro is yours for good — Family Sharing included. There is no subscription tier, no renewal, and no plan to add one. It's the whole reason we put "No subscription. Ever." on a stamp.</p>
+      </details>
+      <details>
+        <summary>What's free and what's Pro?</summary>
+        <p>Free forever: all eleven calculators, unlimited rooms, and the Project Sheet with automatic buy totals. Pro adds the Home Binder and every export — email, CSV, pull sheets, and copy. You can plan an entire project without paying a cent; Pro is for taking it with you and keeping records.</p>
+      </details>
+      <details>
+        <summary>Does it work offline?</summary>
+        <p>Completely. Every calculator, the Project Sheet, and the Home Binder work with no connection — measure in the basement, the attic, or the far corner of the yard. You only need a connection to email a project.</p>
+      </details>
+      <details>
+        <summary>Where does my data live?</summary>
+        <p>On your device, and nowhere else. No account, no cloud sync, no analytics, no ads. Our App Store privacy label reads "Data Not Collected" — the strictest label Apple offers.</p>
+      </details>
+      <details>
+        <summary>Is there an Android version?</summary>
+        <p>Not yet — CastleWise is iPhone and iPad first. If you want it on Android, email us; we count the requests, and demand decides the roadmap.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- FEATURE REQUEST -->
+  <div class="wrap">
+    <div class="ask" id="ask">
+      <div class="eyebrow">BUILT WITH YOU</div>
+      <h2>WISH IT CALCULATED SOMETHING ELSE?</h2>
+      <p>Deck boards? Fence pickets? Pavers? CastleWise grows by request — tell us the calculator or record category your house needs, and the best ideas ship in the next update with a thank-you in the release notes.</p>
+      <a class="btn" href="mailto:features@castlewise.app?subject=CastleWise%20feature%20idea&body=My%20house%20needs%20CastleWise%20to...">
+        &#9993;&nbsp; SUGGEST A FEATURE
+      </a>
+      <span class="mono-mail">or email us anytime — <a href="mailto:features@castlewise.app">features@castlewise.app</a></span>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <span class="display" style="color:var(--paper);font-size:18px;letter-spacing:.08em;">CASTLEWISE</span>
+    <span class="mono"><span class="privacy-flex">We collect no data.</span> Your projects and records live on your device.</span>
+    <span class="mono">Feature ideas: <a href="mailto:features@castlewise.app">features@castlewise.app</a> &nbsp;·&nbsp; © 2026 CastleWise &nbsp;·&nbsp; <a href="privacy.html">Privacy Policy</a></span>
+  </div>
+</footer>
+
+<script>
+  function buildRuler(el, gap, tall, mid, small) {
+    const count = Math.ceil(el.offsetWidth / gap) + 4;
+    for (let i = 0; i < count; i++) {
+      const t = document.createElement('i');
+      t.style.height = (i % 8 === 0 ? tall : i % 4 === 0 ? mid : small) + 'px';
+      el.appendChild(t);
+    }
+  }
+  document.querySelectorAll('.r-big').forEach((el) => buildRuler(el, 10.5, 11, 7, 4));
+  document.querySelectorAll('.r-mini').forEach((el) => buildRuler(el, 7, 6, 4, 2.5));
+</script>
+
+</body>
+</html>
