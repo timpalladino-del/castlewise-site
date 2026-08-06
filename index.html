@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CastleWise Beta - Point your camera at the problem</title>
+<meta name="description" content="CastleWise reads appliance error codes, diagnoses house problems from a photo, and carries 200+ repair playbooks and project guides. Join the free beta.">
+<meta property="og:title" content="CastleWise Beta - Point your camera at the problem">
+<meta property="og:description" content="The app that reads error codes, diagnoses house problems from a photo, and knows how to fix them. Free beta, everything unlocked.">
+<meta property="og:image" content="https://castlewise.app/og-card.png">
+<meta property="og:url" content="https://castlewise.app">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@400;500;700&family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#21242A;--paper:#FCFBF7;--bg:#ECEAE4;--blue:#2B5EA7;--tape:#F5C518;
+    --green:#2E6B4F;--crimson:#A63A3A;--mute:#6B6A64;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Public Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;}
+  .display{font-family:'Big Shoulders Display',sans-serif;font-weight:800;text-transform:uppercase;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+  .ruler{height:18px;background:var(--tape);
+    background-image:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 14px);
+    background-size:14px 9px;background-position:bottom;background-repeat:repeat-x;}
+  .card{background:var(--paper);border:2px solid var(--ink);border-radius:8px;
+    box-shadow:0 5px 0 rgba(33,36,42,.8);padding:22px;}
+  .chip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;
+    letter-spacing:.12em;padding:5px 12px;border-radius:99px;}
+  .btn{display:inline-block;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:14px;
+    letter-spacing:.06em;padding:15px 26px;border-radius:8px;border:2px solid var(--ink);
+    text-decoration:none;box-shadow:0 4px 0 rgba(33,36,42,.8);transition:transform .08s;}
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(33,36,42,.8);}
+  .btn.tape{background:var(--tape);color:var(--ink);}
+  .btn.ink{background:var(--ink);color:var(--paper);}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;
+    letter-spacing:.18em;color:var(--blue);margin-bottom:10px;}
+  header{background:var(--ink);color:var(--paper);padding:56px 0 48px;position:relative;overflow:hidden;}
+  header .cam{position:absolute;right:-40px;top:20px;font-size:280px;opacity:.06;transform:rotate(-8deg);}
+  header h1{font-family:'Big Shoulders Display',sans-serif;font-weight:800;text-transform:uppercase;
+    font-size:clamp(40px,7.5vw,72px);line-height:.95;letter-spacing:.01em;}
+  header h1 .y{color:var(--tape);}
+  header p.sub{font-size:clamp(16px,2.4vw,19px);color:#C9C7BF;max-width:560px;margin:18px 0 26px;}
+  .heroband{background:var(--crimson);color:var(--paper);font-family:'IBM Plex Mono',monospace;
+    font-size:12px;font-weight:700;letter-spacing:.14em;text-align:center;padding:9px 14px;}
+  .numbers{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:-30px auto 0;position:relative;z-index:2;}
+  .num{background:var(--paper);border:2px solid var(--ink);border-radius:8px;
+    box-shadow:0 4px 0 rgba(33,36,42,.8);padding:16px 10px;text-align:center;}
+  .num b{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:34px;display:block;line-height:1;}
+  .num span{font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.1em;color:var(--mute);}
+  section{padding:52px 0;}
+  h2{font-family:'Big Shoulders Display',sans-serif;font-weight:800;text-transform:uppercase;
+    font-size:clamp(28px,4.5vw,42px);line-height:1;margin-bottom:8px;}
+  .lede{color:var(--mute);font-size:16px;max-width:640px;margin-bottom:26px;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+  .step .n{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:40px;color:var(--tape);
+    -webkit-text-stroke:2px var(--ink);line-height:1;}
+  .step h3{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.08em;margin:8px 0 6px;}
+  .step p{font-size:14px;color:var(--mute);}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px;}
+  .feat{background:var(--paper);border:2px solid var(--ink);border-radius:8px;
+    box-shadow:0 4px 0 rgba(33,36,42,.8);padding:18px;}
+  .feat .ic{width:40px;height:40px;border-radius:9px;display:grid;place-items:center;
+    color:var(--paper);font-size:19px;margin-bottom:10px;}
+  .feat h3{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:20px;letter-spacing:.02em;}
+  .feat p{font-size:13.5px;color:var(--mute);margin-top:4px;}
+  .feat .tag{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;
+    color:var(--green);display:block;margin-top:8px;}
+  .promise{background:var(--ink);color:var(--paper);}
+  .promise .card{background:transparent;border-color:#3A3F49;box-shadow:none;}
+  .promise h3{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.1em;color:var(--tape);margin-bottom:6px;}
+  .promise p{font-size:14px;color:#C9C7BF;}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;}
+  @media(max-width:600px){.vs{grid-template-columns:1fr;}}
+  .vs .card{background:#2A2E36;}
+  .vs b.price{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:34px;display:block;}
+  .beta{background:var(--tape);}
+  .beta .card{background:var(--paper);}
+  .copybox{display:flex;gap:8px;align-items:center;background:#F4F2EC;border:2px solid var(--ink);
+    border-radius:8px;padding:10px 12px;margin-top:10px;flex-wrap:wrap;}
+  .copybox code{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;flex:1;min-width:200px;}
+  .copybox button{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.06em;
+    background:var(--ink);color:var(--paper);border:none;border-radius:6px;padding:8px 14px;cursor:pointer;}
+  ol.how{margin:14px 0 0 20px;font-size:15px;}
+  ol.how li{margin-bottom:9px;}
+  ol.how b{font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  footer{background:var(--ink);color:#9B9992;padding:26px 0;font-size:12.5px;}
+  footer a{color:var(--tape);text-decoration:none;}
+  .stamp{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;color:#6B7280;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div class="heroband">FREE BETA NOW OPEN &middot; EVERYTHING UNLOCKED &middot; LIMITED SEATS ON TESTFLIGHT</div>
+<div class="ruler"></div>
+
+<header>
+  <div class="cam">&#128247;</div>
+  <div class="wrap">
+    <span class="chip" style="background:var(--tape);color:var(--ink);">CASTLEWISE &middot; iOS BETA</span>
+    <h1>Point your camera<br>at the problem.<br><span class="y">CastleWise knows<br>the fix.</span></h1>
+    <p class="sub">The washer is flashing a code. The grout looks terrible. Something under the sink smells wrong. Snap a photo - CastleWise tells you what it is, what usually causes it, the parts that fix it, and whether it is safe to do yourself.</p>
+    <a class="btn tape" href="#beta">JOIN THE FREE BETA</a>
+    &nbsp; <a class="btn ink" href="#inside" style="border-color:#3A3F49;">SEE WHAT'S INSIDE</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="numbers">
+    <div class="num"><b>267</b><span>ERROR CODES<br>53 BRANDS</span></div>
+    <div class="num"><b>120</b><span>PROBLEM<br>PLAYBOOKS</span></div>
+    <div class="num"><b>86</b><span>FULL PROJECT<br>GUIDES</span></div>
+    <div class="num"><b>1,600+</b><span>PROJECT<br>BRIEFS</span></div>
+    <div class="num"><b>100+</b><span>TRADE TERMS<br>TRANSLATED</span></div>
+    <div class="num"><b>$0</b><span>DATA LEAVES<br>YOUR PHONE</span></div>
+  </div>
+</div>
+
+<section id="fixlens">
+  <div class="wrap">
+    <div class="label">THE HEADLINE ACT</div>
+    <h2>FixLens: the camera that speaks appliance.</h2>
+    <p class="lede">Every appliance speaks in codes and every house breaks in pictures. FixLens understands both - and it never guesses. Answers come from a hand-built library, checked entry by entry.</p>
+    <div class="steps">
+      <div class="step card"><div class="n">1</div><h3>TELL IT WHAT'S UP</h3><p>Type what's happening, add a photo if it helps - an error display, a data plate, a stain, a crack, a mystery. Or just ask a question with no photo at all.</p></div>
+      <div class="step card"><div class="n">2</div><h3>HIT ANALYZE</h3><p>Everything runs on your iPhone. Smart Vision reads tricky displays and describes any house problem. Nothing uploads, ever.</p></div>
+      <div class="step card"><div class="n">3</div><h3>GET THE VERDICT</h3><p>What it means, the likely causes ranked most-common-first, the fix steps, the parts that usually solve it - and an honest call on DIY versus pro.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="ruler"></div>
+
+<section id="inside">
+  <div class="wrap">
+    <div class="label">FOUR TABS, ONE CAPABLE HOUSE</div>
+    <h2>Everything inside.</h2>
+    <p class="lede">CastleWise is four tools in one app: a diagnostician, a workshop, a filing cabinet, and a coach.</p>
+    <div class="grid">
+      <div class="feat"><div class="ic" style="background:var(--blue);">&#128247;</div><h3>FixLens</h3><p>267 verified error codes across 53 brands (pro lines included). 120 house-problem playbooks from squeaky floors to sewage smells - including full CLEANING and RESETS departments. Every verdict saves to your scan history, and the I FIXED IT stamp records your wins.</p><span class="tag">THE DIAGNOSTICIAN</span></div>
+      <div class="feat"><div class="ic" style="background:var(--green);">&#128296;</div><h3>The Workshop</h3><p>86 full step-by-step project guides (each calling out THE CLASSIC MISTAKE so you skip it), 1,600+ project briefs you can vote into full guides, eleven calculators, a real bubble level, the know-how library, and a 100-term trade dictionary in plain words.</p><span class="tag">THE TOOLBENCH</span></div>
+      <div class="feat"><div class="ic" style="background:var(--crimson);">&#128218;</div><h3>Home Records</h3><p>Every model number, serial, filter size, and paint code - written down once, found forever. Quick-pick chips, custom sections, photos, reminders, and one-tap exports for insurance or warranty calls. Type a new room on a record and it builds your home page automatically.</p><span class="tag">THE FILING CABINET</span></div>
+      <div class="feat"><div class="ic" style="background:#D48A1E;">&#127942;</div><h3>The Trade Ladder</h3><p>CastleWise scores YOU. Records, scans, stamped fixes, and seasonal tasks earn XP; ranks climb from APPRENTICE to MASTER OF THE HOUSE. Plus a House Score showing how documented your castle is. Points only for doing - no streaks, no guilt, no tricks.</p><span class="tag">THE COACH &middot; NEW</span></div>
+      <div class="feat"><div class="ic" style="background:var(--green);">&#128197;</div><h3>Seasonal Checklists</h3><p>Four weekends a year prevent most of a house's disasters. Fully editable lists with real reminders - remove tasks, add your own, and prefills return fresh each season.</p><span class="tag">THE CALENDAR</span></div>
+      <div class="feat"><div class="ic" style="background:var(--crimson);">&#128680;</div><h3>Emergency Mode</h3><p>Burst pipe, gas smell, sparking outlet, sewage backup: the first five minutes for each, numbered, written to work with no signal. Plus the homework that saves you next time.</p><span class="tag">THE RED BUTTON</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="promise">
+  <div class="wrap">
+    <div class="label" style="color:var(--tape);">THE PART THAT'S RARE</div>
+    <h2 style="color:var(--paper);">Private on purpose. Honest by design.</h2>
+    <div class="grid" style="margin-top:22px;">
+      <div class="card"><h3>ON-DEVICE, ALWAYS</h3><p>Photos are analyzed on your iPhone and never leave it. No account. No cloud. No analytics. Your house's records belong to your house.</p></div>
+      <div class="card"><h3>A LIBRARY, NOT A GUESS</h3><p>The scanner refuses to bluff: photos of non-appliances cannot false-match error codes, AI summaries are clearly labeled, and the verified library answer always comes first.</p></div>
+      <div class="card"><h3>HONEST ABOUT LIMITS</h3><p>When a job needs a licensed pro - gas, structural, main panel - CastleWise says so, plainly. The DIY-SAFE badge means something because it is not automatic.</p></div>
+    </div>
+    <div class="vs">
+      <div class="card"><h3>THE SUBSCRIPTION APPS</h3><b class="price" style="color:#C97B7B;">$20+/year</b><p>Accounts required. Data linked to your identity. Reminder lists with a yearly bill.</p></div>
+      <div class="card"><h3>CASTLEWISE PRO</h3><b class="price" style="color:var(--tape);">$4.99 once</b><p>Everything, forever, on your phone. And during the beta? Free. All of it.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="ruler"></div>
+
+<section class="beta" id="beta">
+  <div class="wrap">
+    <div class="label" style="color:var(--ink);">TWO MINUTES, START TO SCANNING</div>
+    <h2>Join the beta. Break things. Shape it.</h2>
+    <p class="lede" style="color:var(--ink);opacity:.75;">Beta testers get the full app free - including Pro - and a direct line to the builder. Your weird laundry-room photos literally decide what gets built next.</p>
+    <div class="card">
+      <ol class="how">
+        <li>Install <b>TestFlight</b> (Apple's free beta app) from the App Store.</li>
+        <li>Email <b>features@castlewise.app</b> with the word <b>BETA</b> - your invite link comes back fast.</li>
+        <li>Open the link on your iPhone, tap <b>INSTALL</b>, and go point your camera at something broken.</li>
+        <li>Unlock everything: tap the <b>$4.99 upgrade</b> with your Apple ID. <b>TestFlight never charges testers</b> - it unlocks the whole app free.</li>
+      </ol>
+      <div class="copybox"><code id="mail">features@castlewise.app</code><button onclick="copyIt('mail',this)">COPY ADDRESS</button></div>
+      <div class="copybox"><code id="subj">BETA - count me in</code><button onclick="copyIt('subj',this)">COPY SUBJECT</button></div>
+      <p style="margin-top:16px;"><a class="btn ink" href="mailto:features@castlewise.app?subject=BETA%20-%20count%20me%20in&body=Put%20me%20on%20the%20list!%20My%20house%20has%20problems%20and%20I%20have%20a%20camera.">EMAIL IN ONE TAP</a></p>
+      <p class="stamp">SEATS ARE LIMITED BY TESTFLIGHT &middot; FIRST COME, FIRST SCANNING</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="display" style="color:var(--paper);font-size:18px;letter-spacing:.06em;">CASTLEWISE</span>
+    &nbsp;&middot;&nbsp; The owner's manual your house never came with.
+    &nbsp;&middot;&nbsp; <a href="privacy.html">Privacy</a>
+    &nbsp;&middot;&nbsp; <a href="mailto:features@castlewise.app">features@castlewise.app</a>
+    <div class="stamp">BUILT SOLO, ON NIGHTS AND WEEKENDS, WITH STRONG OPINIONS ABOUT GROUT. &copy; 2026 CASTLEWISE.</div>
+  </div>
+</footer>
+
+<script>
+function copyIt(id, btn){
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(function(){
+    var old = btn.textContent;
+    btn.textContent = 'COPIED';
+    setTimeout(function(){ btn.textContent = old; }, 1600);
+  });
+}
+</script>
+</body>
+</html>
