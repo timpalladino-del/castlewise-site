@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy - CastleWise</title>
+<meta name="description" content="What CastleWise stores, what it sends, and what it never collects. Written in plain words.">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F9F7F2; --bg-deep:#E8E3D8; --surface:#FEFDFB;
+    --ink:#1A1D21; --mute:#7C776D; --faint:#A09B90; --line:#E4DFD4;
+    --accent:#C24A2F; --green:#2E6B4F;
+    --card:0 1px 3px rgba(60,50,35,.06), 0 6px 16px rgba(60,50,35,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Public Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:linear-gradient(175deg,var(--bg) 0%,#F2EFE7 55%,var(--bg-deep) 100%);
+    background-attachment:fixed;
+    color:var(--ink); line-height:1.65; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:0 22px;}
+  nav{padding:20px 0;display:flex;justify-content:space-between;align-items:center;}
+  .brand{font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+         color:var(--ink);text-decoration:none;}
+  .navlink{font-size:14px;color:var(--mute);text-decoration:none;}
+
+  header{padding:30px 0 8px;}
+  h1{font-size:clamp(30px,5vw,44px);font-weight:600;letter-spacing:-.02em;line-height:1.1;}
+  .sub{font-size:17px;color:var(--mute);margin-top:12px;}
+  .stamp{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);margin-top:16px;}
+
+  section{padding:26px 0;}
+  h2{font-size:21px;font-weight:600;letter-spacing:-.01em;margin-bottom:10px;}
+  p{margin-bottom:12px;color:var(--mute);}
+  p strong{color:var(--ink);font-weight:600;}
+  ul{margin:0 0 12px 20px;color:var(--mute);}
+  li{margin-bottom:7px;}
+
+  .card{background:var(--surface);border-radius:18px;padding:24px;box-shadow:var(--card);margin-bottom:16px;}
+  .card h2{margin-bottom:8px;}
+  .card p:last-child{margin-bottom:0;}
+
+  .headline{background:var(--ink);color:#EDEAE3;border-radius:20px;padding:28px 26px;box-shadow:var(--card);}
+  .headline h2{color:#FEFDFB;font-size:23px;}
+  .headline p{color:#BCB7AD;margin-bottom:10px;}
+  .headline p:last-child{margin-bottom:0;}
+  .headline strong{color:#FEFDFB;}
+
+  table{width:100%;border-collapse:collapse;margin:4px 0 8px;}
+  td{padding:13px 0;border-bottom:1px solid var(--line);font-size:15px;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  td.k{color:var(--mute);width:52%;padding-right:16px;}
+  td.v{font-weight:500;text-align:right;}
+  td.v.no{color:var(--green);}
+  td.v.yes{color:var(--accent);}
+
+  .rule{height:1px;background:var(--line);}
+  footer{padding:34px 0 50px;color:var(--faint);font-size:13.5px;}
+  footer a{color:var(--mute);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <a class="brand" href="/">CastleWise</a>
+    <a class="navlink" href="/">Back to the app &rsaquo;</a>
+  </nav>
+</div>
+
+<header>
+  <div class="wrap">
+    <h1>Privacy</h1>
+    <p class="sub">Written in plain words, because a privacy policy nobody can read is not really a privacy policy.</p>
+    <p class="stamp">LAST UPDATED AUGUST 11, 2026</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <div class="headline">
+      <h2>The short version</h2>
+      <p>CastleWise has <strong>no account and no login</strong>. Your home records, photos, rooms, checklists, and shopping lists are stored <strong>on your iPhone</strong> and are not uploaded anywhere.</p>
+      <p>There is <strong>one exception, and you control it</strong>: when you tap Expert Check or ask a follow-up question, that message and that photo are sent to be analyzed, then discarded. Nothing about that request is kept, and nothing identifies you.</p>
+      <p>We do not sell anything, we do not run ads, and there is nothing here to sell.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>What stays on your phone</h2>
+      <p>All of this lives in the app's own storage on your device and is never transmitted:</p>
+      <ul>
+        <li>Every home record: model numbers, serial numbers, filter sizes, paint codes, purchase dates, warranties</li>
+        <li>Photos you attach to records</li>
+        <li>Your rooms, house names, and room icons and colors</li>
+        <li>Seasonal checklists, home dates, and reminders</li>
+        <li>Shopping lists and calculator results</li>
+        <li>Your electrical panel map</li>
+        <li>Scan history and your Trade Ladder progress</li>
+      </ul>
+      <p>If you delete the app, all of it is gone. There is no cloud copy, because there is no cloud.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Expert Check, and exactly what it sends</h2>
+      <p>Expert Check is optional. Nothing is sent unless you tap the button.</p>
+      <p>When you do, three things are transmitted over an encrypted connection to our own server, which passes them to Anthropic's Claude API for analysis:</p>
+      <ul>
+        <li>The text you typed about the problem</li>
+        <li>The photo you attached, if you attached one</li>
+        <li>An anonymous random ID created by your install, used only to limit how many requests one device can make per day</li>
+      </ul>
+      <p><strong>That random ID is not your name, your email, your Apple ID, or your device's identifier.</strong> It is a number generated on your phone the first time you use the feature, it identifies nobody, and it is never combined with anything else.</p>
+      <p>Your question and photo are <strong>not stored</strong> on our server after the answer comes back. Anthropic processes the request under their API terms and does not use it to train their models.</p>
+      <p>Everything else in CastleWise keeps working normally whether you ever use Expert Check or not.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Anonymous usage counts</h2>
+      <p>CastleWise counts how often features get used, so the useful parts get built up and the ignored ones get fixed or removed. A count looks like "a scan ran" or "a record was added" and nothing more.</p>
+      <p>These are <strong>counts only</strong>. No identity, no device identifier, no location, no timestamps beyond the day, and nothing that could be traced back to a person or linked between sessions.</p>
+      <p>You can switch this off entirely: <strong>My House &rsaquo; About &rsaquo; Share anonymous usage counts</strong>. The app works exactly the same either way.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>What CastleWise never collects</h2>
+      <table>
+        <tr><td class="k">Your name, email, or phone number</td><td class="v no">Never</td></tr>
+        <tr><td class="k">An account or password</td><td class="v no">There isn't one</td></tr>
+        <tr><td class="k">Your location or GPS</td><td class="v no">Never</td></tr>
+        <tr><td class="k">Your contacts, calendar, or other apps</td><td class="v no">Never</td></tr>
+        <tr><td class="k">Advertising identifiers or trackers</td><td class="v no">None</td></tr>
+        <tr><td class="k">Third-party analytics SDKs</td><td class="v no">None</td></tr>
+        <tr><td class="k">Your records, uploaded anywhere</td><td class="v no">Never</td></tr>
+        <tr><td class="k">Photos you attach to records</td><td class="v no">Stay on device</td></tr>
+        <tr><td class="k">A photo you send to Expert Check</td><td class="v yes">Sent, not stored</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Permissions the app asks for</h2>
+      <p><strong>Camera.</strong> Only when you take a photo. CastleWise cannot see through your camera at any other time.</p>
+      <p><strong>Photo library.</strong> Only when you pick an existing photo, and only the one you choose.</p>
+      <p><strong>Notifications.</strong> Only if you set a reminder. Reminders are scheduled on your phone by iOS; no server is involved and nothing is sent anywhere.</p>
+      <p>Decline any of them and the rest of the app keeps working.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Purchases</h2>
+      <p>CastleWise Pro is a one-time purchase handled entirely by Apple. Apple tells the app whether the purchase happened. We never see your payment details, and no payment information touches our servers.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Children</h2>
+      <p>CastleWise is a home maintenance tool for adults and is not directed at children. It collects no personal information from anyone, including children.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>If this changes</h2>
+      <p>If CastleWise ever collects something new, this page gets updated with the date changed, and anything meaningful gets announced in the app's release notes. There is no plan to add accounts, cloud sync, ads, or tracking.</p>
+      <p>Questions, or something here that does not match what you see in the app? Email <a href="mailto:features@castlewise.app" style="color:var(--accent);">features@castlewise.app</a> and it gets a real answer.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="rule" style="margin-bottom:24px;"></div>
+    <p><strong style="color:var(--ink);font-weight:600;">CastleWise</strong> &middot; Records, Reminders &amp; Repairs</p>
+    <p style="margin-top:6px;">
+      <a href="/">Home</a> &nbsp;&middot;&nbsp;
+      <a href="mailto:features@castlewise.app">features@castlewise.app</a>
+    </p>
+    <p style="margin-top:14px;font-size:12.5px;">&copy; 2026 Timothy Palladino.</p>
+  </div>
+</footer>
+
+</body>
+</html>
