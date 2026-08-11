@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CastleWise: Records, Reminders &amp; Repairs</title>
+<meta name="description" content="CastleWise keeps your home's records, reminds you when maintenance is due, and guides every project with calculators and shopping lists. And when something breaks, point the camera at it.">
+<meta property="og:title" content="CastleWise - The owner's manual your house never came with">
+<meta property="og:description" content="Records, maintenance reminders, project guides, and a camera that reads error codes. $9.99 once, no subscription.">
+<meta property="og:url" content="https://castlewise.app">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F9F7F2; --bg-deep:#E8E3D8; --surface:#FEFDFB;
+    --ink:#1A1D21; --mute:#7C776D; --faint:#A09B90; --line:#E4DFD4;
+    --accent:#C24A2F; --blue:#2B5EA7; --green:#2E6B4F; --tape:#D9A21B;
+    --card:0 1px 3px rgba(60,50,35,.06), 0 6px 16px rgba(60,50,35,.05);
+    --lift:0 2px 6px rgba(60,50,35,.08), 0 14px 30px rgba(60,50,35,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Public Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:linear-gradient(175deg,var(--bg) 0%,#F2EFE7 45%,var(--bg-deep) 100%);
+    background-attachment:fixed;
+    color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .wrap{max-width:940px;margin:0 auto;padding:0 22px;}
+  section{padding:64px 0;}
+  h1{font-size:clamp(34px,5.6vw,58px);font-weight:600;line-height:1.06;letter-spacing:-.02em;}
+  h2{font-size:clamp(26px,3.6vw,38px);font-weight:600;line-height:1.12;letter-spacing:-.015em;margin-bottom:10px;}
+  h3{font-size:17px;font-weight:600;letter-spacing:-.005em;}
+  .lede{font-size:clamp(16px,2vw,18px);color:var(--mute);max-width:620px;}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--accent);margin-bottom:12px;}
+
+  /* nav */
+  nav{padding:20px 0;display:flex;justify-content:space-between;align-items:center;}
+  .brand{font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+  .navlink{font-size:14px;color:var(--mute);text-decoration:none;}
+
+  /* buttons */
+  .btn{display:inline-block;font-size:15px;font-weight:600;padding:14px 26px;border-radius:12px;
+       text-decoration:none;transition:transform .1s ease, box-shadow .2s ease;}
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--ink);color:var(--surface);box-shadow:var(--card);}
+  .btn-primary:hover{box-shadow:var(--lift);}
+  .btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line);}
+
+  /* hero */
+  header{padding:36px 0 20px;}
+  .hero-sub{margin:20px 0 30px;font-size:clamp(16px,2.1vw,19px);color:var(--mute);max-width:600px;}
+  .price-note{font-size:14px;color:var(--faint);margin-top:16px;}
+
+  /* stat strip */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:44px;}
+  .stat{background:var(--surface);border-radius:16px;padding:18px 14px;box-shadow:var(--card);}
+  .stat b{display:block;font-size:26px;font-weight:600;letter-spacing:-.02em;line-height:1;}
+  .stat span{font-size:12px;color:var(--faint);display:block;margin-top:5px;line-height:1.35;}
+
+  /* cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
+  .card{background:var(--surface);border-radius:18px;padding:22px;box-shadow:var(--card);}
+  .card p{font-size:14.5px;color:var(--mute);margin-top:6px;}
+  .ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;
+       justify-content:center;font-size:20px;margin-bottom:13px;}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+  .step-n{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--accent);
+          letter-spacing:.1em;margin-bottom:8px;}
+
+  /* spec table */
+  .spec{background:var(--surface);border-radius:18px;padding:8px 20px;box-shadow:var(--card);}
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+       padding:15px 0;border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:none;}
+  .row .k{font-size:14.5px;color:var(--mute);}
+  .row .v{font-size:14.5px;font-weight:500;text-align:right;}
+  .row .v.mono{font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:400;}
+  .row .v.free{color:var(--green);}
+  .row .v.warn{color:var(--accent);}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px;}
+  @media(max-width:620px){.compare{grid-template-columns:1fr;}}
+  .compare .card b{display:block;font-size:30px;font-weight:600;letter-spacing:-.02em;margin:8px 0 4px;}
+
+  /* beta */
+  .beta-card{background:var(--ink);color:#F2EFE8;border-radius:22px;padding:34px 28px;box-shadow:var(--lift);}
+  .beta-card h2{color:#FEFDFB;}
+  .beta-card .lede{color:#B8B3A9;}
+  .beta-steps{margin:22px 0 0;padding:0;list-style:none;counter-reset:s;}
+  .beta-steps li{counter-increment:s;position:relative;padding:0 0 16px 40px;font-size:15px;color:#D8D3C9;}
+  .beta-steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:26px;height:26px;
+    border-radius:50%;background:rgba(255,255,255,.1);color:#F2EFE8;font-size:13px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;}
+  .beta-steps b{color:#FEFDFB;font-weight:600;}
+  .copybox{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.07);
+           border-radius:12px;padding:12px 14px;margin-top:8px;flex-wrap:wrap;}
+  .copybox code{font-family:'IBM Plex Mono',monospace;font-size:14px;flex:1;min-width:190px;color:#F2EFE8;}
+  .copybox button{font-size:13px;font-weight:600;background:#F2EFE8;color:var(--ink);
+                  border:none;border-radius:8px;padding:9px 15px;cursor:pointer;}
+
+  footer{padding:40px 0 50px;color:var(--faint);font-size:13.5px;}
+  footer a{color:var(--mute);text-decoration:none;}
+  .rule{height:1px;background:var(--line);margin:0;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <span class="brand">CastleWise</span>
+    <a class="navlink" href="#beta">Join the beta &rsaquo;</a>
+  </nav>
+</div>
+
+<header>
+  <div class="wrap">
+    <h1>The owner's manual<br>your house never<br>came with.</h1>
+    <p class="hero-sub">Every home runs on information nobody writes down. The filter size. The paint code. When the water heater went in. Which weekend the gutters are due. CastleWise keeps the records, sends the reminders, and guides the projects. And when something breaks, you point the camera at it.</p>
+    <a class="btn btn-primary" href="#beta">Join the free beta</a>
+    &nbsp;
+    <a class="btn btn-ghost" href="#inside">See what's inside</a>
+    <p class="price-note">$9.99 once. No subscription, no account, nothing leaves your phone.</p>
+
+    <div class="stats">
+      <div class="stat"><b>12</b><span>record categories</span></div>
+      <div class="stat"><b>86</b><span>project guides</span></div>
+      <div class="stat"><b>120</b><span>fix playbooks</span></div>
+      <div class="stat"><b>267</b><span>error codes</span></div>
+      <div class="stat"><b>11</b><span>calculators</span></div>
+      <div class="stat"><b>0</b><span>data collected</span></div>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <p class="eyebrow">How it works</p>
+    <h2>Four jobs, one app.</h2>
+    <p class="lede" style="margin-bottom:30px;">Most home apps are a reminder list with a subscription. This one actually knows things.</p>
+    <div class="steps">
+      <div class="card">
+        <p class="step-n">01</p>
+        <h3>Write it down once</h3>
+        <p>Snap the data plate, save the paint code, log the filter size. Quick-pick chips and starter packs mean you are never staring at a blank form.</p>
+      </div>
+      <div class="card">
+        <p class="step-n">02</p>
+        <h3>Let it remind you</h3>
+        <p>Seasonal checklists four times a year, plus every other date worth a nudge: filter changes, service visits, renewals, sprinkler startup.</p>
+      </div>
+      <div class="card">
+        <p class="step-n">03</p>
+        <h3>Plan and build</h3>
+        <p>Step-by-step guides that call out the classic mistake first, and calculators that turn an idea into an exact shopping list.</p>
+      </div>
+      <div class="card">
+        <p class="step-n">04</p>
+        <h3>And when it breaks</h3>
+        <p>Describe it or photograph it. Error codes read, problems matched to playbooks, and an honest call on DIY versus calling a pro.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<section id="inside">
+  <div class="wrap">
+    <p class="eyebrow">What's inside</p>
+    <h2>Everything, in one place.</h2>
+    <p class="lede" style="margin-bottom:30px;">Built over a year of nights and weekends, then rebuilt from beta feedback.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="ico" style="background:rgba(194,74,47,.12);color:var(--accent);">&#9737;</div>
+        <h3>Home records</h3>
+        <p>Twelve categories covering appliances, HVAC, water, paint, flooring, safety, exterior, service history, and tests and inspections like radon and water quality. Photos, exports for insurance, and full search.</p>
+      </div>
+      <div class="card">
+        <div class="ico" style="background:rgba(46,107,79,.12);color:var(--green);">&#9200;</div>
+        <h3>Reminders that fit a house</h3>
+        <p>Editable seasonal checklists, plus home dates for filter changes, HVAC service, smoke detector batteries, septic pumping, insurance renewals, and holiday lights. Set how far ahead you want the nudge.</p>
+      </div>
+      <div class="card">
+        <div class="ico" style="background:rgba(43,94,167,.12);color:var(--blue);">&#9998;</div>
+        <h3>Guides and calculators</h3>
+        <p>86 full projects, each calling out the mistake first-timers make. 1,600 more you can vote into existence. Eleven calculators, a know-how library, and a 100-term trade dictionary in plain words.</p>
+      </div>
+      <div class="card">
+        <div class="ico" style="background:rgba(217,162,27,.14);color:#A8791A;">&#9889;</div>
+        <h3>Electrical panel map</h3>
+        <p>Label every breaker in a grid that looks like your panel door. It knows your panel brand and tells you the exact breaker to buy, because Square D QO and Homeline are not interchangeable. Sub-panels included.</p>
+      </div>
+      <div class="card">
+        <div class="ico" style="background:rgba(194,74,47,.12);color:var(--accent);">&#9673;</div>
+        <h3>FixLens</h3>
+        <p>267 verified error codes across 53 brands. 120 problem playbooks from squeaky floors to sewage smells. Runs on your phone. When it doesn't know, it says so instead of guessing.</p>
+      </div>
+      <div class="card">
+        <div class="ico" style="background:rgba(124,119,109,.14);color:var(--mute);">&#9878;</div>
+        <h3>Your house, your way</h3>
+        <p>Name it whatever you call it. Give every room its own icon and color from 54 symbols and 12 shades. The app builds your rooms during setup, then gets out of the way.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<section id="free">
+  <div class="wrap">
+    <p class="eyebrow">Free versus Pro</p>
+    <h2>Try the whole thing first.</h2>
+    <p class="lede" style="margin-bottom:26px;">The free tier is not a demo. It is enough to know whether this belongs on your phone.</p>
+    <div class="spec">
+      <div class="row"><span class="k">Home records</span><span class="v">5 free, then unlimited</span></div>
+      <div class="row"><span class="k">FixLens scans</span><span class="v">10 free, then unlimited</span></div>
+      <div class="row"><span class="k">Project guides and playbooks</span><span class="v free">Free, always</span></div>
+      <div class="row"><span class="k">Calculators and shopping lists</span><span class="v free">Free, always</span></div>
+      <div class="row"><span class="k">Trade dictionary and know-how</span><span class="v free">Free, always</span></div>
+      <div class="row"><span class="k">Emergency mode</span><span class="v free">Free, always</span></div>
+      <div class="row"><span class="k">Electrical panel map</span><span class="v free">Free, always</span></div>
+      <div class="row"><span class="k">Seasonal reminders</span><span class="v">Pro</span></div>
+      <div class="row"><span class="k">Insurance and warranty exports</span><span class="v">Pro</span></div>
+      <div class="row"><span class="k">Price</span><span class="v mono">$9.99 once</span></div>
+    </div>
+
+    <div class="compare">
+      <div class="card">
+        <h3>The subscription apps</h3>
+        <b style="color:var(--accent);">$20+/year</b>
+        <p>Account required. Data linked to your identity. A reminder list with a yearly bill.</p>
+      </div>
+      <div class="card">
+        <h3>CastleWise</h3>
+        <b>$9.99 once</b>
+        <p>No account. No cloud. No analytics tracking you. Yours forever, and free for the whole beta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<section id="privacy">
+  <div class="wrap">
+    <p class="eyebrow">The part that's rare</p>
+    <h2>Private on purpose.</h2>
+    <div class="grid" style="margin-top:26px;">
+      <div class="card">
+        <h3>It stays on your phone</h3>
+        <p>Photos are analyzed on your iPhone. Records live on your device. No account to create, nothing synced to a server you cannot see.</p>
+      </div>
+      <div class="card">
+        <h3>A library, not a guess</h3>
+        <p>Answers come from a hand-built library, checked entry by entry. The optional Expert Check is clearly labeled when you choose to use it.</p>
+      </div>
+      <div class="card">
+        <h3>Honest about limits</h3>
+        <p>Gas, main panels, structural work: the app says call a licensed pro, plainly. The DIY-safe badge means something because it is not automatic.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="beta">
+  <div class="wrap">
+    <div class="beta-card">
+      <p class="eyebrow" style="color:var(--tape);">Two minutes to install</p>
+      <h2>Join the beta.</h2>
+      <p class="lede">Testers get everything unlocked for free and a direct line to the person building it. The app has changed a lot because of feedback like yours.</p>
+      <ol class="beta-steps">
+        <li>Install <b>TestFlight</b> from the App Store first. It is free, made by Apple, and this only works if it is already on your phone.</li>
+        <li>Email <b>features@castlewise.app</b> with the word BETA and your invite link comes back fast.</li>
+        <li>Open the link <b>on your iPhone</b>, tap Install, and CastleWise lands on your home screen.</li>
+        <li>Tap the <b>$9.99 upgrade</b> with your Apple ID to unlock everything. TestFlight never charges testers.</li>
+      </ol>
+      <div class="copybox">
+        <code id="mail">features@castlewise.app</code>
+        <button onclick="copyIt('mail',this)">Copy</button>
+      </div>
+      <p style="margin-top:20px;">
+        <a class="btn" style="background:#F2EFE8;color:var(--ink);" href="mailto:features@castlewise.app?subject=BETA%20-%20count%20me%20in&body=Put%20me%20on%20the%20list.%20My%20house%20has%20problems%20and%20I%20have%20a%20camera.">Email in one tap</a>
+      </p>
+      <p style="margin-top:16px;font-size:13px;color:#8E8981;">iPhone only for now. Seats are limited by TestFlight.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="rule" style="margin-bottom:26px;"></div>
+    <p><b style="color:var(--ink);font-weight:600;">CastleWise</b> &middot; Records, Reminders &amp; Repairs</p>
+    <p style="margin-top:6px;">
+      <a href="privacy.html">Privacy</a> &nbsp;&middot;&nbsp;
+      <a href="mailto:features@castlewise.app">features@castlewise.app</a>
+    </p>
+    <p style="margin-top:14px;font-size:12.5px;">Built solo, on nights and weekends, with strong opinions about grout. &copy; 2026 Timothy Palladino.</p>
+  </div>
+</footer>
+
+<script>
+function copyIt(id, btn){
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(function(){
+    var old = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(function(){ btn.textContent = old; }, 1600);
+  });
+}
+</script>
+</body>
+</html>
