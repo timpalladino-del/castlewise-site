@@ -5,6 +5,11 @@ one accent color per area (red city, blue harbor, purple night), speed lines
 and sound-effect words. Crashing opens a comic-panel "To Be Continued...?"
 revive screen.
 
+## Files
+
+- `DESIGN.md`: design doc, draft 1
+- `prototype/index.html`: playable browser prototype of the full loop (open it in a phone browser or desktop; swipe or use arrow keys)
+
 ## Round 1 images
 
 Six images were generated on 2026-10-22. Their hosted links expire after about
