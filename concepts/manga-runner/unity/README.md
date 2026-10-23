@@ -5,9 +5,11 @@ This folder holds the game code for the Unity build. It mirrors the browser prot
 revive flow, missions, outfits and playbook rules. When the prototype feels right,
 this is where the real game is built.
 
-**Status:** scripts and shaders written, not yet compiled. This folder is meant to be
-moved into its own repository once the Unity project exists. First run through Unity
-will surface compile fixes; expect a handful.
+**Status:** scripts compile-checked outside Unity against stand-in Unity APIs
+(`Tools/compile-check/check.sh`, both the editor and device build paths), so syntax
+and type errors are gone. Not yet run inside Unity, so expect small API fixes on the
+first open, and the shaders are unverified. This folder is meant to be moved into its
+own repository once the Unity project exists.
 
 ## 1. Create the project
 
