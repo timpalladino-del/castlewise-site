@@ -59,3 +59,28 @@ Concept art sheet on white paper showing game pickups and power-ups for a manga-
 
 All decided: the game is **Ink Run**, the hero is **Nozomi**, the chasers are both
 the rival gang and the kaiju, and the engine is Unity. See `DESIGN.md` section 9.
+
+## Round 2 images: crash strips (2026-10-23)
+
+Four three-panel strips, one per obstacle, generated 16:9 in the house style. Save as
+`07-crash-barrier.png`, `08-crash-sign.png`, `09-crash-train.png`, `10-crash-gap.png`.
+Cut each into its three panels for the crash animation described in `STORY.md`.
+
+Note: a literal "hit by a train" prompt is refused by the image service's safety filter.
+The train strip works when written as slapstick (a toy-like tram with a face, Nozomi
+bounces off like a rubber ball, nobody hurt), which also fits the game's tone better.
+
+### Shared style prefix
+Three-panel manga strip in one wide image, panels side by side with thick black gutters, read left to right. Hero is Nozomi, a teenage street kid: spiky black hair, red hoodie with hood down, goggles pushed up on the forehead, high-top sneakers. Style: pure black ink linework on white paper, screentone halftone dots for shadows, the only color a bold red.
+
+### 07 Barrier
+Panel 1: low angle, Nozomi sprinting toward a striped low road barrier on a city rooftop, his sneaker catching the top rail, motion lines. Panel 2: he flips face-first over the barrier, limbs flailing, huge hand-lettered sound effect "WHAM!" bursting across the panel, radial speed lines. Panel 3: Nozomi flat on his back on the rooftop, goggles knocked sideways, small stars circling his head, a single red coin rolling away, tiny caption box "The rail was higher than it looked."
+
+### 08 Sign
+Panel 1: an overhead sign board on two posts fills the frame, the word "STOP" on it in red, Nozomi running toward it from below, too late to duck. Panel 2: Nozomi clotheslined by the board at neck height, his feet still running in mid-air, body horizontal, huge hand-lettered katakana sound effect "ガン!" across the panel, impact lines. Panel 3: Nozomi sitting slumped against the sign post, stars circling his head, the sign slightly bent, tiny caption box "He read the sign. Too late."
+
+### 09 Train (slapstick version)
+Comedic cartoon tone, nobody is hurt. Panel 1: a boxy toy-like rooftop tram with a big round headlight and a smiling face painted on its nose rolls toward Nozomi, who is turning around mid-run with a comically wide-eyed "uh oh" expression, a red horn sound effect word "PAAAP" above. Panel 2: Nozomi bounces off the flat front of the tram like a rubber ball, squashed into a comic pancake shape, giant hand-lettered katakana "ドン!" filling the panel, red coins popping out of his pockets in a fountain, radial speed lines. Panel 3: Nozomi sitting on the rails dizzy with stars circling his head, hair standing straight up, the tram's tail leaving the frame, one red coin spinning on its edge beside him, tiny caption box "The Nozomi doesn't stop for anyone."
+
+### 10 Gap
+Panel 1: close on Nozomi's sneakers skidding at the edge of a rooftop, toes over the edge, the gap between buildings below drawn as solid black with a few white speckles, his face shocked. Panel 2: Nozomi falling into the gap, arms windmilling, drawn from below looking up, three gang silhouettes in black jackets peering down from the roof edge above, hand-lettered katakana sound effect "ヒュー" trailing down the panel. Panel 3: Nozomi caught upside down in a laundry line strung between the buildings two floors down, a red sock hanging next to his head, tiny caption box "Lucky. This time."
