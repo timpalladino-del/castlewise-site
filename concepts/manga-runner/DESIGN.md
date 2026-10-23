@@ -63,9 +63,12 @@ rival gang, a kaiju, or both (the key art shows a kaiju).
 
 ## 4. Meta and retention
 
-- **Daily missions**: three a day, e.g. "Jump 50 times", "Collect 300 coins",
-  "Reach The Harbor". Rewards are coins.
-- **Outfits**: bought with coins. Cosmetic only.
+- **Daily missions**: three a day picked from a pool (jump N times, collect N
+  coins, slide N times, run N m in total, reach The Harbor, smash N obstacles
+  with a dash, revive once). Progress counts across runs and resets at local
+  midnight. Rewards are coins, paid on the results screen.
+- **Outfits**: Default (free), Delivery (300 coins), Ronin (800 coins), bought in
+  the Wardrobe with banked coins. Cosmetic only.
 - **Record chase**: a speech bubble appears when within 200 m of the best run.
 - **Comeback help**: after three runs under 20 s, the next run starts slower with
   fewer obstacles and shows a small ASSIST tag. Clears after a run over 40 s.
@@ -115,8 +118,11 @@ after launch.
 
 `prototype/index.html` is a canvas prototype of the full loop: lanes, swipes,
 obstacles, coins, both power-ups, three areas with accent changes, speed lines,
-sound-effect words, the revive screen, the haul button, assist mode, and the
-near-record bubble. It is for feel and look only. It is not the shipping code.
+sound-effect words, the revive screen, the haul button, assist mode, the
+near-record bubble, daily missions, the wardrobe with three outfits, and small
+synthesized sound effects. Everything from the first-version list is in it
+except the real ad SDK, player groups, remote config, and ad pacing. It is for
+feel and look only. It is not the shipping code.
 
 ## 9. Open decisions
 
