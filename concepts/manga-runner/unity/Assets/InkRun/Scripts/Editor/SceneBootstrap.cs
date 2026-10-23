@@ -378,7 +378,7 @@ namespace InkRun.EditorTools
         {
             var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = canvasGo.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            var scaler = canvasGo.GetComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(1080, 1920); scaler.matchWidthOrHeight = 0.5f;
+            var scaler = canvasGo.GetComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(1080, 1920); scaler.matchWidthOrHeight = 1f;
 #if ENABLE_INPUT_SYSTEM
             new GameObject("EventSystem", typeof(EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
 #else
@@ -400,7 +400,7 @@ namespace InkRun.EditorTools
 
             // HUD
             var hudView = Full(root, "HUD").gameObject.AddComponent<HudView>();
-            var hud = Safe(hudView.transform, "Panel"); hudView.Panel = hud.gameObject;
+            var hud = Safe(hudView.transform, "Panel"); hudView.Panel = hud.gameObject; hud.gameObject.SetActive(false);
             hudView.PauseButton = Button(hud, "PauseButton", "II", new Vector2(1f, 1f), new Vector2(-70, -240), new Vector2(90, 70), Color.white, Ink);
             hudView.Distance = Text(hud, "Distance", "0m", 72, new Vector2(0.5f, 1f), new Vector2(0, -90));
             hudView.Coins = Text(hud, "Coins", "0", 52, new Vector2(1f, 1f), new Vector2(-90, -80));
@@ -449,7 +449,7 @@ namespace InkRun.EditorTools
 
             // Revive
             var reviveView = Full(root, "Revive").gameObject.AddComponent<ReviveView>();
-            var revive = Safe(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.92f), Color.clear);
+            var revive = Safe(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.92f), Color.clear); revive.gameObject.SetActive(false);
             var p1 = Group(revive, "Panel1", new Vector2(0.5f, 1f), new Vector2(940, 180)); p1.anchoredPosition = new Vector2(0, -420); Panel(p1, Ink, Ink);
             reviveView.Panel1 = Text(p1, "Text", Story.RevivePanels[0], 34, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel1.color = Color.white;
             var p2 = Group(revive, "Panel2", new Vector2(0.5f, 1f), new Vector2(940, 160)); p2.anchoredPosition = new Vector2(0, -610); Panel(p2, Color.white, Ink);
@@ -463,7 +463,7 @@ namespace InkRun.EditorTools
 
             // Results
             var resultsView = Full(root, "Results").gameObject.AddComponent<ResultsView>();
-            var results = Safe(resultsView.transform, "Panel"); resultsView.Panel = results.gameObject; Panel(results, new Color(1, 1, 1, 0.92f), Color.clear);
+            var results = Safe(resultsView.transform, "Panel"); resultsView.Panel = results.gameObject; Panel(results, new Color(1, 1, 1, 0.92f), Color.clear); results.gameObject.SetActive(false);
             var burst = Text(results, "RecordBurst", "NEW RECORD!", 56, new Vector2(0.2f, 0.85f), Vector2.zero); burst.color = Red; resultsView.RecordBurst = burst.gameObject; burst.gameObject.SetActive(false);
             resultsView.Kicker = Text(results, "Kicker", "END OF CHAPTER 1", 40, new Vector2(0.5f, 0.5f), new Vector2(0, 330));
             resultsView.Distance = Text(results, "Distance", "0", 90, new Vector2(0.5f, 0.5f), new Vector2(-300, 180)); Text(results, "DistanceLabel", "METERS", 26, new Vector2(0.5f, 0.5f), new Vector2(-300, 110));
