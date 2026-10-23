@@ -30,6 +30,7 @@ namespace UnityEngine
     public static class Random { public static float value; public static float Range(float a, float b) => 0; public static int Range(int a, int b) => 0; public static Vector3 insideUnitSphere; }
     public static class Time { public static float deltaTime, unscaledDeltaTime, time, timeScale; }
     public class AudioClip : Object { public static AudioClip Create(string n, int samples, int ch, int hz, bool stream) => new AudioClip(); public void SetData(float[] d, int off) { } }
+    public class AudioListener : Behaviour { }
     public class AudioSource : Behaviour { public bool playOnAwake; public void PlayOneShot(AudioClip c, float v) { } }
     public static class Screen { public static float dpi; public static int width, height; public static Rect safeArea; }
     public struct Rect { public Vector2 position, size; public static bool operator ==(Rect a, Rect b) => true; public static bool operator !=(Rect a, Rect b) => false; public override bool Equals(object o) => true; public override int GetHashCode() => 0; }

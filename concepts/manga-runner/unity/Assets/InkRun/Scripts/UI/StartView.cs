@@ -10,7 +10,7 @@ namespace InkRun.UI
     /// <summary>Title page: tap to run, best, bank, today's missions, wardrobe, sound toggle, starter bundle.</summary>
     public class StartView : MonoBehaviour
     {
-        public Button TapToRun, WardrobeButton, SoundButton, StarterBundleButton;
+        public Button TapToRun, WardrobeButton, SoundButton, StarterBundleButton, TapAnywhere;
         public TMP_Text BestText, BankText, SoundLabel;
         public GameObject AssistChip, StarterBundlePanel;
         public MissionListView Missions;
@@ -20,6 +20,7 @@ namespace InkRun.UI
         void Awake()
         {
             TapToRun.onClick.AddListener(() => { FX.InkAudio.Play("ui"); GameManager.Instance.StartRun(); });
+            if (TapAnywhere != null) TapAnywhere.onClick.AddListener(() => { FX.InkAudio.Play("ui"); GameManager.Instance.StartRun(); });
             WardrobeButton.onClick.AddListener(() => WardrobePanel.SetActive(true));
             SoundButton.onClick.AddListener(() => { var s = SaveData.Current; s.SoundOn = !s.SoundOn; s.Save(); Refresh(); });
             StarterBundleButton.onClick.AddListener(() => Services.Services.PlayerGroups.BuyStarterBundle(Refresh));

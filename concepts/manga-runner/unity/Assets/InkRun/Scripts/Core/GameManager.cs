@@ -128,7 +128,7 @@ namespace InkRun.Core
         void Crash(Obstacle obstacle)
         {
             SfxWord?.Invoke("WHAM!", Player.transform.position + Vector3.up * 2f, 1.8f);
-            SfxWord?.Invoke("ドン!", Player.transform.position + Vector3.right * 1.2f + Vector3.up * 1f, 0.9f);
+            SfxWord?.Invoke("DON!", Player.transform.position + Vector3.right * 1.2f + Vector3.up * 1f, 0.9f);   // ドン! once a Japanese font is in
             SetState(GameState.Crashed);
             InkAudio.Play("crash");
             Services.Services.Analytics.Log("crash", ("distance", Mathf.FloorToInt(Run.Distance)), ("kind", obstacle.Kind.ToString()));
