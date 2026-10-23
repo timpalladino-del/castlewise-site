@@ -431,6 +431,7 @@ namespace InkRun.EditorTools
             startView.WardrobeButton = Button(start, "WardrobeButton", "WARDROBE", new Vector2(0.5f, 0f), new Vector2(-200, 110), new Vector2(360, 100), Color.white, Ink);
             startView.SoundButton = Button(start, "SoundButton", "SOUND: ON", new Vector2(0.5f, 0f), new Vector2(200, 110), new Vector2(360, 100), Color.white, Ink);
             startView.SoundLabel = startView.SoundButton.GetComponentInChildren<TMP_Text>();
+            startView.VersionText = Text(start, "Version", Story.Build, 24, new Vector2(0.5f, 0f), new Vector2(0, 30));
             var chip = Text(start, "AssistChip", "Assist on: slower start, fewer obstacles", 28, new Vector2(0.5f, 1f), new Vector2(0, -1250)); startView.AssistChip = chip.gameObject; chip.gameObject.SetActive(false);
             var bundle = Group(start, "StarterBundle", new Vector2(0.5f, 1f), new Vector2(900, 100)); bundle.anchoredPosition = new Vector2(0, -1290); Panel(bundle, Color.white, Ink);
             Text(bundle, "Text", "Starter bundle: 1,500 coins + Delivery outfit", 30, new Vector2(0.35f, 0.5f), Vector2.zero);

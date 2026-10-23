@@ -11,7 +11,7 @@ namespace InkRun.UI
     public class StartView : MonoBehaviour
     {
         public Button TapToRun, WardrobeButton, SoundButton, StarterBundleButton, TapAnywhere;
-        public TMP_Text BestText, BankText, SoundLabel;
+        public TMP_Text BestText, BankText, SoundLabel, VersionText;
         public GameObject AssistChip, StarterBundlePanel;
         public MissionListView Missions;
         public GameObject WardrobePanel;
@@ -35,7 +35,8 @@ namespace InkRun.UI
             var save = SaveData.Current;
             BestText.text = save.BestDistance.ToString("N0");
             BankText.text = save.Bank.ToString("N0");
-            SoundLabel.text = "Sound: " + (save.SoundOn ? "on" : "off");
+            SoundLabel.text = "SOUND: " + (save.SoundOn ? "ON" : "OFF");
+            if (VersionText != null) VersionText.text = Story.Build;
             AssistChip.SetActive(save.ShouldAssist(GameManager.Instance.Tuning));
             StarterBundlePanel.SetActive(Services.Services.PlayerGroups.ShowStarterBundle);
             Missions.Refresh();
