@@ -35,6 +35,11 @@ Game view: set Scale to 1x and pick a portrait size (dropdown next to Free Aspec
 After pulling new commits, rerun the menu only when prefabs or the scene changed; script
 changes recompile on their own.
 
+Input: works with either backend. Unity 6 templates use the Input System package; the
+scripts detect it (`ENABLE_INPUT_SYSTEM`) and fall back to the legacy Input class otherwise.
+If the console warns that the `Unity.InputSystem` reference in `InkRun.asmdef` is missing,
+either install the Input System package or remove that line from the asmdef.
+
 The rest of this section describes what the menu builds, so you can rebuild or change
 it by hand.
 

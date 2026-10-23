@@ -139,7 +139,7 @@ namespace InkRun.EditorTools
                 Box("PostL", new Vector3(0.1f, 2.2f, 0.1f), new Vector3(-0.75f, 1.1f, 0), _ink, false).transform.SetParent(root.transform, false);
                 Box("PostR", new Vector3(0.1f, 2.2f, 0.1f), new Vector3(0.75f, 1.1f, 0), _ink, false).transform.SetParent(root.transform, false);
                 var kanji = new GameObject("Kanji"); kanji.transform.SetParent(root.transform, false); kanji.transform.localPosition = new Vector3(0, 1.75f, -0.17f);
-                var kt = kanji.AddComponent<TextMeshPro>(); kt.text = "止"; kt.fontSize = 6; kt.alignment = TextAlignmentOptions.Center; kt.color = new Color(0.878f, 0.125f, 0.165f);
+                var kt = kanji.AddComponent<TextMeshPro>(); kt.text = "STOP"; kt.fontSize = 4;   // swap for 止 once a Japanese TMP font is added kt.alignment = TextAlignmentOptions.Center; kt.color = new Color(0.878f, 0.125f, 0.165f);
                 root.AddComponent<Obstacle>().Kind = ObstacleKind.Sign;
                 p.sign = Save("Sign", root);
             }
@@ -378,7 +378,11 @@ namespace InkRun.EditorTools
             var canvasGo = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var canvas = canvasGo.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var scaler = canvasGo.GetComponent<CanvasScaler>(); scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize; scaler.referenceResolution = new Vector2(1080, 1920); scaler.matchWidthOrHeight = 0.5f;
+#if ENABLE_INPUT_SYSTEM
+            new GameObject("EventSystem", typeof(EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
+#else
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+#endif
             var root = canvasGo.transform;
 
             // speed lines

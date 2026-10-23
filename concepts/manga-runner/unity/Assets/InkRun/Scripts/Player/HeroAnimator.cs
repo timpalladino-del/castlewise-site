@@ -18,19 +18,35 @@ namespace InkRun.Player
         public float LeanDegrees = 14f;
 
         PlayerController _player;
-        float _phase, _lastX, _lean;
+        float _phase, _lastX, _lean, _fall;
         Vector3 _bodyRest, _headRest;
+        Renderer[] _renderers;
 
         void Awake()
         {
             _player = GetComponentInParent<PlayerController>();
             if (Body != null) _bodyRest = Body.localPosition;
             if (Head != null) _headRest = Head.localPosition;
+            _renderers = GetComponentsInChildren<Renderer>(true);
         }
 
         void Update()
         {
             var gm = GameManager.Instance;
+            // crash: tip over and stay down until the next run or the revive
+            bool down = gm != null && (gm.State == GameState.Crashed || gm.State == GameState.Revive || gm.State == GameState.Results);
+            if (down)
+            {
+                _fall = Mathf.MoveTowards(_fall, 1f, Time.unscaledDeltaTime * 3f);
+                transform.localRotation = Quaternion.Euler(-85f * _fall, 0f, 25f * _fall);
+                return;
+            }
+            _fall = 0f;
+            // revive grace: blink
+            bool blink = gm != null && gm.InvulnerableTimeLeft > 0f && !gm.IsDashing;
+            bool visible = !blink || Mathf.FloorToInt(Time.time * 12f) % 2 == 0;
+            foreach (var r in _renderers) if (r != null) r.enabled = visible;
+
             bool running = gm != null && gm.State == GameState.Running;
             float speed = running ? gm.Speed : 6f;
             _phase += Time.deltaTime * speed * 1.25f;

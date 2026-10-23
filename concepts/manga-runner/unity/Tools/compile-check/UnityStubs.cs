@@ -11,7 +11,7 @@ namespace UnityEngine
         public static T Instantiate<T>(T o, Vector3 p, Quaternion q) where T : Object => o;
         public static bool operator ==(Object a, Object b) => ReferenceEquals(a, b); public static bool operator !=(Object a, Object b) => !ReferenceEquals(a, b);
         public override bool Equals(object o) => ReferenceEquals(this, o); public override int GetHashCode() => 0; public static implicit operator bool(Object o) => o != null; }
-    public class Component : Object { public GameObject gameObject; public Transform transform; public string tag; public T GetComponent<T>() => default; public T GetComponentInParent<T>() => default; public T GetComponentInChildren<T>() => default; public T[] GetComponentsInChildren<T>() => new T[0]; }
+    public class Component : Object { public GameObject gameObject; public Transform transform; public string tag; public T GetComponent<T>() => default; public T GetComponentInParent<T>() => default; public T GetComponentInChildren<T>() => default; public T[] GetComponentsInChildren<T>() => new T[0]; public T[] GetComponentsInChildren<T>(bool inactive) => new T[0]; }
     public class Behaviour : Component { public bool enabled; }
     public class MonoBehaviour : Behaviour { public Coroutine StartCoroutine(IEnumerator e) => null; public void Invoke(string m, float t) { } public void CancelInvoke(string m) { } }
     public class ScriptableObject : Object { public static T CreateInstance<T>() where T : ScriptableObject => (T)Activator.CreateInstance(typeof(T)); }
@@ -26,7 +26,7 @@ namespace UnityEngine
         public static Vector3 MoveTowards(Vector3 a, Vector3 b, float d) => a; }
     public struct Quaternion { public static Quaternion identity; public static Quaternion Euler(float x, float y, float z) => identity; }
     public struct Color { public static Color white, clear, black; public float r, g, b, a; public Color(float r, float g, float b) { this.r = r; this.g = g; this.b = b; a = 1; } public Color(float r, float g, float b, float a) { this.r = r; this.g = g; this.b = b; this.a = a; } public static Color Lerp(Color a, Color b, float t) => a; }
-    public static class Mathf { public static float Exp(float f) => (float)Math.Exp(f); public static float Lerp(float a, float b, float t) => a + (b - a) * Clamp01(t); public static float Min(float a, float b) => Math.Min(a, b); public static float Max(float a, float b) => Math.Max(a, b); public static int Max(int a, int b) => Math.Max(a, b); public static int RoundToInt(float f) => (int)Math.Round(f); public static float Clamp01(float f) => f < 0 ? 0 : f > 1 ? 1 : f; public static float Abs(float f) => Math.Abs(f); public static int FloorToInt(float f) => (int)Math.Floor(f); public static int CeilToInt(float f) => (int)Math.Ceiling(f); public static float InverseLerp(float a, float b, float v) => a == b ? 0 : Clamp01((v - a) / (b - a)); public static float Pow(float a, float b) => (float)Math.Pow(a, b); public static float Sin(float f) => (float)Math.Sin(f); public static float Cos(float f) => (float)Math.Cos(f); public const float PI = 3.14159265f; public static float Clamp(float v, float a, float b) => v < a ? a : v > b ? b : v; }
+    public static class Mathf { public static float Exp(float f) => (float)Math.Exp(f); public static float Lerp(float a, float b, float t) => a + (b - a) * Clamp01(t); public static float Min(float a, float b) => Math.Min(a, b); public static float Max(float a, float b) => Math.Max(a, b); public static int Max(int a, int b) => Math.Max(a, b); public static int RoundToInt(float f) => (int)Math.Round(f); public static float Clamp01(float f) => f < 0 ? 0 : f > 1 ? 1 : f; public static float Abs(float f) => Math.Abs(f); public static int FloorToInt(float f) => (int)Math.Floor(f); public static int CeilToInt(float f) => (int)Math.Ceiling(f); public static float InverseLerp(float a, float b, float v) => a == b ? 0 : Clamp01((v - a) / (b - a)); public static float Pow(float a, float b) => (float)Math.Pow(a, b); public static float Sin(float f) => (float)Math.Sin(f); public static float Cos(float f) => (float)Math.Cos(f); public const float PI = 3.14159265f; public static float Clamp(float v, float a, float b) => v < a ? a : v > b ? b : v; public static float MoveTowards(float a, float b, float d) => a < b ? Math.Min(a + d, b) : Math.Max(a - d, b); }
     public static class Random { public static float value; public static float Range(float a, float b) => 0; public static int Range(int a, int b) => 0; public static Vector3 insideUnitSphere; }
     public static class Time { public static float deltaTime, unscaledDeltaTime, time, timeScale; }
     public class AudioClip : Object { public static AudioClip Create(string n, int samples, int ch, int hz, bool stream) => new AudioClip(); public void SetData(float[] d, int off) { } }
@@ -45,7 +45,7 @@ namespace UnityEngine
     public class Collider : Component { public bool enabled, isTrigger; }
     public class SphereCollider : Collider { public float radius; public Vector3 center; }
     public class BoxCollider : Collider { public Vector3 size, center; }
-    public class Renderer : Component { public Material sharedMaterial; }
+    public class Renderer : Component { public Material sharedMaterial; public bool enabled; }
     public enum PrimitiveType { Cube, Sphere, Capsule, Cylinder, Quad }
     public class Light : Behaviour { public LightType type; }
     public enum LightType { Directional, Point }
@@ -107,4 +107,15 @@ namespace UnityEditor
     }
     public static class EditorUtility { public static void SetDirty(UnityEngine.Object o) { } }
     public class MenuItem : Attribute { public MenuItem(string s) { } }
+}
+
+namespace UnityEngine.InputSystem
+{
+    public class ButtonControl { public bool wasPressedThisFrame, wasReleasedThisFrame, isPressed; }
+    public class Vector2Control { public UnityEngine.Vector2 ReadValue() => default; }
+    public class Keyboard { public static Keyboard current; public ButtonControl leftArrowKey, rightArrowKey, upArrowKey, downArrowKey, aKey, dKey, wKey, sKey, spaceKey; }
+    public class TouchControl { public ButtonControl press; public Vector2Control position; }
+    public class Touchscreen { public static Touchscreen current; public TouchControl primaryTouch; }
+    public class Mouse { public static Mouse current; public Vector2Control position; public ButtonControl leftButton; }
+    namespace UI { public class InputSystemUIInputModule : UnityEngine.MonoBehaviour { } }
 }

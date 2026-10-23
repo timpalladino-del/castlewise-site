@@ -10,7 +10,7 @@ out="$(mktemp -d)"
 vt=/usr/lib/mono/4.5/Facades/System.ValueTuple.dll
 W="-nowarn:0169,0649,0414,0108,0660,0661"
 mcs -target:library -langversion:latest -out:"$out/UnityStubs.dll" $W "$here/UnityStubs.cs"
-for define in UNITY_EDITOR ""; do
+for define in UNITY_EDITOR "" "UNITY_EDITOR;ENABLE_INPUT_SYSTEM"; do
   mcs -target:library -langversion:latest ${define:+-define:$define} -out:"$out/InkRun.dll" \
       -r:"$out/UnityStubs.dll" -r:"$vt" $W -recurse:"$scripts/*.cs"
   echo "compile ok: ${define:-device build}"
