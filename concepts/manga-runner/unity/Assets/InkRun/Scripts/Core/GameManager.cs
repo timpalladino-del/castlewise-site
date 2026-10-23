@@ -58,9 +58,9 @@ namespace InkRun.Core
             DashTimeLeft = MagnetTimeLeft = InvulnerableTimeLeft = 0f;
             _nearRecordShown = false;
             Spawner.ResetTrack();
-            Areas.ResetToFirst();
             Player.ResetPlayer();
             SetState(GameState.Running);
+            Areas.ResetToFirst();   // after the state change so the HUD is visible for the chapter card
             Services.Services.Analytics.Log("run_start", ("assist", Run.Assist));
         }
 

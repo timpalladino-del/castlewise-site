@@ -17,11 +17,16 @@ namespace InkRun.FX
         static readonly int IntensityId = Shader.PropertyToID("_Intensity");
         Material _mat;
 
-        void Awake() { _mat = Instantiate(Image.material); Image.material = _mat; }
+        void Awake()
+        {
+            if (Image == null || Image.material == null) { enabled = false; return; }
+            _mat = Instantiate(Image.material); Image.material = _mat;
+        }
 
         void Update()
         {
             var gm = GameManager.Instance;
+            if (_mat == null) return;
             if (gm == null || gm.State != GameState.Running) { _mat.SetFloat(IntensityId, 0f); return; }
             float t = gm.Tuning.SpeedAt(gm.Run.Distance, false, false);
             float ramp = Mathf.InverseLerp(gm.Tuning.BaseSpeed, gm.Tuning.BaseSpeed + gm.Tuning.MaxSpeedBonus, t);

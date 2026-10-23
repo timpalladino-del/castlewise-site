@@ -40,6 +40,7 @@ namespace UnityEngine
     public class Camera : Behaviour { public static Camera main; public Color backgroundColor; public CameraClearFlags clearFlags; }
     public class Collider : Component { public bool enabled, isTrigger; }
     public class SphereCollider : Collider { public float radius; public Vector3 center; }
+    public class BoxCollider : Collider { public Vector3 size, center; }
     public class Renderer : Component { public Material sharedMaterial; }
     public enum PrimitiveType { Cube, Sphere, Capsule, Cylinder, Quad }
     public class Light : Behaviour { public LightType type; }
@@ -82,6 +83,7 @@ namespace TMPro
     public enum TextAlignmentOptions { Left, Center, Right }
     public class TMP_Text : UnityEngine.MonoBehaviour { public string text; public UnityEngine.Color color; public float fontSize; public TextAlignmentOptions alignment; public bool raycastTarget, enableWordWrapping; public UnityEngine.RectTransform rectTransform; public float outlineWidth; public UnityEngine.Color32 outlineColor; }
     public class TextMeshProUGUI : TMP_Text { }
+    public class TMP_Settings { public static TMP_Settings instance; }
     public class TextMeshPro : TMP_Text { }
 }
 namespace UnityEngine.EventSystems { public class EventSystem : MonoBehaviour { } public class StandaloneInputModule : MonoBehaviour { } }

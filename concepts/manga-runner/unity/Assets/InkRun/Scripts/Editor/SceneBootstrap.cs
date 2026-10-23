@@ -28,6 +28,11 @@ namespace InkRun.EditorTools
         [MenuItem("Ink Run/Build gray-box scene")]
         public static void Build()
         {
+            if (TMP_Settings.instance == null)
+            {
+                Debug.LogWarning("Ink Run: import TextMeshPro first (Window > TextMeshPro > Import TMP Essential Resources), then run this menu again.");
+                return;
+            }
             Folders();
             Materials();
             PatternBootstrap.Create();
@@ -131,7 +136,12 @@ namespace InkRun.EditorTools
                 p.sign = Save("Sign", root);
             }
             p.wall = Save("Train", Obstacle(ObstacleKind.Wall, Box("Body", new Vector3(1.9f, 2.6f, 6f), new Vector3(0, 1.3f, 3f), _paper, true)));
-            p.gap = Save("Gap", Obstacle(ObstacleKind.Gap, Box("Hole", new Vector3(1.8f, 0.3f, 3f), new Vector3(0, 0.08f, 1.2f), _ink, true)));
+            {
+                // thin black slab to see, plus an invisible trigger tall enough to touch the hero's capsule
+                var root = Obstacle(ObstacleKind.Gap, Box("Hole", new Vector3(1.8f, 0.3f, 3f), new Vector3(0, 0.08f, 1.2f), _ink, false));
+                var bc = root.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.size = new Vector3(1.8f, 1.2f, 3f); bc.center = new Vector3(0, 0.5f, 1.2f);
+                p.gap = Save("Gap", root);
+            }
             {
                 var root = new GameObject("Coin");
                 var disc = GameObject.CreatePrimitive(PrimitiveType.Cylinder); disc.name = "Disc";
@@ -403,7 +413,7 @@ namespace InkRun.EditorTools
         {
             var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(parent, false);
             var rt = go.GetComponent<RectTransform>(); rt.anchorMin = rt.anchorMax = anchor; rt.pivot = new Vector2(0.5f, anchor.y); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(980, size * 1.4f + 10f);
-            var t = go.AddComponent<TextMeshProUGUI>(); t.text = text; t.fontSize = size; t.alignment = TextAlignmentOptions.Center; t.color = Ink; t.raycastTarget = false; t.enableWordWrapping = true;
+            var t = go.AddComponent<TextMeshProUGUI>(); t.text = text; t.fontSize = size; t.alignment = TextAlignmentOptions.Center; t.color = Ink; t.raycastTarget = false;
             return t;
         }
 

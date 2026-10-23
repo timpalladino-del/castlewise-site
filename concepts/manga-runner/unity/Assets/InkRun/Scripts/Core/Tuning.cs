@@ -29,7 +29,7 @@ namespace InkRun.Core
         public float PatternGapStart = 22f;
         public float PatternGapMin = 13f;
         public float AssistGapMultiplier = 1.3f;
-        public float DespawnBehind = 8f;
+        public float DespawnBehind = 14f;
 
         [Header("Power-ups (seconds)")]
         public float MagnetDuration = 8f;
