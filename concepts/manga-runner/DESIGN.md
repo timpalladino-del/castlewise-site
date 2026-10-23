@@ -76,15 +76,15 @@ appearances in later volumes.
 
 ## 5. Monetization (from the playbook)
 
-| Playbook feature | In Ink Run | Prototype status |
-|---|---|---|
-| Second Wind revive | "To Be Continued...?" screen, one revive per run, 5 s countdown | Built (ad is a 3 s placeholder) |
-| Save the haul | "2× coins" button on results after an ad | Built (placeholder) |
-| Comeback help | Assist mode after three quick crashes | Built |
-| Almost a record | "200m to your record!" bubble | Built |
-| Player groups | Starter bundle for new players; ad-free offer for frequent ad watchers | Not yet |
-| Server-side tuning | Speed curve, spawn gaps, power-up odds, prices via Remote Config | Not yet |
-| Smart ad pacing | Interstitials only between runs, none in the first 3 sessions, capped per hour | Not yet |
+| Playbook feature | In Ink Run | Browser prototype | Unity build |
+|---|---|---|---|
+| Second Wind revive | "To Be Continued...?" screen, one revive per run, 5 s countdown | Built (fake ad) | Built; MAX behind a define, fake ad in editor |
+| Save the haul | "2× coins" button on results after an ad | Built (fake ad) | Built, same |
+| Comeback help | Assist mode after three quick crashes | Built | Built, tested |
+| Almost a record | "200m to your record!" bubble | Built | Built |
+| Player groups | Starter bundle for new players; ad-free offer for frequent ad watchers | Not built | Built; purchases are a fake until Unity IAP is wired |
+| Server-side tuning | Speed curve, spawn gaps, power-up odds, prices via Remote Config | Not built | Built; Firebase behind a define, every number in one Tuning asset |
+| Smart ad pacing | Interstitials only between runs, none in the first 3 sessions, capped per hour | Not built | Built, tested |
 
 Prices are the same for everyone. We test bundles and discounts, never hidden
 price differences.
@@ -115,7 +115,16 @@ price differences.
 Seasons, more areas, the chaser reveal, and story panels between chapters come
 after launch.
 
-## 8. What the browser prototype proves
+## 8. Unity build status
+
+`unity/` holds the real game. Everything in the first-version list is in code: the loop,
+four obstacles, coins and both power-ups, three areas with accent changes, missions,
+three outfits, the revive and haul flows, assist, ad pacing, player groups, remote
+config. A menu item builds a complete gray-box scene from primitives. It runs on the
+Mac; what remains is real art (models, a Japanese font, music), the ad and purchase
+SDK keys, and tuning by play.
+
+## 9. What the browser prototype proves
 
 `prototype/index.html` is a canvas prototype of the full loop: lanes, swipes,
 obstacles, coins, both power-ups, three areas with accent changes, speed lines,
@@ -125,7 +134,7 @@ synthesized sound effects. Everything from the first-version list is in it
 except the real ad SDK, player groups, remote config, and ad pacing. It is for
 feel and look only. It is not the shipping code.
 
-## 9. Decisions
+## 10. Decisions
 
 1. **Name**: Ink Run (confirmed).
 2. **Engine**: Unity for iPhone and Android (confirmed). Code lives in `unity/`.
