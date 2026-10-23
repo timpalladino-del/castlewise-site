@@ -6,10 +6,11 @@ revive flow, missions, outfits and playbook rules. When the prototype feels righ
 this is where the real game is built.
 
 **Status:** scripts compile-checked outside Unity against stand-in Unity APIs
-(`Tools/compile-check/check.sh`, both the editor and device build paths), so syntax
-and type errors are gone. Not yet run inside Unity, so expect small API fixes on the
-first open, and the shaders are unverified. This folder is meant to be moved into its
-own repository once the Unity project exists.
+(`Tools/compile-check/check.sh`, both the editor and device build paths), and the
+pure-logic tests pass (15 tests: speed curve, assist rules, ad pacing, missions). Not
+yet run inside Unity, so expect small API fixes on the first open, and the shaders are
+unverified. This folder is meant to be moved into its own repository once the Unity
+project exists.
 
 ## 1. Create the project
 
@@ -19,7 +20,17 @@ own repository once the Unity project exists.
 4. Window > Package Manager: confirm **TextMeshPro** (part of UGUI) is present. Import TMP Essentials when asked.
 5. Project Settings > Player: Default Orientation **Portrait**, Target API as current store minimums.
 
-## 2. Scene setup (one scene: `Run`)
+## 2. Build the scene with one click
+
+Menu **Ink Run > Build gray-box scene** (`Scripts/Editor/SceneBootstrap.cs`) creates
+everything below from code: materials, the Tuning, Area, Outfit and Pattern assets,
+prefabs made of primitives, the `Run` scene with every manager wired, and the whole
+UI. Then press Play. Swipe or use the arrow keys. Safe to re-run; it overwrites in place.
+
+Tests: Window > General > Test Runner > EditMode runs `Tests/EditMode`.
+
+The rest of this section describes what the menu builds, so you can rebuild or change
+it by hand.
 
 Hierarchy:
 

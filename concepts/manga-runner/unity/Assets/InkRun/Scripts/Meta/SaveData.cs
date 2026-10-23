@@ -15,6 +15,8 @@ namespace InkRun.Meta
         const string Key = "inkrun.save.v1";
         static SaveData _current;
         public static SaveData Current { get { if (_current == null) _current = Load(); return _current; } }
+        /// <summary>Tests only: start from an empty save without touching PlayerPrefs.</summary>
+        public static void UseFresh() { _current = new SaveData(); }
 
         public int BestDistance;
         public int Bank;

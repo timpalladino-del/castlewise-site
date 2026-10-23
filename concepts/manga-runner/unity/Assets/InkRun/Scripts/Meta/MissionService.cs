@@ -27,6 +27,12 @@ namespace InkRun.Meta
 
         static string TodayKey() => DateTime.Now.ToString("yyyy-MM-dd");
 
+        /// <summary>FNV-1a. string.GetHashCode can differ between runtimes, this cannot.</summary>
+        public static int StableHash(string s)
+        {
+            unchecked { uint h = 2166136261; foreach (char c in s) { h ^= c; h *= 16777619; } return (int)h; }
+        }
+
         static Def Find(string id) { foreach (var d in Pool) if (d.Id == id) return d; return null; }
 
         void EnsureToday()
@@ -34,7 +40,7 @@ namespace InkRun.Meta
             var save = SaveData.Current;
             string day = TodayKey();
             if (save.MissionDay == day && save.Missions.Count == 3) return;
-            var rng = new System.Random(day.GetHashCode());
+            var rng = new System.Random(StableHash(day));   // same three missions on every device
             var chosen = new List<Def>();
             while (chosen.Count < 3) { var d = Pool[rng.Next(Pool.Length)]; if (!chosen.Contains(d)) chosen.Add(d); }
             save.MissionDay = day;
