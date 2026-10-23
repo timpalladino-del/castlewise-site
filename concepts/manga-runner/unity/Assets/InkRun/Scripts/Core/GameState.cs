@@ -1,6 +1,6 @@
 namespace InkRun.Core
 {
-    public enum GameState { Idle, Running, Crashed, Revive, Results }
+    public enum GameState { Idle, Running, Crashed, Revive, Results, Paused }
 
     /// <summary>Everything that changes during one run. Reset by GameManager.StartRun().</summary>
     public class RunStats

@@ -64,6 +64,32 @@ namespace InkRun.EditorTools
                 p.AddCoinLine(0, -2f, 5);
                 p.Length = 12f;
             });
+            Make("P8_DoubleBarrierRows", 0.9f, 500f, p =>
+            {
+                for (int l = 0; l < 3; l++) { p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Barrier, Lane = l, ZOffset = 0f }); p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Barrier, Lane = l, ZOffset = 8f }); }
+                p.AddCoinLine(1, 2.5f, 3); p.Length = 16f;
+            });
+            Make("P9_SignsAndTrain", 0.9f, 400f, p =>
+            {
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Sign, Lane = 0, ZOffset = 0f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Sign, Lane = 1, ZOffset = 0f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Wall, Lane = 2, ZOffset = 0f });
+                p.AddCoinLine(0, 3f, 4); p.Length = 14f;
+            });
+            Make("P10_CoinRiver", 0.7f, 0f, p => { for (int l = 0; l < 3; l++) p.AddCoinLine(l, 0f, 6); p.Length = 12f; });
+            Make("P11_Gauntlet", 0.8f, 700f, p =>
+            {
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Wall, Lane = 0, ZOffset = 0f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Wall, Lane = 2, ZOffset = 0f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Barrier, Lane = 1, ZOffset = 4f });
+                p.AddCoinLine(1, 6f, 4, 1.6f, i => 1.4f * (1f - Mathf.Pow((i - 1.5f) / 1.5f, 2f))); p.Length = 16f;
+            });
+            Make("P12_GapRow", 0.8f, 350f, p =>
+            {
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Gap, Lane = 0, ZOffset = 0f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Gap, Lane = 1, ZOffset = 0f });
+                p.AddCoinLine(2, -2f, 6); p.Length = 12f;
+            });
             AssetDatabase.SaveAssets();
             Debug.Log("Ink Run: default patterns created in " + Folder);
         }

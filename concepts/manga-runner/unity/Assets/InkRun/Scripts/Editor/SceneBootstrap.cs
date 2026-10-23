@@ -176,6 +176,8 @@ namespace InkRun.EditorTools
                 Box("Roof", new Vector3(6.6f, 0.2f, 10f), new Vector3(0, -0.1f, 5f), _paper, false).transform.SetParent(root.transform, false);
                 Box("EdgeL", new Vector3(0.12f, 0.25f, 10f), new Vector3(-3.3f, 0.02f, 5f), _ink, false).transform.SetParent(root.transform, false);
                 Box("EdgeR", new Vector3(0.12f, 0.25f, 10f), new Vector3(3.3f, 0.02f, 5f), _ink, false).transform.SetParent(root.transform, false);
+                for (int i = 0; i < 5; i++) Box("Tick" + i, new Vector3(6.6f, 0.02f, 0.07f), new Vector3(0, 0.01f, i * 2f), _ink, false).transform.SetParent(root.transform, false);
+                for (int i = 0; i < 10; i++) foreach (float x in new[] { -1f, 1f }) Box("Dash" + i + (x > 0 ? "R" : "L"), new Vector3(0.05f, 0.015f, 0.5f), new Vector3(x, 0.01f, 0.25f + i), _tone, false).transform.SetParent(root.transform, false);
                 p.track = Save("TrackPiece", root);
             }
             {
@@ -325,7 +327,7 @@ namespace InkRun.EditorTools
 
             var sun = GameObject.CreatePrimitive(PrimitiveType.Cylinder); sun.name = "Sun";
             Object.DestroyImmediate(sun.GetComponent<Collider>());
-            sun.transform.position = new Vector3(14f, 14f, 90f); sun.transform.rotation = Quaternion.Euler(90f, 0f, 0f); sun.transform.localScale = new Vector3(28f, 0.1f, 28f);
+            sun.transform.position = new Vector3(18f, 20f, 230f); sun.transform.rotation = Quaternion.Euler(90f, 0f, 0f); sun.transform.localScale = new Vector3(44f, 0.1f, 44f);
             sun.GetComponent<Renderer>().sharedMaterial = _accent;
             var moon = GameObject.CreatePrimitive(PrimitiveType.Cylinder); moon.name = "MoonMask";
             Object.DestroyImmediate(moon.GetComponent<Collider>());
@@ -334,6 +336,10 @@ namespace InkRun.EditorTools
 
             var worldGo = new GameObject("World"); var world = worldGo.AddComponent<WorldMover>();
             var hero = (GameObject)PrefabUtility.InstantiatePrefab(p.hero);
+            var shadow = GameObject.CreatePrimitive(PrimitiveType.Cylinder); shadow.name = "HeroShadow";
+            Object.DestroyImmediate(shadow.GetComponent<Collider>());
+            shadow.GetComponent<Renderer>().sharedMaterial = _tone;
+            shadow.AddComponent<GroundShadow>().Target = hero.transform;
             var input = new GameObject("Input").AddComponent<SwipeInput>();
             hero.GetComponent<PlayerController>().Input = input;
 
@@ -358,6 +364,8 @@ namespace InkRun.EditorTools
             string path = Root + "/Scenes/Run.unity";
             EditorSceneManager.SaveScene(scene, path);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(path, true) };
+            PlayerSettings.productName = "Ink Run";
+            PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
         }
 
         // ---------- UI ----------
@@ -387,7 +395,8 @@ namespace InkRun.EditorTools
 
             // HUD
             var hudView = new GameObject("HUD").AddComponent<HudView>(); hudView.transform.SetParent(root, false);
-            var hud = Full(hudView.transform, "Panel"); hudView.Panel = hud.gameObject;
+            var hud = Safe(hudView.transform, "Panel"); hudView.Panel = hud.gameObject;
+            hudView.PauseButton = Button(hud, "PauseButton", "II", new Vector2(1f, 1f), new Vector2(-70, -150), new Vector2(90, 70), Color.white, Ink);
             hudView.Distance = Text(hud, "Distance", "0m", 72, new Vector2(0.5f, 1f), new Vector2(0, -90));
             hudView.Coins = Text(hud, "Coins", "0", 52, new Vector2(1f, 1f), new Vector2(-90, -80));
             hudView.Best = Text(hud, "Best", "BEST 0", 34, new Vector2(0f, 1f), new Vector2(160, -80));
@@ -403,7 +412,8 @@ namespace InkRun.EditorTools
 
             // Start
             var startView = new GameObject("Start").AddComponent<StartView>(); startView.transform.SetParent(root, false);
-            var start = Full(startView.transform, "Panel"); startView.Panel = start.gameObject; Panel(start, new Color(1, 1, 1, 0.92f), Color.clear);
+            var start = Safe(startView.transform, "Panel"); startView.Panel = start.gameObject; Panel(start, new Color(1, 1, 1, 0.92f), Color.clear);
+            start.gameObject.AddComponent<Button>().onClick.AddListener(() => GameManager.Instance.StartRun());   // tap anywhere to run
             Text(start, "Kicker", "VOLUME 1", 36, new Vector2(0.5f, 1f), new Vector2(0, -330));
             Text(start, "Title", "INK\nRUN", 180, new Vector2(0.5f, 1f), new Vector2(0, -560));
             Text(start, "Hint", "Swipe to change lanes, up to jump, down to slide.", 34, new Vector2(0.5f, 1f), new Vector2(0, -790));
@@ -423,7 +433,7 @@ namespace InkRun.EditorTools
             startView.StarterBundlePanel = bundle.gameObject;
 
             // Wardrobe (toggles itself)
-            var wardrobe = Full(root, "Wardrobe"); var wv = wardrobe.gameObject.AddComponent<WardrobeView>(); Panel(wardrobe, new Color(1, 1, 1, 0.95f), Color.clear);
+            var wardrobe = Safe(root, "Wardrobe"); var wv = wardrobe.gameObject.AddComponent<WardrobeView>(); Panel(wardrobe, new Color(1, 1, 1, 0.95f), Color.clear);
             Text(wardrobe, "Kicker", "WARDROBE", 48, new Vector2(0.5f, 1f), new Vector2(0, -330));
             var cards = Group(wardrobe, "Cards", new Vector2(0.5f, 0.55f), new Vector2(1000, 520));
             var hlg = cards.gameObject.AddComponent<HorizontalLayoutGroup>(); hlg.spacing = 20; hlg.childAlignment = TextAnchor.MiddleCenter; hlg.childForceExpandWidth = false; hlg.childForceExpandHeight = false; hlg.childControlWidth = false; hlg.childControlHeight = false;
@@ -434,7 +444,7 @@ namespace InkRun.EditorTools
 
             // Revive
             var reviveView = new GameObject("Revive").AddComponent<ReviveView>(); reviveView.transform.SetParent(root, false);
-            var revive = Full(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.92f), Color.clear);
+            var revive = Safe(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.92f), Color.clear);
             var p1 = Group(revive, "Panel1", new Vector2(0.5f, 1f), new Vector2(940, 180)); p1.anchoredPosition = new Vector2(0, -420); Panel(p1, Ink, Ink);
             reviveView.Panel1 = Text(p1, "Text", Story.RevivePanels[0], 34, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel1.color = Color.white;
             var p2 = Group(revive, "Panel2", new Vector2(0.5f, 1f), new Vector2(940, 160)); p2.anchoredPosition = new Vector2(0, -610); Panel(p2, Color.white, Ink);
@@ -448,7 +458,7 @@ namespace InkRun.EditorTools
 
             // Results
             var resultsView = new GameObject("Results").AddComponent<ResultsView>(); resultsView.transform.SetParent(root, false);
-            var results = Full(resultsView.transform, "Panel"); resultsView.Panel = results.gameObject; Panel(results, new Color(1, 1, 1, 0.92f), Color.clear);
+            var results = Safe(resultsView.transform, "Panel"); resultsView.Panel = results.gameObject; Panel(results, new Color(1, 1, 1, 0.92f), Color.clear);
             var burst = Text(results, "RecordBurst", "NEW RECORD!", 56, new Vector2(0.2f, 0.85f), Vector2.zero); burst.color = Red; resultsView.RecordBurst = burst.gameObject; burst.gameObject.SetActive(false);
             resultsView.Kicker = Text(results, "Kicker", "END OF CHAPTER 1", 40, new Vector2(0.5f, 0.5f), new Vector2(0, 330));
             resultsView.Distance = Text(results, "Distance", "0", 90, new Vector2(0.5f, 0.5f), new Vector2(-300, 180)); Text(results, "DistanceLabel", "METERS", 26, new Vector2(0.5f, 0.5f), new Vector2(-300, 110));
@@ -459,6 +469,21 @@ namespace InkRun.EditorTools
             resultsView.RunAgain = Button(results, "RunAgain", "RUN AGAIN", new Vector2(0.5f, 0.5f), new Vector2(0, -190), new Vector2(560, 130), Red, Color.white);
             resultsView.MissionLine = Text(results, "MissionLine", "", 30, new Vector2(0.5f, 0.5f), new Vector2(0, -320));
             resultsView.BankLine = Text(results, "BankLine", "Coins banked: 0", 30, new Vector2(0.5f, 0.5f), new Vector2(0, -380));
+
+            // Pause
+            var pauseView = new GameObject("Pause").AddComponent<PauseView>(); pauseView.transform.SetParent(root, false);
+            var pause = Safe(pauseView.transform, "Panel"); pauseView.Panel = pause.gameObject; Panel(pause, new Color(1, 1, 1, 0.92f), Color.clear);
+            pauseView.Resume = pause.gameObject.AddComponent<Button>();
+            Text(pause, "Title", "PAUSED", 110, new Vector2(0.5f, 0.5f), new Vector2(0, 60));
+            Text(pause, "Hint", "Tap to keep running", 36, new Vector2(0.5f, 0.5f), new Vector2(0, -60));
+            pause.gameObject.SetActive(false);
+        }
+
+        static RectTransform Safe(Transform parent, string name)
+        {
+            var rt = Full(parent, name);
+            rt.gameObject.AddComponent<SafeArea>();
+            return rt;
         }
 
         static RectTransform Full(Transform parent, string name)

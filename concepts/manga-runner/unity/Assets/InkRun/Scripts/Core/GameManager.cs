@@ -177,6 +177,25 @@ namespace InkRun.Core
 
         public void GiveUp() => EndRun();
 
+        // ---- pause ----
+
+        public void Pause()
+        {
+            if (State != GameState.Running) return;
+            Time.timeScale = 0f;
+            SetState(GameState.Paused);
+        }
+
+        public void Resume()
+        {
+            if (State != GameState.Paused) return;
+            Time.timeScale = 1f;
+            SetState(GameState.Running);
+        }
+
+        void OnApplicationPause(bool paused) { if (paused) Pause(); }
+        void OnApplicationFocus(bool focused) { if (!focused) Pause(); }
+
         void EndRun()
         {
             var save = SaveData.Current;

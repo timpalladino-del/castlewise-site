@@ -12,6 +12,7 @@ namespace InkRun.UI
         public TMP_Text Distance, Coins, Best, ChapterLabel, ChapterName, NearRecordText;
         public GameObject ChapterCard, NearRecordBubble, AssistTag;
         public Image DashBar, MagnetBar;
+        public Button PauseButton;
         public GameObject Panel;      // child that is shown/hidden; this object stays active
 
         void Start()
@@ -19,6 +20,7 @@ namespace InkRun.UI
             var gm = GameManager.Instance;
             gm.StateChanged += OnState; gm.CoinsChanged += OnCoins; gm.NearRecord += OnNearRecord;
             gm.Areas.ChapterStarted += OnChapter;
+            if (PauseButton != null) PauseButton.onClick.AddListener(() => gm.Pause());
             OnState(gm.State);
         }
         void OnDestroy()

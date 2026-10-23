@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using InkRun.Core;
 
@@ -39,6 +40,20 @@ namespace InkRun.World
                 case PickupKind.Coin: gm.CollectCoin(transform.position); break;
                 case PickupKind.Magnet: gm.ActivateMagnet(); break;
                 case PickupKind.Dash: gm.ActivateDash(); break;
+            }
+            foreach (var c in GetComponentsInChildren<Collider>()) c.enabled = false;
+            StartCoroutine(PopAndHide());
+        }
+
+        IEnumerator PopAndHide()
+        {
+            var start = transform.localScale; float t = 0f;
+            while (t < 0.12f)
+            {
+                t += Time.deltaTime;
+                transform.localScale = start * (1f + 2.5f * t);
+                transform.position += Vector3.up * (6f * Time.deltaTime);
+                yield return null;
             }
             gameObject.SetActive(false);
         }

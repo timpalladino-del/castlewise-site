@@ -20,7 +20,7 @@ namespace UnityEngine
     public class GameObject : Object { public GameObject() { } public GameObject(string n) { } public GameObject(string n, params Type[] c) { } public static GameObject CreatePrimitive(PrimitiveType p) => new GameObject(); public Transform transform; public void SetActive(bool b) { } public bool activeSelf; public T AddComponent<T>() where T : Component, new() => new T(); public T GetComponent<T>() => default; public T GetComponentInChildren<T>() => default; }
     public class Transform : Component, IEnumerable { public Vector3 position, localPosition, localScale, forward; public Quaternion rotation, localRotation; public Vector3 localEulerAngles; public void SetParent(Transform p, bool keep) { } public Transform parent; public int childCount; public Transform GetChild(int i) => null; public Transform Find(string n) => null; public void Rotate(float x, float y, float z, Space s) { } public void LookAt(Vector3 v) { } public IEnumerator GetEnumerator() => null; }
     public enum Space { World, Self }
-    public struct Vector2 { public float x, y; public static Vector2 zero, one; public Vector2(float x, float y) { this.x = x; this.y = y; } public float magnitude => 0; public static Vector2 operator -(Vector2 a, Vector2 b) => a; public static implicit operator Vector2(Vector3 v) => new Vector2(); public static explicit operator Vector3(Vector2 v) => new Vector3(); }
+    public struct Vector2 { public float x, y; public static Vector2 zero, one; public Vector2(float x, float y) { this.x = x; this.y = y; } public float magnitude => 0; public static Vector2 operator -(Vector2 a, Vector2 b) => a; public static Vector2 operator +(Vector2 a, Vector2 b) => a; public static implicit operator Vector2(Vector3 v) => new Vector2(); public static explicit operator Vector3(Vector2 v) => new Vector3(); }
     public struct Vector3 { public float x, y, z; public Vector3(float x, float y, float z) { this.x = x; this.y = y; this.z = z; } public static Vector3 zero, up, right, one, forward;
         public static Vector3 operator +(Vector3 a, Vector3 b) => a; public static Vector3 operator -(Vector3 a, Vector3 b) => a; public static Vector3 operator *(Vector3 a, float f) => a; public static Vector3 operator *(float f, Vector3 a) => a;
         public static Vector3 MoveTowards(Vector3 a, Vector3 b, float d) => a; }
@@ -31,7 +31,9 @@ namespace UnityEngine
     public static class Time { public static float deltaTime, unscaledDeltaTime, time, timeScale; }
     public class AudioClip : Object { public static AudioClip Create(string n, int samples, int ch, int hz, bool stream) => new AudioClip(); public void SetData(float[] d, int off) { } }
     public class AudioSource : Behaviour { public bool playOnAwake; public void PlayOneShot(AudioClip c, float v) { } }
-    public static class Screen { public static float dpi; }
+    public static class Screen { public static float dpi; public static int width, height; public static Rect safeArea; }
+    public struct Rect { public Vector2 position, size; public static bool operator ==(Rect a, Rect b) => true; public static bool operator !=(Rect a, Rect b) => false; public override bool Equals(object o) => true; public override int GetHashCode() => 0; }
+    public enum UIOrientation { Portrait, LandscapeLeft }
     public enum KeyCode { LeftArrow, RightArrow, UpArrow, DownArrow, A, D, W, S, Space }
     public enum TouchPhase { Began, Moved, Stationary, Ended, Canceled }
     public struct Touch { public TouchPhase phase; public Vector2 position; }
@@ -95,6 +97,7 @@ namespace UnityEditor
     public static class AssetDatabase { public static bool IsValidFolder(string p) => true; public static string CreateFolder(string a, string b) => ""; public static T LoadAssetAtPath<T>(string p) where T : UnityEngine.Object => null; public static void CreateAsset(UnityEngine.Object o, string p) { } public static void SaveAssets() { } public static string[] FindAssets(string f, string[] folders) => new string[0]; public static string GUIDToAssetPath(string g) => ""; }
     public static class PrefabUtility { public static UnityEngine.GameObject SaveAsPrefabAsset(UnityEngine.GameObject g, string p) => g; public static UnityEngine.Object InstantiatePrefab(UnityEngine.Object o) => o; }
     public static class EditorBuildSettings { public static EditorBuildSettingsScene[] scenes; }
+    public static class PlayerSettings { public static string productName; public static UnityEngine.UIOrientation defaultInterfaceOrientation; }
     public class EditorBuildSettingsScene { public EditorBuildSettingsScene(string p, bool e) { } }
     namespace SceneManagement
     {
