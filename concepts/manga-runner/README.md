@@ -1,4 +1,4 @@
-# Ink Run (working title) — concept art, round 1
+# Ink Run — concept art, round 1
 
 Manga-style endless runner. Black ink on white paper, screentone shading,
 one accent color per area (red city, blue harbor, purple night), speed lines
@@ -57,6 +57,5 @@ Concept art sheet on white paper showing game pickups and power-ups for a manga-
 
 ## Open decisions before the design doc
 
-1. Game name. "Ink Run" is a placeholder.
-2. Hero name and whether the chaser is a rival gang, a kaiju, or both.
-3. Engine: Unity (both stores) vs RealityKit (iPhone only).
+All decided: the game is **Ink Run**, the hero is **Nozomi**, the chasers are both
+the rival gang and the kaiju, and the engine is Unity. See `DESIGN.md` section 9.

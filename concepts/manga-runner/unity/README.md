@@ -107,7 +107,7 @@ Remote Config keys: `base_speed`, `max_speed_bonus`, `ramp_distance`, `pattern_g
 ## 8. Names
 
 - Game: **Ink Run**, Volume 1.
-- Hero: proposed **Nozomi** (望, "hope"; also the fastest Shinkansen, which the train
-  obstacle can wink at). Not yet in code; it appears in story panels and the store listing.
+- Hero: **Nozomi** (望, "hope"; also the fastest Shinkansen, which the train obstacle
+  winks at). Used in the revive page copy (`Core/Story.cs`) and the store listing.
 - Chasers: the **rival gang** on the ground and the **kaiju** in the sky. Volume 1 shows
   the kaiju only as a shadow on the revive screen; the gang appears in chapter transitions.

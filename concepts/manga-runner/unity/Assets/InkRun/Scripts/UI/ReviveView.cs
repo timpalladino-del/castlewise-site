@@ -8,7 +8,7 @@ namespace InkRun.UI
     /// <summary>The "To Be Continued...?" page. Countdown, Keep Running (rewarded ad), Give up.</summary>
     public class ReviveView : MonoBehaviour
     {
-        public TMP_Text Countdown, DistanceLine;
+        public TMP_Text Countdown, DistanceLine, Panel1, Panel2;
         public Button KeepRunning, GiveUp;
         public GameObject Panel;      // child that is shown/hidden; this object stays active
 
@@ -30,6 +30,8 @@ namespace InkRun.UI
             var gm = GameManager.Instance;
             _left = gm.Tuning.ReviveCountdownSeconds; _ticking = true;
             DistanceLine.text = Mathf.FloorToInt(gm.Run.Distance).ToString("N0") + "m and counting.";
+            if (Panel1 != null) Panel1.text = Story.RevivePanels[0];
+            if (Panel2 != null) Panel2.text = Story.RevivePanels[1];
         }
 
         void Update()

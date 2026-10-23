@@ -56,7 +56,7 @@ and a CHAPTER card pops. Launch ships with City Rooftops fully dressed; Harbor
 and Night Alley can start as palette swaps and get real props after launch.
 
 ### Hero and chasers
-Street kid, spiky hair, hoodie (accent color), goggles on forehead, high-tops.
+**Nozomi**, a street kid: spiky hair, hoodie (accent color), goggles on forehead, high-tops.
 Three outfits at launch: Default, Delivery, Ronin. Two chasers: a rival gang on
 the ground and a kaiju in the sky. At launch the kaiju is only a shadow on the
 revive screen and the gang shows up in chapter transitions; both get real
@@ -132,5 +132,5 @@ feel and look only. It is not the shipping code.
 3. **Chasers**: both. The rival gang on the ground, the kaiju in the sky. Volume 1
    shows the kaiju only as a shadow on the revive screen; the gang appears in
    chapter transitions and story panels.
-4. **Hero's name**: proposed Nozomi (望, "hope"; also the fastest Shinkansen, which
-   the train obstacle winks at). Awaiting a yes.
+4. **Hero's name**: Nozomi (望, "hope"; also the fastest Shinkansen, which the
+   train obstacle winks at). Confirmed.
