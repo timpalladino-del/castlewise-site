@@ -29,6 +29,12 @@ UI. Then press Play. Swipe or use the arrow keys. Safe to re-run; it overwrites 
 
 Tests: Window > General > Test Runner > EditMode runs `Tests/EditMode`.
 
+Game view: set Scale to 1x and pick a portrait size (dropdown next to Free Aspect, press +,
+1080 x 1920, Fixed Resolution). The UI is laid out for portrait phones.
+
+After pulling new commits, rerun the menu only when prefabs or the scene changed; script
+changes recompile on their own.
+
 The rest of this section describes what the menu builds, so you can rebuild or change
 it by hand.
 

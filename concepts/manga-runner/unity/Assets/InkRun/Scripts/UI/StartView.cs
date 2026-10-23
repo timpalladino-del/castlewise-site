@@ -19,7 +19,7 @@ namespace InkRun.UI
 
         void Awake()
         {
-            TapToRun.onClick.AddListener(() => GameManager.Instance.StartRun());
+            TapToRun.onClick.AddListener(() => { FX.InkAudio.Play("ui"); GameManager.Instance.StartRun(); });
             WardrobeButton.onClick.AddListener(() => WardrobePanel.SetActive(true));
             SoundButton.onClick.AddListener(() => { var s = SaveData.Current; s.SoundOn = !s.SoundOn; s.Save(); Refresh(); });
             StarterBundleButton.onClick.AddListener(() => Services.Services.PlayerGroups.BuyStarterBundle(Refresh));

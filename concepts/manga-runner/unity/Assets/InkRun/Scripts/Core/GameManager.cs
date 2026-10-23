@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using InkRun.FX;
 using InkRun.Meta;
 using InkRun.Services;
 using InkRun.World;
@@ -63,6 +65,7 @@ namespace InkRun.Core
             _nearRecordShown = false;
             Spawner.ResetTrack();
             Player.ResetPlayer();
+            Time.timeScale = 1f;
             SetState(GameState.Running);
             Areas.ResetToFirst();   // after the state change so the HUD is visible for the chapter card
             Services.Services.Analytics.Log("run_start", ("assist", Run.Assist));
@@ -100,10 +103,11 @@ namespace InkRun.Core
         {
             Run.Coins++;
             CoinsChanged?.Invoke(Run.Coins);
+            InkAudio.Play("coin", 0.8f);
         }
 
-        public void ActivateMagnet() { MagnetTimeLeft = Tuning.MagnetDuration; SfxWord?.Invoke("MAGNET!", Player.transform.position + Vector3.up * 2.5f, 1f); }
-        public void ActivateDash() { DashTimeLeft = Tuning.DashDuration; SfxWord?.Invoke("DASH!", Player.transform.position + Vector3.up * 2.5f, 1.4f); }
+        public void ActivateMagnet() { InkAudio.Play("power"); MagnetTimeLeft = Tuning.MagnetDuration; SfxWord?.Invoke("MAGNET!", Player.transform.position + Vector3.up * 2.5f, 1f); }
+        public void ActivateDash() { InkAudio.Play("power"); DashTimeLeft = Tuning.DashDuration; SfxWord?.Invoke("DASH!", Player.transform.position + Vector3.up * 2.5f, 1.4f); }
 
         /// <summary>An obstacle the player did not avoid. Returns true if the run ends.</summary>
         public bool HitObstacle(Obstacle obstacle)
@@ -113,6 +117,7 @@ namespace InkRun.Core
             {
                 if (IsDashing) Run.Smashes++;
                 obstacle.Smash();
+                InkAudio.Play("smash");
                 SfxWord?.Invoke("WHAM!", obstacle.transform.position + Vector3.up * 1.5f, 1f);
                 return false;
             }
@@ -125,8 +130,17 @@ namespace InkRun.Core
             SfxWord?.Invoke("WHAM!", Player.transform.position + Vector3.up * 2f, 1.8f);
             SfxWord?.Invoke("ドン!", Player.transform.position + Vector3.right * 1.2f + Vector3.up * 1f, 0.9f);
             SetState(GameState.Crashed);
+            InkAudio.Play("crash");
             Services.Services.Analytics.Log("crash", ("distance", Mathf.FloorToInt(Run.Distance)), ("kind", obstacle.Kind.ToString()));
-            Invoke(nameof(AfterCrash), 0.9f);
+            StartCoroutine(CrashSlowMo());
+        }
+
+        IEnumerator CrashSlowMo()
+        {
+            Time.timeScale = 0.3f;                       // the manga freeze-frame
+            yield return new WaitForSecondsRealtime(0.9f);
+            Time.timeScale = 1f;
+            AfterCrash();
         }
 
         void AfterCrash()
@@ -154,6 +168,8 @@ namespace InkRun.Core
             InvulnerableTimeLeft = Tuning.ReviveInvulnerability;
             Spawner.ClearObstaclesAhead(14f);
             Player.ResetMoves();
+            Time.timeScale = 1f;
+            InkAudio.Play("revive");
             SetState(GameState.Running);
             SfxWord?.Invoke("AGAIN!", Player.transform.position + Vector3.up * 3f, 1.4f);
             Services.Services.Analytics.Log("revive", ("distance", Mathf.FloorToInt(Run.Distance)));
@@ -171,6 +187,7 @@ namespace InkRun.Core
             save.RecordRun(Run.Seconds, Tuning);
             save.Save();
             LastResult = new RunResult { Record = record, MissionsCleared = missions.Cleared, MissionCoins = missions.CoinsEarned };
+            if (missions.Cleared.Length > 0) InkAudio.Play("clear");
             SetState(GameState.Results);
             Services.Services.Analytics.Log("run_end", ("distance", Mathf.FloorToInt(Run.Distance)), ("coins", Run.Coins), ("record", record));
         }

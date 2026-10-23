@@ -39,7 +39,7 @@ namespace InkRun.EditorTools
             var tuning = Asset<Tuning>("Data/Tuning.asset");
             var outfits = Outfits();
             var prefabs = Prefabs();
-            var areas = Areas(prefabs.building);
+            var areas = Areas(prefabs);
             Scene(tuning, outfits, prefabs, areas);
             Debug.Log("Ink Run: gray-box scene built. Press Play.");
         }
@@ -102,13 +102,13 @@ namespace InkRun.EditorTools
             return o;
         }
 
-        static AreaDefinition[] Areas(GameObject building)
+        static AreaDefinition[] Areas(PrefabSet p)
         {
             return new[]
             {
-                Area("City", "CHAPTER 1", "CITY ROOFTOPS", new Color(0.878f, 0.125f, 0.165f), false, building),
-                Area("Harbor", "CHAPTER 2", "THE HARBOR", new Color(0.118f, 0.435f, 0.878f), false, building),
-                Area("NightAlley", "CHAPTER 3", "NIGHT ALLEY", new Color(0.482f, 0.184f, 0.878f), true, building),
+                Area("City", "CHAPTER 1", "CITY ROOFTOPS", new Color(0.878f, 0.125f, 0.165f), false, p.building),
+                Area("Harbor", "CHAPTER 2", "THE HARBOR", new Color(0.118f, 0.435f, 0.878f), false, p.container),
+                Area("NightAlley", "CHAPTER 3", "NIGHT ALLEY", new Color(0.482f, 0.184f, 0.878f), true, p.alley),
             };
         }
         static AreaDefinition Area(string file, string chapter, string name, Color accent, bool moon, GameObject prop)
@@ -121,21 +121,35 @@ namespace InkRun.EditorTools
 
         // ---------- prefabs ----------
 
-        struct PrefabSet { public GameObject barrier, sign, wall, gap, coin, magnet, dash, track, building, hero, word; }
+        struct PrefabSet { public GameObject barrier, sign, wall, gap, coin, magnet, dash, track, building, container, alley, hero, word; }
 
         static PrefabSet Prefabs()
         {
             var p = new PrefabSet();
-            p.barrier = Save("Barrier", Obstacle(ObstacleKind.Barrier, Box("Body", new Vector3(1.6f, 0.8f, 0.4f), new Vector3(0, 0.4f, 0), _accent, true)));
+            {
+                var root = Obstacle(ObstacleKind.Barrier, Box("Body", new Vector3(1.6f, 0.8f, 0.4f), new Vector3(0, 0.4f, 0), _paper, true));
+                for (int i = 0; i < 3; i++) { var stripe = Box("Stripe" + i, new Vector3(0.22f, 0.82f, 0.42f), new Vector3(-0.5f + i * 0.5f, 0.4f, 0), _accent, false); stripe.transform.SetParent(root.transform, false); stripe.transform.localRotation = Quaternion.Euler(0, 0, 18f); }
+                Box("FootL", new Vector3(0.1f, 0.1f, 0.6f), new Vector3(-0.65f, 0.05f, 0), _ink, false).transform.SetParent(root.transform, false);
+                Box("FootR", new Vector3(0.1f, 0.1f, 0.6f), new Vector3(0.65f, 0.05f, 0), _ink, false).transform.SetParent(root.transform, false);
+                p.barrier = Save("Barrier", root);
+            }
             {
                 var root = new GameObject("Sign");
                 Box("Board", new Vector3(1.6f, 0.9f, 0.3f), new Vector3(0, 1.75f, 0), _paper, true).transform.SetParent(root.transform, false);
                 Box("PostL", new Vector3(0.1f, 2.2f, 0.1f), new Vector3(-0.75f, 1.1f, 0), _ink, false).transform.SetParent(root.transform, false);
                 Box("PostR", new Vector3(0.1f, 2.2f, 0.1f), new Vector3(0.75f, 1.1f, 0), _ink, false).transform.SetParent(root.transform, false);
+                var kanji = new GameObject("Kanji"); kanji.transform.SetParent(root.transform, false); kanji.transform.localPosition = new Vector3(0, 1.75f, -0.17f);
+                var kt = kanji.AddComponent<TextMeshPro>(); kt.text = "止"; kt.fontSize = 6; kt.alignment = TextAlignmentOptions.Center; kt.color = new Color(0.878f, 0.125f, 0.165f);
                 root.AddComponent<Obstacle>().Kind = ObstacleKind.Sign;
                 p.sign = Save("Sign", root);
             }
-            p.wall = Save("Train", Obstacle(ObstacleKind.Wall, Box("Body", new Vector3(1.9f, 2.6f, 6f), new Vector3(0, 1.3f, 3f), _paper, true)));
+            {
+                var root = Obstacle(ObstacleKind.Wall, Box("Body", new Vector3(1.9f, 2.6f, 6f), new Vector3(0, 1.3f, 3f), _paper, true));
+                Box("Band", new Vector3(1.92f, 0.3f, 6.02f), new Vector3(0, 0.9f, 3f), _accent, false).transform.SetParent(root.transform, false);
+                for (int i = 0; i < 3; i++) Box("Window" + i, new Vector3(0.5f, 0.6f, 6.02f), new Vector3(-0.6f + i * 0.6f, 1.9f, 3f), _ink, false).transform.SetParent(root.transform, false);
+                Box("Nose", new Vector3(1.9f, 0.8f, 0.3f), new Vector3(0, 0.4f, -0.1f), _ink, false).transform.SetParent(root.transform, false);
+                p.wall = Save("Train", root);
+            }
             {
                 // thin black slab to see, plus an invisible trigger tall enough to touch the hero's capsule
                 var root = Obstacle(ObstacleKind.Gap, Box("Hole", new Vector3(1.8f, 0.3f, 3f), new Vector3(0, 0.08f, 1.2f), _ink, false));
@@ -168,7 +182,29 @@ namespace InkRun.EditorTools
                 var root = new GameObject("Building");
                 Box("Block", new Vector3(3f, 6f, 4f), new Vector3(1.5f, 3f, 2f), _paper, false).transform.SetParent(root.transform, false);
                 Box("Shade", new Vector3(1.2f, 6f, 4.02f), new Vector3(0.6f, 3f, 2f), _tone, false).transform.SetParent(root.transform, false);
+                for (int r = 0; r < 4; r++) for (int c = 0; c < 2; c++) Box("Win" + r + c, new Vector3(0.06f, 0.5f, 0.6f), new Vector3(-0.01f, 1.2f + r * 1.2f, 1.0f + c * 1.6f), _ink, false).transform.SetParent(root.transform, false);
+                Box("Tank", new Vector3(1.2f, 1.2f, 1.2f), new Vector3(1.5f, 6.6f, 2f), _paper, false).transform.SetParent(root.transform, false);
                 p.building = Save("Building", root);
+            }
+            {
+                var root = new GameObject("Containers");
+                Box("Low", new Vector3(3f, 1.4f, 4f), new Vector3(1.5f, 0.7f, 2f), _paper, false).transform.SetParent(root.transform, false);
+                Box("LowStripe", new Vector3(3.02f, 0.3f, 1f), new Vector3(1.5f, 0.7f, 2f), _accent, false).transform.SetParent(root.transform, false);
+                Box("High", new Vector3(3f, 1.4f, 3f), new Vector3(1.6f, 2.1f, 2.4f), _tone, false).transform.SetParent(root.transform, false);
+                Box("Crane", new Vector3(0.2f, 7f, 0.2f), new Vector3(2.8f, 3.5f, 0.5f), _ink, false).transform.SetParent(root.transform, false);
+                Box("Arm", new Vector3(4f, 0.15f, 0.15f), new Vector3(1f, 7f, 0.5f), _ink, false).transform.SetParent(root.transform, false);
+                p.container = Save("Containers", root);
+            }
+            {
+                var root = new GameObject("Alley");
+                Box("Block", new Vector3(2.4f, 9f, 4f), new Vector3(1.2f, 4.5f, 2f), _paper, false).transform.SetParent(root.transform, false);
+                Box("Shade", new Vector3(0.9f, 9f, 4.02f), new Vector3(0.45f, 4.5f, 2f), _tone, false).transform.SetParent(root.transform, false);
+                for (int r = 0; r < 6; r++) Box("Win" + r, new Vector3(0.06f, 0.4f, 1.2f), new Vector3(-0.01f, 1.0f + r * 1.3f, 2f), _ink, false).transform.SetParent(root.transform, false);
+                Box("Wire", new Vector3(0.04f, 0.04f, 1.2f), new Vector3(-0.6f, 4.2f, 2f), _ink, false).transform.SetParent(root.transform, false);
+                var lantern = GameObject.CreatePrimitive(PrimitiveType.Sphere); lantern.name = "Lantern"; Object.DestroyImmediate(lantern.GetComponent<Collider>());
+                lantern.transform.SetParent(root.transform, false); lantern.transform.localPosition = new Vector3(-1.2f, 3.7f, 2f); lantern.transform.localScale = new Vector3(0.6f, 0.8f, 0.6f);
+                lantern.GetComponent<Renderer>().sharedMaterial = _accent;
+                p.alley = Save("Alley", root);
             }
             p.hero = Save("Hero", Hero());
             {
@@ -216,12 +252,17 @@ namespace InkRun.EditorTools
             var visual = new GameObject("Visual"); visual.transform.SetParent(root.transform, false);
             var body = GameObject.CreatePrimitive(PrimitiveType.Capsule); body.name = "Body";
             Object.DestroyImmediate(body.GetComponent<Collider>());
-            body.transform.SetParent(visual.transform, false); body.transform.localPosition = new Vector3(0, 0.75f, 0); body.transform.localScale = new Vector3(0.6f, 0.55f, 0.6f);
+            body.transform.SetParent(visual.transform, false); body.transform.localPosition = new Vector3(0, 0.9f, 0); body.transform.localScale = new Vector3(0.6f, 0.42f, 0.5f);
             body.GetComponent<Renderer>().sharedMaterial = _accent;
             var head = GameObject.CreatePrimitive(PrimitiveType.Sphere); head.name = "Head";
             Object.DestroyImmediate(head.GetComponent<Collider>());
             head.transform.SetParent(visual.transform, false); head.transform.localPosition = new Vector3(0, 1.55f, 0); head.transform.localScale = Vector3.one * 0.5f;
             head.GetComponent<Renderer>().sharedMaterial = _paper;
+            var anim = visual.AddComponent<HeroAnimator>(); anim.Body = body.transform; anim.Head = head.transform;
+            anim.LegL = Limb(visual, "LegL", new Vector3(-0.14f, 0.55f, 0), 0.5f, 0.16f, _ink);
+            anim.LegR = Limb(visual, "LegR", new Vector3(0.14f, 0.55f, 0), 0.5f, 0.16f, _ink);
+            anim.ArmL = Limb(visual, "ArmL", new Vector3(-0.36f, 1.15f, 0), 0.45f, 0.13f, _accent);
+            anim.ArmR = Limb(visual, "ArmR", new Vector3(0.36f, 1.15f, 0), 0.45f, 0.13f, _accent);
             var parts = new GameObject("Parts"); parts.transform.SetParent(visual.transform, false);
             Part(parts, "default", new Vector3(0.5f, 0.08f, 0.3f), new Vector3(0, 1.72f, 0.05f), _accent);
             Part(parts, "delivery", new Vector3(0.55f, 0.12f, 0.55f), new Vector3(0, 1.8f, 0), _accent);
@@ -230,6 +271,17 @@ namespace InkRun.EditorTools
             var pc = root.AddComponent<PlayerController>(); pc.Visual = visual.transform;
             return root;
         }
+        // a limb is a joint pivot with a box hanging below it, so rotating the joint swings the limb
+        static Transform Limb(GameObject parent, string name, Vector3 joint, float length, float thickness, Material m)
+        {
+            var pivot = new GameObject(name); pivot.transform.SetParent(parent.transform, false); pivot.transform.localPosition = joint;
+            var box = Box("Bone", new Vector3(thickness, length, thickness), new Vector3(0, -length / 2f, 0), m, false);
+            box.transform.SetParent(pivot.transform, false);
+            var foot = Box("Tip", new Vector3(thickness * 1.3f, thickness * 0.8f, thickness * 2f), new Vector3(0, -length, thickness * 0.4f), name.StartsWith("Leg") ? _paper : m, false);
+            foot.transform.SetParent(pivot.transform, false);
+            return pivot.transform;
+        }
+
         static void Part(GameObject parent, string id, Vector3 size, Vector3 pos, Material m)
         {
             var go = Box(id, size, pos, m, false); go.transform.SetParent(parent.transform, false);
@@ -257,6 +309,19 @@ namespace InkRun.EditorTools
             cam.transform.SetParent(rig.transform, false);
             cam.transform.position = new Vector3(0, 3.4f, -6.5f); cam.transform.LookAt(new Vector3(0, 1.2f, 10f));
             cam.backgroundColor = Color.white; cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.gameObject.AddComponent<CameraFollow>();
+
+            // distant skyline silhouette, two rows, does not scroll
+            var sky = new GameObject("Skyline");
+            var rng = new System.Random(7);
+            for (int row = 0; row < 2; row++)
+                for (float x = -160f; x < 160f;)
+                {
+                    float w = 6f + (float)rng.NextDouble() * 10f, h = 4f + (float)rng.NextDouble() * (row == 0 ? 22f : 14f);
+                    var b = Box("Tower", new Vector3(w, h, 4f), new Vector3(x + w / 2f, h / 2f - 0.5f, 150f + row * 30f), row == 0 ? _ink : _tone, false);
+                    b.transform.SetParent(sky.transform, false);
+                    x += w + (float)rng.NextDouble() * 3f;
+                }
 
             var sun = GameObject.CreatePrimitive(PrimitiveType.Cylinder); sun.name = "Sun";
             Object.DestroyImmediate(sun.GetComponent<Collider>());
@@ -283,6 +348,7 @@ namespace InkRun.EditorTools
                 spawner.Patterns.Add(AssetDatabase.LoadAssetAtPath<PatternDefinition>(AssetDatabase.GUIDToAssetPath(guid)));
 
             var gmGo = new GameObject("GameManager"); var gm = gmGo.AddComponent<GameManager>();
+            gmGo.AddComponent<InkAudio>();
             gm.Tuning = tuning; gm.Player = hero.GetComponent<PlayerController>(); gm.World = world; gm.Spawner = spawner; gm.Areas = areaCtl; gm.Outfits = outfits;
 
             var words = new GameObject("SfxWords").AddComponent<SfxWords>(); words.WordPrefab = p.word.GetComponent<TMP_Text>();
@@ -310,7 +376,13 @@ namespace InkRun.EditorTools
             // speed lines
             var lines = Full(root, "SpeedLines"); var raw = lines.gameObject.AddComponent<RawImage>(); raw.raycastTarget = false;
             var lineShader = Shader.Find("InkRun/InkSpeedLines");
-            if (lineShader != null) raw.material = new Material(lineShader);
+            if (lineShader != null)
+            {
+                string mp = Root + "/Materials/InkSpeedLines.mat";
+                var lm = AssetDatabase.LoadAssetAtPath<Material>(mp);
+                if (lm == null) { lm = new Material(lineShader); AssetDatabase.CreateAsset(lm, mp); }
+                raw.material = lm;
+            }
             lines.gameObject.AddComponent<SpeedLines>().Image = raw;
 
             // HUD

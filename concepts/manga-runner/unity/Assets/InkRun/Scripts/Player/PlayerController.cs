@@ -49,11 +49,11 @@ namespace InkRun.Player
                 case Swipe.Left: if (Lane > 0) Lane--; break;
                 case Swipe.Right: if (Lane < 2) Lane++; break;
                 case Swipe.Up:
-                    if (_jumpT < 0f) { _jumpT = 0f; _slideT = -1f; gm.Run.Jumps++; Animator?.SetTrigger("Jump"); SfxWords.Pop("HUP!", transform.position + new Vector3(0.8f, 2.6f, 0f), 0.6f); }
+                    if (_jumpT < 0f) { _jumpT = 0f; _slideT = -1f; gm.Run.Jumps++; InkAudio.Play("jump"); Animator?.SetTrigger("Jump"); SfxWords.Pop("HUP!", transform.position + new Vector3(0.8f, 2.6f, 0f), 0.6f); }
                     break;
                 case Swipe.Down:
                     if (_jumpT >= 0f) _jumpT = Mathf.Max(_jumpT, 0.8f);               // fast fall
-                    else if (_slideT < 0f) { _slideT = 0f; gm.Run.Slides++; Animator?.SetTrigger("Slide"); SfxWords.Pop("SHHK!", transform.position + new Vector3(-0.9f, 0.8f, 0f), 0.55f); }
+                    else if (_slideT < 0f) { _slideT = 0f; gm.Run.Slides++; InkAudio.Play("slide"); Animator?.SetTrigger("Slide"); SfxWords.Pop("SHHK!", transform.position + new Vector3(-0.9f, 0.8f, 0f), 0.55f); }
                     break;
             }
         }
