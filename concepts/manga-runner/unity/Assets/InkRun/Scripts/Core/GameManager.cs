@@ -48,6 +48,10 @@ namespace InkRun.Core
 
         void Start()
         {
+            // build the world behind the title screen so the hero stands on a rooftop before the first tap
+            Spawner.ResetTrack();
+            Areas.ResetToFirst();
+            Player.ResetPlayer();
             SetState(GameState.Idle);
         }
 

@@ -23,6 +23,12 @@ namespace InkRun.World
         static readonly int AccentId = Shader.PropertyToID("_InkAccent");
         Color _from; float _fadeT = 1f;
 
+        void Awake()
+        {
+            // the ink shader reads this global; set it before the first frame so the title screen is not black
+            if (Areas != null && Areas.Length > 0) { AccentNow = _from = Areas[0].Accent; Shader.SetGlobalColor(AccentId, AccentNow); }
+        }
+
         public void ResetToFirst()
         {
             CurrentIndex = 0; _fadeT = 1f;

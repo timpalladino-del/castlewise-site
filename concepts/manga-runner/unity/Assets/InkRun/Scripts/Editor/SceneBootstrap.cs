@@ -412,7 +412,7 @@ namespace InkRun.EditorTools
         static TMP_Text Text(Transform parent, string name, string text, float size, Vector2 anchor, Vector2 pos)
         {
             var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(parent, false);
-            var rt = go.GetComponent<RectTransform>(); rt.anchorMin = rt.anchorMax = anchor; rt.pivot = new Vector2(0.5f, anchor.y); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(980, size * 1.4f + 10f);
+            var rt = go.GetComponent<RectTransform>(); rt.anchorMin = rt.anchorMax = anchor; rt.pivot = new Vector2(0.5f, anchor.y); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(980, size * 1.4f * (text.Split('\n').Length) + 10f);
             var t = go.AddComponent<TextMeshProUGUI>(); t.text = text; t.fontSize = size; t.alignment = TextAlignmentOptions.Center; t.color = Ink; t.raycastTarget = false;
             return t;
         }
