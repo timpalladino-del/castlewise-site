@@ -9,6 +9,7 @@ revive screen.
 
 - `DESIGN.md`: design doc, draft 1
 - `prototype/index.html`: playable browser prototype of the full loop (open it in a phone browser or desktop; swipe or use arrow keys)
+- `unity/`: the Unity project code (C# scripts, ink toon shader, setup guide). Not compiled yet; see `unity/README.md`
 
 ## Round 1 images
 

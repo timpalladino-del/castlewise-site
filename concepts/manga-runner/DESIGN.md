@@ -55,11 +55,12 @@ Areas rotate every 1,200 m. The accent color cross-fades over about a second
 and a CHAPTER card pops. Launch ships with City Rooftops fully dressed; Harbor
 and Night Alley can start as palette swaps and get real props after launch.
 
-### Hero
+### Hero and chasers
 Street kid, spiky hair, hoodie (accent color), goggles on forehead, high-tops.
-Three outfits at launch: Default, Delivery, Ronin. The chaser is not shown at
-launch except as a shadow on the revive screen. Decide later whether it is a
-rival gang, a kaiju, or both (the key art shows a kaiju).
+Three outfits at launch: Default, Delivery, Ronin. Two chasers: a rival gang on
+the ground and a kaiju in the sky. At launch the kaiju is only a shadow on the
+revive screen and the gang shows up in chapter transitions; both get real
+appearances in later volumes.
 
 ## 4. Meta and retention
 
@@ -124,8 +125,12 @@ synthesized sound effects. Everything from the first-version list is in it
 except the real ad SDK, player groups, remote config, and ad pacing. It is for
 feel and look only. It is not the shipping code.
 
-## 9. Open decisions
+## 9. Decisions
 
-1. Final name ("Ink Run" is a placeholder).
-2. Hero's name and the chaser.
-3. Unity for both stores vs RealityKit for iPhone only.
+1. **Name**: Ink Run (confirmed).
+2. **Engine**: Unity for iPhone and Android (confirmed). Code lives in `unity/`.
+3. **Chasers**: both. The rival gang on the ground, the kaiju in the sky. Volume 1
+   shows the kaiju only as a shadow on the revive screen; the gang appears in
+   chapter transitions and story panels.
+4. **Hero's name**: proposed Nozomi (望, "hope"; also the fastest Shinkansen, which
+   the train obstacle winks at). Awaiting a yes.
