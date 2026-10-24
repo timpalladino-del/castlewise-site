@@ -16,6 +16,8 @@ python3 Tools/blender/build_all.py   # writes Assets/InkRun/Models/*.glb
 | `props_bl.py` | Train, Barrier, Sign, BuildingCity, Containers, BuildingAlley, Coin, Magnet, Dash, Lantern. Buildings get real boolean window reveals with glass and mullions; sizes match the trigger colliders in `SceneBootstrap.cs` |
 | `review/` | three.js toon viewer + Playwright scripts that render contact sheets and a full in-game frame (`scene.html`) with the same ink look as the Unity shader |
 | `gates.py` | Numeric gates from the reference-modeling skill, adapted to run headless: `mesh_report` (ngons, non-manifold, loose verts), `dim_gate` (bbox vs brief ±tol), `extent_profile` (taper, catches tubes), and `review()` Workbench clay/silhouette renders + a 450 px gameplay strip |
+| `import_gen.py` | Post-processor for AI-generated GLBs (Tripo/Meshy/Hunyuan): normalise, ink-quantize the texture, quadric-decimate per material, split into the animator's joint nodes. See `GEN-PIPELINE.md` |
+| `GEN-PIPELINE.md` | The image-to-3D route: measured Higgsfield costs, the Mac-session prompt, review loop |
 | `BRIEF.md` | Phase-0 asset briefs: measured proportions, parts, silhouette features, budgets, gates and 'never' rules for the hero and every prop |
 | `previews/` | Latest renders (`hero-sheet.png`, `props-sheet.png`, `scene-run.png`, `scene-jump.png`, `hero-clay.png` form check) |
 
