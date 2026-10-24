@@ -576,6 +576,21 @@ namespace InkRun.EditorTools
             wv.Back = Button(wardrobe, "Back", "BACK", new Vector2(0.5f, 0f), new Vector2(0, 260), new Vector2(360, 110), Red, Color.white);
             startView.WardrobePanel = wardrobe.gameObject; wardrobe.gameObject.SetActive(false);
 
+            // Crash strip (plays during the Crashed freeze-frame, under the revive page)
+            {
+                var stripRoot = Full(root, "CrashStrip"); var csv = stripRoot.gameObject.AddComponent<CrashStripView>();
+                var stripPanel = Full(stripRoot, "Panel"); csv.Panel = stripPanel.gameObject;
+                var bg = stripPanel.gameObject.AddComponent<Image>(); bg.color = new Color(1f, 1f, 1f, 0.96f);
+                var imgGo = new GameObject("Strip"); imgGo.transform.SetParent(stripPanel, false);
+                var imgRt = imgGo.AddComponent<RectTransform>(); imgRt.anchorMin = imgRt.anchorMax = new Vector2(0.5f, 0.55f); imgRt.sizeDelta = new Vector2(1000f, 1000f * 9f / 16f * 3f); // one third of a 16:9 strip, shown as a tall panel
+                var stripImg = imgGo.AddComponent<RawImage>(); csv.Strip = stripImg; csv.StripRect = imgRt;
+                var textRoot = new GameObject("Text"); textRoot.transform.SetParent(stripPanel, false); textRoot.AddComponent<RectTransform>(); csv.TextRoot = textRoot;
+                csv.TextApproach = Text(textRoot.transform, "Approach", "", 40, new Vector2(0.5f, 0.78f), Vector2.zero); csv.TextApproach.color = Color.black;
+                csv.TextImpact = Text(textRoot.transform, "Impact", "", 140, new Vector2(0.5f, 0.52f), Vector2.zero); csv.TextImpact.color = new Color(0.878f, 0.125f, 0.165f);
+                csv.TextAftermath = Text(textRoot.transform, "Aftermath", "", 36, new Vector2(0.5f, 0.26f), Vector2.zero); csv.TextAftermath.color = Color.black;
+                var flashGo = new GameObject("Flash"); flashGo.transform.SetParent(stripPanel, false); var flashRt = flashGo.AddComponent<RectTransform>(); flashRt.anchorMin = Vector2.zero; flashRt.anchorMax = Vector2.one; flashRt.sizeDelta = Vector2.zero;
+                var flash = flashGo.AddComponent<Image>(); flash.color = new Color(1f, 1f, 1f, 0f); flash.raycastTarget = false; csv.Flash = flash;
+            }
             // Revive
             var reviveView = Full(root, "Revive").gameObject.AddComponent<ReviveView>();
             var revive = Safe(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.92f), Color.clear); revive.gameObject.SetActive(false);

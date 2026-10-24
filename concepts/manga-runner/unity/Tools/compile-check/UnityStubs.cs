@@ -16,6 +16,9 @@ namespace UnityEngine
     public class MonoBehaviour : Behaviour { public Coroutine StartCoroutine(IEnumerator e) => null; public void Invoke(string m, float t) { } public void CancelInvoke(string m) { } }
     public class ScriptableObject : Object { public static T CreateInstance<T>() where T : ScriptableObject => (T)Activator.CreateInstance(typeof(T)); }
     public class Coroutine { }
+    public class Texture : Object { }
+    public class Texture2D : Texture { }
+    public static class Resources { public static T Load<T>(string path) where T : Object => null; }
     public class WaitForSecondsRealtime { public WaitForSecondsRealtime(float s) { } }
     public class GameObject : Object { public GameObject() { } public GameObject(string n) { } public GameObject(string n, params Type[] c) { } public T[] GetComponentsInChildren<T>(bool inactive) => new T[0]; public T[] GetComponentsInChildren<T>() => new T[0]; public static GameObject CreatePrimitive(PrimitiveType p) => new GameObject(); public Transform transform; public void SetActive(bool b) { } public bool activeSelf; public T AddComponent<T>() where T : Component, new() => new T(); public T GetComponent<T>() => default; public T GetComponentInChildren<T>() => default; }
     public class Transform : Component, IEnumerable { public Vector3 position, localPosition, localScale, forward; public Quaternion rotation, localRotation; public Vector3 localEulerAngles; public void SetParent(Transform p, bool keep) { } public Transform parent; public int childCount; public Transform GetChild(int i) => null; public Transform Find(string n) => null; public void Rotate(float x, float y, float z, Space s) { } public void LookAt(Vector3 v) { } public IEnumerator GetEnumerator() => null; }
@@ -33,7 +36,7 @@ namespace UnityEngine
     public class AudioListener : Behaviour { }
     public class AudioSource : Behaviour { public bool playOnAwake; public void PlayOneShot(AudioClip c, float v) { } }
     public static class Screen { public static float dpi; public static int width, height; public static Rect safeArea; }
-    public struct Rect { public Vector2 position, size; public static bool operator ==(Rect a, Rect b) => true; public static bool operator !=(Rect a, Rect b) => false; public override bool Equals(object o) => true; public override int GetHashCode() => 0; }
+    public struct Rect { public Vector2 position, size; public Rect(float x, float y, float w, float h) { position = new Vector2(x, y); size = new Vector2(w, h); } public static bool operator ==(Rect a, Rect b) => true; public static bool operator !=(Rect a, Rect b) => false; public override bool Equals(object o) => true; public override int GetHashCode() => 0; }
     public enum UIOrientation { Portrait, LandscapeLeft }
     public enum KeyCode { LeftArrow, RightArrow, UpArrow, DownArrow, A, D, W, S, Space }
     public enum TouchPhase { Began, Moved, Stationary, Ended, Canceled }
@@ -72,7 +75,7 @@ namespace UnityEngine
     {
         public class Graphic : MonoBehaviour { public Material material; public Color color; public bool raycastTarget; public RectTransform rectTransform; }
         public class Image : Graphic { public float fillAmount; public Type type; public FillMethod fillMethod; public enum Type { Simple, Filled } public enum FillMethod { Horizontal, Vertical } }
-        public class RawImage : Graphic { }
+        public class RawImage : Graphic { public Texture texture; public Rect uvRect; }
         public class Outline : MonoBehaviour { public Color effectColor; public Vector2 effectDistance; }
         public class CanvasScaler : MonoBehaviour { public ScaleMode uiScaleMode; public Vector2 referenceResolution; public float matchWidthOrHeight; public enum ScaleMode { ConstantPixelSize, ScaleWithScreenSize } }
         public class GraphicRaycaster : MonoBehaviour { }

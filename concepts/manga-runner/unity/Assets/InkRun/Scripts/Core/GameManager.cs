@@ -32,6 +32,7 @@ namespace InkRun.Core
         public float MagnetTimeLeft { get; private set; }
         public float InvulnerableTimeLeft { get; private set; }
         public int RevivesUsed { get; private set; }
+        public ObstacleKind LastCrashKind { get; private set; }
         public bool IsDashing => DashTimeLeft > 0f;
         public bool IsInvulnerable => InvulnerableTimeLeft > 0f || IsDashing;
 
@@ -127,6 +128,7 @@ namespace InkRun.Core
 
         void Crash(Obstacle obstacle)
         {
+            LastCrashKind = obstacle.Kind;
             SfxWord?.Invoke("WHAM!", Player.transform.position + Vector3.up * 2f, 1.8f);
             SfxWord?.Invoke("DON!", Player.transform.position + Vector3.right * 1.2f + Vector3.up * 1f, 0.9f);   // ドン! once a Japanese font is in
             SetState(GameState.Crashed);
