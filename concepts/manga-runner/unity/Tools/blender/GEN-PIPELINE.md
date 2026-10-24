@@ -58,3 +58,28 @@ Animator (glTFast imports the clip); that path replaces `HeroAnimator` and is th
 
 Same as before: `gates.py` numbers (height, shoulders, mesh report), clay renders, three.js toon sheet, and a
 fresh-eyes critic pass before the GLB replaces the procedural one.
+
+## Route C: free
+
+No purchase needed; pick whichever is easiest.
+
+1. **Tripo or Meshy web apps, free tier.** Both give free credits every month (amounts change; check the pricing page).
+   Upload the reference images from `concepts/manga-runner/gen/REFS.md` (front + back + side as multi-view where the
+   UI offers it), choose quad / low-poly around 15k faces, textured, download the GLB, drop it in
+   `concepts/manga-runner/gen/in/` under the name from `gen/README.md`, then `bash unity/Tools/blender/ingest.sh`.
+2. **Open-source generator on the Mac.** Paste into the Mac Claude session:
+
+   ```
+   Pull branch claude/manga-runner-concept-xzx1kz and read concepts/manga-runner/unity/Tools/blender/GEN-PIPELINE.md
+   (Route C). Set up a Python 3.11 venv and install TripoSR (github.com/VAST-AI-Research/TripoSR, MIT) with the
+   stabilityai/TripoSR weights from Hugging Face; if Hunyuan3D-2 (github.com/Tencent/Hunyuan3D-2) runs on this Mac,
+   prefer its shape model. Run it on concepts/manga-runner/gen/refs/nozomi_front.png (download the URLs in
+   gen/REFS.md into that folder first), save the GLB as concepts/manga-runner/gen/in/Hero.glb, then
+   pip install bpy fast-simplification trimesh and run bash concepts/manga-runner/unity/Tools/blender/ingest.sh Hero.
+   Rebuild the Ink Run gray-box scene in Unity, press Play, send a screenshot, and commit gen/in and the new model.
+   ```
+   TripoSR runs on CPU in a minute or two per image and is weakest on thin parts (hair spikes, straps); Hunyuan3D-2
+   gives much better characters but needs more memory. The cloud session cannot run either: the weights live on
+   Hugging Face, which its network policy blocks.
+3. **Cloud session, no credits:** keeps the procedural models (build 11) and the critic loop; it can also regenerate
+   reference images on Runway, whose credits are already on the account.
