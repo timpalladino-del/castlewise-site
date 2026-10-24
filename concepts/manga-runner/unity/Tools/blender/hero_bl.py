@@ -55,8 +55,8 @@ def head():
         parts.append(K.cone_sweep(name, (base, mid, tip), (r, r*0.7, 0.0), I, 10, 7))
     C = (0, HL + 0.02, -0.03); R = 0.23
     # dominant (3), secondary (6): angle around head from +z toward the back, elevation, length, radius, curl back
-    for ang, elev, ln, r, curl in [(0.5, 1.0, 0.26, 0.085, 0.5), (0.3, 0.75, 0.22, 0.08, 0.8), (0.7, 0.75, 0.22, 0.08, 0.8),
-                                   (0.12, 0.55, 0.16, 0.065, 1.0), (0.88, 0.55, 0.16, 0.065, 1.0), (0.4, 1.25, 0.2, 0.065, 0.3), (0.6, 1.25, 0.2, 0.065, 0.3),
+    for ang, elev, ln, r, curl in [(0.5, 1.0, 0.2, 0.085, 0.5), (0.3, 0.75, 0.19, 0.08, 0.8), (0.7, 0.75, 0.19, 0.08, 0.8),
+                                   (0.12, 0.55, 0.16, 0.065, 1.0), (0.88, 0.55, 0.16, 0.065, 1.0), (0.4, 1.25, 0.17, 0.065, 0.3), (0.6, 1.25, 0.17, 0.065, 0.3),
                                    (1.0, 0.75, 0.11, 0.055, 0.6), (1.15, 0.5, 0.1, 0.05, 0.8), (0.85, 1.1, 0.15, 0.06, 0.4), (0.0, 0.45, 0.14, 0.055, 1.1), (1.3, 0.9, 0.1, 0.045, 0.5)]:
         ang *= math.pi
         d = (math.cos(ang)*math.cos(elev), math.sin(elev), -math.sin(ang)*math.cos(elev))
@@ -70,19 +70,19 @@ def head():
         base = (0.225*math.sin(a), HL + 0.01, 0.2*math.cos(a) + 0.02)
         spike('Bang', base, (base[0] + lean*0.03, base[1] - ln*0.55, base[2] + 0.02), (base[0] + lean*0.08, base[1] - ln, base[2] - 0.0), 0.05)
     for sx in (-1, 1):
-        spike('Sideburn', (sx*0.215, HL - 0.02, 0.02), (sx*0.22, HL - 0.09, 0.03), (sx*0.215, HL - 0.16, 0.035), 0.045)
-    for ang, ln in [(0.62, 0.08), (0.75, 0.1), (0.88, 0.11), (1.0, 0.12), (1.12, 0.11), (1.25, 0.1), (1.38, 0.08)]:
+        spike('Sideburn', (sx*0.215, HL - 0.02, 0.02), (sx*0.22, HL - 0.06, 0.03), (sx*0.215, HL - 0.1, 0.035), 0.045)
+    for ang, ln in [(0.6, 0.1), (0.8, 0.15), (1.0, 0.17), (1.2, 0.15), (1.4, 0.1)]:
         ang *= math.pi; rr = 0.2
         base = (rr*math.cos(ang), HL - 0.17, -rr*0.96*math.sin(ang) - 0.01)
-        spike('NapePoint', base, (base[0]*1.03, base[1] - ln*0.5, base[2]*1.03), (base[0]*1.06, base[1] - ln, base[2]*1.06), 0.045)
+        spike('NapePoint', base, (base[0]*1.03, base[1] - ln*0.5, base[2]*1.03), (base[0]*1.06, base[1] - ln, base[2]*1.06), 0.065)
     # goggles pushed up on the hairline
-    parts.append(torus('Strap', (0, HL + 0.015, -0.02), 0.238, 0.018, T, tilt=-8))
+    parts.append(torus('Strap', (0, HL + 0.015, -0.02), 0.23, 0.022, T, tilt=-8))
     parts.append(box('StrapBuckle', (0, HL + 0.0, -0.26), (0.07, 0.055, 0.03), I, 0.01))
     for sx in (-1, 1):
         lens = spin('Lens', [(0.0, 0.0), (0.062, 0.0), (0.075, 0.012), (0.075, 0.03), (0.062, 0.045), (0.035, 0.06), (0.0, 0.066)], A, 24, axis='z')
-        K.transform(lens, (0, 0, 0), 'x', -35); K.transform(lens, (0, 0, 0), move=(sx*0.1, HL + 0.06, 0.17)); parts.append(lens)
-        rim = torus('LensRim', (0, 0, 0.024), 0.078, 0.016, I, axis='z'); K.transform(rim, (0, 0, 0), 'x', -35); K.transform(rim, (0, 0, 0), move=(sx*0.1, HL + 0.06, 0.17)); parts.append(rim)
-    parts.append(box('Bridge', (0, HL + 0.075, 0.2), (0.05, 0.024, 0.024), I, 0.006))
+        K.transform(lens, (0, 0, 0), 'x', -50); K.transform(lens, (0, 0, 0), move=(sx*0.1, HL + 0.1, 0.15)); parts.append(lens)
+        rim = torus('LensRim', (0, 0, 0.024), 0.078, 0.016, I, axis='z'); K.transform(rim, (0, 0, 0), 'x', -50); K.transform(rim, (0, 0, 0), move=(sx*0.1, HL + 0.1, 0.15)); parts.append(rim)
+    parts.append(box('Bridge', (0, HL + 0.115, 0.185), (0.05, 0.024, 0.024), I, 0.006))
     return K.join('Head', parts, (0, HEAD, 0))
 
 def body():
@@ -93,15 +93,16 @@ def body():
     torso = station_loft('Torso', st, A, 28, 0.3); parts.append(torso); record('torso', [torso])
     parts.append(cylinder('NeckBand', (0, TOP + 0.02, -0.005), 0.1, 0.07, P, 'y', 20))   # ribbed tee inside the collar
     for sx in (-1, 1): parts.append(sphere('ShoulderBall', (sx*SH_X, SH, 0), 0.088, A))   # ball joint volume: sleeves rotate inside it
-    for sx in (-1, 1): parts.append(sphere('HipBall', (sx*HIP_X, HIP, 0), 0.125, I))
+    for sx in (-1, 1): parts.append(sphere('HipBall', (sx*HIP_X, HIP, 0), 0.115, I))
     # hood: thick ring of cloth around the neck, bulkier at the back, plus a hanging flap
     pts = []
     for k in range(9):
         a = math.pi*0.22 + math.pi*0.56*k/8
         pts.append((0.2*math.cos(a), TOP - 0.06 - 0.04*math.sin(a), -0.02 - 0.15*math.sin(a)))
     parts.append(tube('HoodRoll', pts, 0.06, A, radii=[0.5, 0.8, 0.95, 1.0, 1.0, 1.0, 0.95, 0.8, 0.5], bevel_res=8))
-    hood = extrude_profile('HoodFlap', [(-0.16, 0.0), (-0.13, -0.08), (-0.05, -0.19), (0.0, -0.22), (0.05, -0.19), (0.13, -0.08), (0.16, 0.0), (0.09, 0.03), (-0.09, 0.03)], 0.04, (0, TOP - 0.1, -0.16), A, 'xy', bevel_w=0.014)
-    K.transform(hood, (0, TOP - 0.1, -0.16), 'x', 8); parts.append(hood)
+    hood = extrude_profile('HoodFlap', [(-0.17, 0.0), (-0.14, -0.07), (-0.05, -0.16), (0.0, -0.18), (0.05, -0.16), (0.14, -0.07), (0.17, 0.0), (0.1, 0.03), (-0.1, 0.03)], 0.075, (0, TOP - 0.1, -0.17), A, 'xy', bevel_w=0.03)
+    K.transform(hood, (0, TOP - 0.1, -0.17), 'x', 22); parts.append(hood)
+    parts.append(tube('HoodEdge', [(-0.15, TOP - 0.12, -0.2), (0.0, TOP - 0.27, -0.19), (0.15, TOP - 0.12, -0.2)], 0.012, P))
     for sx in (-1, 1):
         parts.append(tube('Drawstring', [(sx*0.05, TOP - 0.04, 0.12), (sx*0.065, TOP - 0.14, 0.155), (sx*0.06, TOP - 0.23, 0.145)], 0.009, P))
         parts.append(sphere('Aglet', (sx*0.06, TOP - 0.24, 0.145), 0.015, P))
@@ -113,9 +114,9 @@ def body():
     hem = loft('Hem', [ring((0, y, 0), rx, rz, 28, 'xz', 0.3) for y, rx, rz in [(HIP - 0.09, 0.235, 0.155), (HIP - 0.05, 0.235, 0.155), (HIP - 0.05, 0.21, 0.13), (HIP - 0.09, 0.21, 0.13)]], I, sharp_deg=90); parts.append(hem)
     pelvis = station_loft('Pelvis', [(HIP + 0.02, 0.22, 0.135, 0.0), (HIP - 0.06, 0.2, 0.13, 0.0), (HIP - 0.12, 0.165, 0.11, 0.0), (HIP - 0.16, 0.12, 0.085, 0.0)], I, 24, 0.3); parts.append(pelvis)
     # glyph on the back (raised paper strokes), scaled to read at 450 px
-    cy = HIP + 0.13
-    enso = torus('Enso', (0.0, cy, -0.148), 0.1, 0.014, P, 'z', 32, 8, angle=320); K.transform(enso, (0, cy, -0.148), 'z', 200); parts.append(enso)
-    slash = box('Slash', (0.0, cy, -0.15), (0.03, 0.17, 0.014), P, 0.006); K.transform(slash, (0, cy, -0.15), 'z', 28); parts.append(slash)
+    cy = HIP + 0.14
+    enso = torus('Enso', (0.0, cy, -0.146), 0.115, 0.022, I, 'z', 40, 8, angle=315); K.transform(enso, (0, cy, -0.146), 'z', 200); parts.append(enso)
+    slash = box('Slash', (0.0, cy, -0.148), (0.045, 0.2, 0.018), I, 0.008); K.transform(slash, (0, cy, -0.148), 'z', 28); parts.append(slash)
     return K.join('Body', parts, (0, 0, 0))
 
 def leg(name, x):
@@ -124,8 +125,10 @@ def leg(name, x):
     st = [(HIP + 0.04, 0.125, 0.13, 0.0), (HIP - 0.1, 0.12, 0.125, 0.005), (0.52, 0.1, 0.105, 0.02), (0.34, 0.085, 0.09, 0.015), (0.2, 0.078, 0.082, 0.0), (0.11, 0.074, 0.078, 0.0)]
     rings = [ring((x, y, zc), rx, rz, 20, 'xz', 0.15) for y, rx, rz, zc in st]
     pant = loft('Pant', rings, I, sharp_deg=90); K.subsurf(pant, 1); parts.append(pant)
+    sx = 1 if x > 0 else -1
+    parts.append(tube('Seam', [(x + sx*0.122, HIP + 0.02, 0.0), (x + sx*0.1, 0.5, 0.02), (x + sx*0.078, 0.16, 0.0)], 0.012, P, radii=[1.0, 0.9, 0.8]))
     # sneaker 0.34 long x 0.15 wide, toe lifted; sections along z (x half-width, y half-height, y centre)
-    sh = [(-0.13, 0.062, 0.055, 0.08), (-0.07, 0.082, 0.08, 0.095), (0.0, 0.088, 0.085, 0.1), (0.09, 0.085, 0.078, 0.095), (0.17, 0.072, 0.056, 0.085), (0.23, 0.045, 0.03, 0.085)]
+    sh = [(-0.13, 0.062, 0.055, 0.08), (-0.07, 0.082, 0.08, 0.095), (0.0, 0.088, 0.088, 0.105), (0.09, 0.086, 0.082, 0.1), (0.17, 0.076, 0.062, 0.09), (0.23, 0.05, 0.036, 0.085)]
     shoe = loft('Shoe', [ring((x, cy, z), rx, ry, 20, 'xy') for z, rx, ry, cy in sh], P, sharp_deg=90); K.subsurf(shoe, 1); parts.append(shoe); record('shoe', [shoe])
     outline = [(0.09*math.copysign(abs(math.cos(t))**0.6, math.cos(t)), 0.19*math.copysign(abs(math.sin(t))**0.6, math.sin(t))) for t in [2*math.pi*i/28 for i in range(28)]]
     parts.append(extrude_profile('Sole', outline, 0.05, (x, 0.025, 0.045), I, 'xz', bevel_w=0.018))
@@ -137,17 +140,15 @@ def leg(name, x):
 def arm(name, x, side):
     parts = []
     # sleeve: shoulder 0.19 -> wrist 0.11 diameter, hangs 10 deg out and a little forward (relaxed A-pose)
-    ELB = SH - 0.22
-    upper = loft('Upper', [ring((x, y, 0.0), rx, rz, 20, 'xz') for y, rx, rz in [(SH - 0.01, 0.088, 0.088), (SH - 0.1, 0.086, 0.086), (ELB + 0.02, 0.08, 0.08)]], A, sharp_deg=90); K.subsurf(upper, 1); parts.append(upper)
-    parts.append(sphere('Elbow', (x, ELB, 0), 0.082, A))
-    fore = [loft('Fore', [ring((x, y, 0.0), rx, rz, 20, 'xz') for y, rx, rz in [(ELB + 0.01, 0.08, 0.08), (ELB - 0.1, 0.074, 0.074), (ELB - 0.18, 0.07, 0.07), (ELB - 0.21, 0.078, 0.078)]], A, sharp_deg=90)]
-    K.subsurf(fore[0], 1)
-    fore.append(cylinder('Cuff', (x, ELB - 0.22, 0), 0.08, 0.045, P, 'y', 20, bevel_w=0.008))
-    mitt = sphere('Mitt', (x, ELB - 0.31, 0.01), 0.095, S, (0.8, 1.0, 0.6)); fore.append(mitt)
-    fore.append(sphere('Thumb', (x + side*0.07, ELB - 0.27, 0.05), 0.034, S, (1.0, 1.4, 0.9)))
-    for p in fore: K.transform(p, (x, ELB, 0), 'x', -65)   # forearm swings forward: runner's bent elbow
+    ELB = SH - 0.24
+    # one continuous sleeve: shoulder -> elbow (slightly back) -> wrist forward of the hip, no seam at the joint
+    parts.append(K.sweep_loft('Sleeve', [(x, SH + 0.01, 0.0), (x, ELB, -0.04), (x, ELB - 0.03, 0.2)], [0.09, 0.086, 0.08, 0.074, 0.07], A, 20, 11))
+    fore = []
+    fore.append(cylinder('Cuff', (x, ELB - 0.03, 0.215), 0.08, 0.045, P, 'z', 20, bevel_w=0.008))
+    mitt = sphere('Mitt', (x, ELB - 0.03, 0.3), 0.095, S, (0.78, 0.62, 1.0)); fore.append(mitt)
+    fore.append(sphere('Thumb', (x + side*0.07, ELB + 0.01, 0.265), 0.034, S, (1.0, 0.9, 1.4)))
     parts += fore; record('mitt', [mitt])
-    for p in parts: K.transform(p, (x, SH, 0), 'z', -side*8)   # a little out from the shoulder
+    for p in parts: K.transform(p, (x, SH, 0), 'z', -side*6)   # a little out from the shoulder
     return K.join(name, parts, (x, SH, 0))
 
 def build():

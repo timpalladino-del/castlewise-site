@@ -44,7 +44,7 @@ function box(w, h, d, x, y, z, hex, outline = true) {
   // rooftop track: paper slab, ink edges, tick lines, lane dashes
   box(6.6, 0.3, 90, 0, -0.15, 35, '#ffffff');
   box(0.12, 0.25, 90, -3.3, 0.05, 35, '#121212', false); box(0.12, 0.25, 90, 3.3, 0.05, 35, '#121212', false);
-  for (let z = -4; z < 80; z += 2) box(6.6, 0.02, 0.07, 0, 0.01, z, '#121212', false);
+  for (let z = -4; z < 80; z += 2) box(6.6, 0.012, 0.03, 0, 0.008, z, '#cfcfcf', false);
   for (let z = -4; z < 80; z += 1) for (const x of [-1, 1]) box(0.05, 0.015, 0.5, x, 0.012, z + 0.25, '#b8b8b8', false);
   // skyline both sides
   const row = [['BuildingCity', 0], ['BuildingAlley', 4.5], ['Containers', 9], ['BuildingCity', 13.5], ['BuildingAlley', 18], ['BuildingCity', 22.5], ['Containers', 27], ['BuildingAlley', 31.5], ['BuildingCity', 36], ['BuildingAlley', 40.5], ['BuildingCity', 45], ['BuildingCity', 50], ['BuildingAlley', 55]];

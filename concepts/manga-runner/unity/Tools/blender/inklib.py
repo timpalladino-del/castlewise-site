@@ -214,6 +214,28 @@ def cone_sweep(name, pts, radii, material='Ink', n=10, steps=7):
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     return new_mesh_object(name, bm, material, True, 60)
 
+def sweep_loft(name, pts, radii, material='InkPaper', n=20, steps=9, cap_start=True, cap_end=True, subsurf_levels=1):
+    """One smooth lofted tube along a quadratic bezier through 3 Unity points, radius interpolated from
+    `radii` (a list sampled along t). Use for bent sleeves/legs so there is no seam at the joint."""
+    from mathutils import Vector as V
+    p0, p1, p2 = (V(U(p)) for p in pts)
+    path = [(1-t)**2*p0 + 2*(1-t)*t*p1 + t*t*p2 for t in [i/(steps-1) for i in range(steps)]]
+    bm = bmesh.new(); rings = []
+    for i, c in enumerate(path):
+        t = i/(steps-1); f = t*(len(radii)-1); k = min(int(f), len(radii)-2); r = radii[k] + (radii[k+1]-radii[k])*(f-k)
+        tang = (path[min(i+1, steps-1)] - path[max(i-1, 0)]).normalized()
+        ref = V((0, 0, 1)) if abs(tang.z) < 0.9 else V((1, 0, 0))
+        u = tang.cross(ref).normalized(); v = u.cross(tang)
+        vs = [bm.verts.new(c + (u*math.cos(a) + v*math.sin(a))*r) for a in [2*math.pi*j/n for j in range(n)]]
+        rings.append([bm.edges.new((vs[j], vs[(j+1) % n])) for j in range(n)])
+    for a, b in zip(rings, rings[1:]): bmesh.ops.bridge_loops(bm, edges=a + b)
+    if cap_start: bmesh.ops.contextual_create(bm, geom=rings[0])
+    if cap_end: bmesh.ops.contextual_create(bm, geom=rings[-1])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    ob = new_mesh_object(name, bm, material, True, 90)
+    if subsurf_levels: subsurf(ob, subsurf_levels)
+    return ob
+
 def skin_chain(name, chains, material='InkSkin', subdiv=2, root=0):
     """Organic mass from joint chains [(x, y, z, r), ...] (Unity coords) or a dict of chains that
     share points by position. Skin + Subdivision gives smooth limbs with loops at every joint."""

@@ -213,7 +213,7 @@ namespace InkRun.EditorTools
                 Box("Roof", new Vector3(6.6f, 0.2f, 10f), new Vector3(0, -0.1f, 5f), _paper, false).transform.SetParent(root.transform, false);
                 Box("EdgeL", new Vector3(0.12f, 0.25f, 10f), new Vector3(-3.3f, 0.02f, 5f), _ink, false).transform.SetParent(root.transform, false);
                 Box("EdgeR", new Vector3(0.12f, 0.25f, 10f), new Vector3(3.3f, 0.02f, 5f), _ink, false).transform.SetParent(root.transform, false);
-                for (int i = 0; i < 5; i++) Box("Tick" + i, new Vector3(6.6f, 0.02f, 0.07f), new Vector3(0, 0.01f, i * 2f), _ink, false).transform.SetParent(root.transform, false);
+                for (int i = 0; i < 5; i++) Box("Tick" + i, new Vector3(6.6f, 0.012f, 0.03f), new Vector3(0, 0.008f, i * 2f), _tone, false).transform.SetParent(root.transform, false);   // faint paving seams, never black bars (they read as hurdles)
                 for (int i = 0; i < 10; i++) foreach (float x in new[] { -1f, 1f }) Box("Dash" + i + (x > 0 ? "R" : "L"), new Vector3(0.05f, 0.015f, 0.5f), new Vector3(x, 0.01f, 0.25f + i), _tone, false).transform.SetParent(root.transform, false);
                 p.track = Save("TrackPiece", root);
             }

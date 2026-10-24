@@ -17,7 +17,7 @@ python3 Tools/blender/build_all.py   # writes Assets/InkRun/Models/*.glb
 | `review/` | three.js toon viewer + Playwright scripts that render contact sheets and a full in-game frame (`scene.html`) with the same ink look as the Unity shader |
 | `gates.py` | Numeric gates from the reference-modeling skill, adapted to run headless: `mesh_report` (ngons, non-manifold, loose verts), `dim_gate` (bbox vs brief ±tol), `extent_profile` (taper, catches tubes), and `review()` Workbench clay/silhouette renders + a 450 px gameplay strip |
 | `BRIEF.md` | Phase-0 asset briefs: measured proportions, parts, silhouette features, budgets, gates and 'never' rules for the hero and every prop |
-| `previews/` | Latest renders (`hero-sheet.png`, `props-sheet.png`, `scene-run.png`, `scene-jump.png`, `hero_v5_review.png` clay) |
+| `previews/` | Latest renders (`hero-sheet.png`, `props-sheet.png`, `scene-run.png`, `scene-jump.png`, `hero-clay.png` form check) |
 
 Materials are named `InkPaper`, `InkAccent`, `Ink`, `InkTone`, `InkSkin`; `SceneBootstrap.RemapInk`
 swaps them for the InkToon shader materials on import (glTFast package required).
@@ -26,7 +26,7 @@ Process (from the game-asset-modeling, reference-modeling and blender-image-to-3
 `~/.claude/skills/`): write the brief first; blockout to measured stations; pass the numeric gates
 (`dim_gate`, `extent_profile`, `mesh_report`) before any detail; review clay + silhouette renders, never the
 viewport; then hand the renders to a fresh-eyes critic subagent and work its ranked list until only minors
-remain. Two critic rounds were run on these models; their findings drove v2-v5 of the hero and v2 of the props.
+remain. Two critic rounds were run on these models; their findings drove v2-v6 of the hero and v2-v3 of the props (round 2 verified 5 of 14 earlier findings fixed, 7 partly; everything it ranked above minor is now applied).
 
 Technique notes (from the modeling skills this pipeline follows): silhouette before detail,
 Bevel before Subdivision, overlap parts at joins instead of abutting them, skin chains for organic
