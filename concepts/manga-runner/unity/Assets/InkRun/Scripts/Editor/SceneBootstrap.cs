@@ -126,6 +126,15 @@ namespace InkRun.EditorTools
         static PrefabSet Prefabs()
         {
             var p = new PrefabSet();
+            var barrierModel = Model("Barrier");
+            if (barrierModel != null)
+            {
+                var root = new GameObject("Barrier"); barrierModel.transform.SetParent(root.transform, false);
+                var bc = root.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.size = new Vector3(1.6f, 0.8f, 0.4f); bc.center = new Vector3(0, 0.5f, 0);
+                root.AddComponent<Obstacle>().Kind = ObstacleKind.Barrier;
+                p.barrier = Save("Barrier", root);
+            }
+            else
             {
                 var root = Obstacle(ObstacleKind.Barrier, Box("Body", new Vector3(1.6f, 0.8f, 0.4f), new Vector3(0, 0.4f, 0), _paper, true));
                 for (int i = 0; i < 3; i++) { var stripe = Box("Stripe" + i, new Vector3(0.22f, 0.82f, 0.42f), new Vector3(-0.5f + i * 0.5f, 0.4f, 0), _accent, false); stripe.transform.SetParent(root.transform, false); stripe.transform.localRotation = Quaternion.Euler(0, 0, 18f); }
@@ -133,6 +142,15 @@ namespace InkRun.EditorTools
                 Box("FootR", new Vector3(0.1f, 0.1f, 0.6f), new Vector3(0.65f, 0.05f, 0), _ink, false).transform.SetParent(root.transform, false);
                 p.barrier = Save("Barrier", root);
             }
+            var signModel = Model("Sign");
+            if (signModel != null)
+            {
+                var root = new GameObject("Sign"); signModel.transform.SetParent(root.transform, false);
+                var bc = root.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.size = new Vector3(1.75f, 0.95f, 0.3f); bc.center = new Vector3(0, 1.78f, 0);
+                root.AddComponent<Obstacle>().Kind = ObstacleKind.Sign;
+                p.sign = Save("Sign", root);
+            }
+            else
             {
                 var root = new GameObject("Sign");
                 Box("Board", new Vector3(1.6f, 0.9f, 0.3f), new Vector3(0, 1.75f, 0), _paper, true).transform.SetParent(root.transform, false);
@@ -143,6 +161,15 @@ namespace InkRun.EditorTools
                 root.AddComponent<Obstacle>().Kind = ObstacleKind.Sign;
                 p.sign = Save("Sign", root);
             }
+            var trainModel = Model("Train");
+            if (trainModel != null)
+            {
+                var root = new GameObject("Train"); trainModel.transform.SetParent(root.transform, false);
+                var bc = root.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.size = new Vector3(1.9f, 2.6f, 6f); bc.center = new Vector3(0, 1.3f, 3f);
+                root.AddComponent<Obstacle>().Kind = ObstacleKind.Wall;
+                p.wall = Save("Train", root);
+            }
+            else
             {
                 var root = Obstacle(ObstacleKind.Wall, Box("Body", new Vector3(1.9f, 2.6f, 6f), new Vector3(0, 1.3f, 3f), _paper, true));
                 Box("Band", new Vector3(1.92f, 0.3f, 6.02f), new Vector3(0, 0.9f, 3f), _accent, false).transform.SetParent(root.transform, false);
@@ -156,6 +183,15 @@ namespace InkRun.EditorTools
                 var bc = root.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.size = new Vector3(1.8f, 1.2f, 3f); bc.center = new Vector3(0, 0.5f, 1.2f);
                 p.gap = Save("Gap", root);
             }
+            var coinModel = Model("Coin");
+            if (coinModel != null)
+            {
+                var root = new GameObject("Coin"); coinModel.transform.SetParent(root.transform, false);
+                var sc = root.AddComponent<SphereCollider>(); sc.isTrigger = true; sc.radius = 0.45f; sc.center = new Vector3(0, 0.6f, 0);
+                root.AddComponent<Pickup>().Kind = PickupKind.Coin;
+                p.coin = Save("Coin", root);
+            }
+            else
             {
                 var root = new GameObject("Coin");
                 var disc = GameObject.CreatePrimitive(PrimitiveType.Cylinder); disc.name = "Disc";
@@ -180,6 +216,9 @@ namespace InkRun.EditorTools
                 for (int i = 0; i < 10; i++) foreach (float x in new[] { -1f, 1f }) Box("Dash" + i + (x > 0 ? "R" : "L"), new Vector3(0.05f, 0.015f, 0.5f), new Vector3(x, 0.01f, 0.25f + i), _tone, false).transform.SetParent(root.transform, false);
                 p.track = Save("TrackPiece", root);
             }
+            var cityModel = Model("BuildingCity");
+            if (cityModel != null) { var root = new GameObject("Building"); cityModel.transform.SetParent(root.transform, false); p.building = Save("Building", root); }
+            else
             {
                 var root = new GameObject("Building");
                 Box("Block", new Vector3(3f, 6f, 4f), new Vector3(1.5f, 3f, 2f), _paper, false).transform.SetParent(root.transform, false);
@@ -188,6 +227,9 @@ namespace InkRun.EditorTools
                 Box("Tank", new Vector3(1.2f, 1.2f, 1.2f), new Vector3(1.5f, 6.6f, 2f), _paper, false).transform.SetParent(root.transform, false);
                 p.building = Save("Building", root);
             }
+            var containerModel = Model("Containers");
+            if (containerModel != null) { var root = new GameObject("Containers"); containerModel.transform.SetParent(root.transform, false); p.container = Save("Containers", root); }
+            else
             {
                 var root = new GameObject("Containers");
                 Box("Low", new Vector3(3f, 1.4f, 4f), new Vector3(1.5f, 0.7f, 2f), _paper, false).transform.SetParent(root.transform, false);
@@ -197,6 +239,9 @@ namespace InkRun.EditorTools
                 Box("Arm", new Vector3(4f, 0.15f, 0.15f), new Vector3(1f, 7f, 0.5f), _ink, false).transform.SetParent(root.transform, false);
                 p.container = Save("Containers", root);
             }
+            var alleyModel = Model("BuildingAlley");
+            if (alleyModel != null) { var root = new GameObject("Alley"); alleyModel.transform.SetParent(root.transform, false); p.alley = Save("Alley", root); }
+            else
             {
                 var root = new GameObject("Alley");
                 Box("Block", new Vector3(2.4f, 9f, 4f), new Vector3(1.2f, 4.5f, 2f), _paper, false).transform.SetParent(root.transform, false);
@@ -217,6 +262,41 @@ namespace InkRun.EditorTools
                 p.word = Save("SfxWord", go);
             }
             return p;
+        }
+
+        // ---------- GLB models (Assets/InkRun/Models, imported by the glTFast package) ----------
+
+        static GameObject Model(string name)
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "/Models/" + name + ".glb");
+            if (asset == null) { Debug.LogWarning("Ink Run: no imported model for " + name + " (install com.unity.cloud.gltfast); using primitives."); return null; }
+            var go = Object.Instantiate(asset); go.name = "Model";
+            RemapInk(go);
+            return go;
+        }
+
+        // GLB materials are named InkPaper / InkAccent / Ink / InkTone; swap them for the ink shader materials.
+        static void RemapInk(GameObject go)
+        {
+            foreach (var r in go.GetComponentsInChildren<Renderer>(true))
+            {
+                var mats = r.sharedMaterials;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    string n = mats[i] != null ? mats[i].name : "";
+                    if (n.StartsWith("InkAccent")) mats[i] = _accent;
+                    else if (n.StartsWith("InkPaper")) mats[i] = _paper;
+                    else if (n.StartsWith("InkTone")) mats[i] = _tone;
+                    else if (n.StartsWith("Ink")) mats[i] = _ink;
+                }
+                r.sharedMaterials = mats;
+            }
+        }
+
+        static Transform Find(Transform root, string name)
+        {
+            foreach (var t in root.GetComponentsInChildren<Transform>(true)) if (t.name == name) return t;
+            return null;
         }
 
         static GameObject Box(string name, Vector3 size, Vector3 pos, Material m, bool trigger)
@@ -240,7 +320,9 @@ namespace InkRun.EditorTools
         static GameObject PickupPrefab(PickupKind kind)
         {
             var root = new GameObject(kind.ToString());
-            Box("Body", new Vector3(0.6f, 0.6f, 0.6f), new Vector3(0, 0.8f, 0), _accent, false).transform.SetParent(root.transform, false);
+            var model = Model(kind.ToString());
+            if (model != null) model.transform.SetParent(root.transform, false);
+            else Box("Body", new Vector3(0.6f, 0.6f, 0.6f), new Vector3(0, 0.8f, 0), _accent, false).transform.SetParent(root.transform, false);
             var sc = root.AddComponent<SphereCollider>(); sc.isTrigger = true; sc.radius = 0.6f; sc.center = new Vector3(0, 0.8f, 0);
             root.AddComponent<Pickup>().Kind = kind;
             return root;
@@ -251,6 +333,22 @@ namespace InkRun.EditorTools
             var root = new GameObject("Hero");
             var cap = root.AddComponent<CapsuleCollider>(); cap.isTrigger = true; cap.height = 1.8f; cap.radius = 0.35f; cap.center = new Vector3(0, 0.9f, 0);
             var rb = root.AddComponent<Rigidbody>(); rb.isKinematic = true; rb.useGravity = false;
+            var heroModel = Model("Hero");
+            if (heroModel != null)
+            {
+                heroModel.name = "Visual"; heroModel.transform.SetParent(root.transform, false);
+                var heroAnim = heroModel.AddComponent<HeroAnimator>();
+                heroAnim.Body = Find(heroModel.transform, "Body"); heroAnim.Head = Find(heroModel.transform, "Head");
+                heroAnim.LegL = Find(heroModel.transform, "LegL"); heroAnim.LegR = Find(heroModel.transform, "LegR");
+                heroAnim.ArmL = Find(heroModel.transform, "ArmL"); heroAnim.ArmR = Find(heroModel.transform, "ArmR");
+                var partsM = new GameObject("Parts"); partsM.transform.SetParent(heroModel.transform, false);
+                Part(partsM, "default", new Vector3(0.01f, 0.01f, 0.01f), new Vector3(0, -5f, 0), _accent);   // goggles are modeled; keep the node for the outfit swap
+                Part(partsM, "delivery", new Vector3(0.55f, 0.12f, 0.55f), new Vector3(0, 1.78f, 0), _accent);
+                Part(partsM, "ronin", new Vector3(0.56f, 0.06f, 0.56f), new Vector3(0, 1.64f, 0), _accent);
+                root.AddComponent<HeroOutfit>().PartsRoot = partsM.transform;
+                var pcM = root.AddComponent<PlayerController>(); pcM.Visual = heroModel.transform;
+                return root;
+            }
             var visual = new GameObject("Visual"); visual.transform.SetParent(root.transform, false);
             var body = GameObject.CreatePrimitive(PrimitiveType.Capsule); body.name = "Body";
             Object.DestroyImmediate(body.GetComponent<Collider>());

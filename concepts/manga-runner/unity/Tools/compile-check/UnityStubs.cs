@@ -17,7 +17,7 @@ namespace UnityEngine
     public class ScriptableObject : Object { public static T CreateInstance<T>() where T : ScriptableObject => (T)Activator.CreateInstance(typeof(T)); }
     public class Coroutine { }
     public class WaitForSecondsRealtime { public WaitForSecondsRealtime(float s) { } }
-    public class GameObject : Object { public GameObject() { } public GameObject(string n) { } public GameObject(string n, params Type[] c) { } public static GameObject CreatePrimitive(PrimitiveType p) => new GameObject(); public Transform transform; public void SetActive(bool b) { } public bool activeSelf; public T AddComponent<T>() where T : Component, new() => new T(); public T GetComponent<T>() => default; public T GetComponentInChildren<T>() => default; }
+    public class GameObject : Object { public GameObject() { } public GameObject(string n) { } public GameObject(string n, params Type[] c) { } public T[] GetComponentsInChildren<T>(bool inactive) => new T[0]; public T[] GetComponentsInChildren<T>() => new T[0]; public static GameObject CreatePrimitive(PrimitiveType p) => new GameObject(); public Transform transform; public void SetActive(bool b) { } public bool activeSelf; public T AddComponent<T>() where T : Component, new() => new T(); public T GetComponent<T>() => default; public T GetComponentInChildren<T>() => default; }
     public class Transform : Component, IEnumerable { public Vector3 position, localPosition, localScale, forward; public Quaternion rotation, localRotation; public Vector3 localEulerAngles; public void SetParent(Transform p, bool keep) { } public Transform parent; public int childCount; public Transform GetChild(int i) => null; public Transform Find(string n) => null; public void Rotate(float x, float y, float z, Space s) { } public void LookAt(Vector3 v) { } public IEnumerator GetEnumerator() => null; }
     public enum Space { World, Self }
     public struct Vector2 { public float x, y; public static Vector2 zero, one; public Vector2(float x, float y) { this.x = x; this.y = y; } public float magnitude => 0; public static Vector2 operator -(Vector2 a, Vector2 b) => a; public static Vector2 operator +(Vector2 a, Vector2 b) => a; public static implicit operator Vector2(Vector3 v) => new Vector2(); public static explicit operator Vector3(Vector2 v) => new Vector3(); }
@@ -46,7 +46,7 @@ namespace UnityEngine
     public class Collider : Component { public bool enabled, isTrigger; }
     public class SphereCollider : Collider { public float radius; public Vector3 center; }
     public class BoxCollider : Collider { public Vector3 size, center; }
-    public class Renderer : Component { public Material sharedMaterial; public bool enabled; }
+    public class Renderer : Component { public Material sharedMaterial; public Material[] sharedMaterials; public bool enabled; }
     public enum PrimitiveType { Cube, Sphere, Capsule, Cylinder, Quad }
     public class Light : Behaviour { public LightType type; }
     public enum LightType { Directional, Point }

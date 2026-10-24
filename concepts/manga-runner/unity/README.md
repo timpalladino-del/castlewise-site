@@ -80,6 +80,16 @@ Lanes are at x = -2, 0, +2 (`Tuning.LaneWidth`). The track is a strip of 10 m pi
 - **Pattern**: menu **Ink Run > Create default patterns** builds the seven starting patterns.
 - **Outfit** × 3: `default` (0), `delivery` (300), `ronin` (800), with preview prefabs.
 
+## 3b. Models
+
+`Assets/InkRun/Models/*.glb` are low-poly toon models built by `Tools/models/build_models.py`
+(hero with joint nodes for the procedural run cycle, train, barrier, sign, coin, magnet,
+dash, city block, container stack, alley building, lantern). Install the **glTFast**
+package (Window > Package Manager > Add by name > `com.unity.cloud.gltfast`) so Unity
+imports them; the scene builder then uses them instead of primitives and swaps their
+materials for the ink shader. Without glTFast it falls back to primitives and says so.
+Edit the Python, rerun it, and rerun the menu to update models.
+
 ## 4. Prefabs
 
 | Prefab | Components | Collider |
