@@ -11,7 +11,8 @@ namespace InkRun.FX
     public class SpeedLines : MonoBehaviour
     {
         public RawImage Image;
-        public float BaseIntensity = 0.1f;
+        public float BaseIntensity = 0.04f;
+        public float RampIntensity = 0.14f;      // added at top speed
         public float DashIntensity = 0.75f;
 
         static readonly int IntensityId = Shader.PropertyToID("_Intensity");
@@ -30,7 +31,7 @@ namespace InkRun.FX
             if (gm == null || gm.State != GameState.Running) { _mat.SetFloat(IntensityId, 0f); return; }
             float t = gm.Tuning.SpeedAt(gm.Run.Distance, false, false);
             float ramp = Mathf.InverseLerp(gm.Tuning.BaseSpeed, gm.Tuning.BaseSpeed + gm.Tuning.MaxSpeedBonus, t);
-            float v = BaseIntensity + ramp * 0.3f + (gm.IsDashing ? DashIntensity : 0f) + (gm.Player.IsAirborne ? 0.12f : 0f);
+            float v = BaseIntensity + ramp * RampIntensity + (gm.IsDashing ? DashIntensity : 0f) + (gm.Player.IsAirborne ? 0.1f : 0f);
             _mat.SetFloat(IntensityId, Mathf.Clamp01(v));
         }
     }

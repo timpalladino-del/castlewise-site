@@ -49,11 +49,11 @@ Shader "InkRun/InkSpeedLines"
                 float seg = floor(a * _Lines);
                 float seed = seg + floor(_Time.y * _Flicker) * 131.0;
                 float on = step(hash(seed), _Intensity);              // more lines as intensity rises
-                float halfWidth = 0.08 + 0.25 * hash(seed * 1.7);     // in segment units
+                float halfWidth = 0.05 + 0.16 * hash(seed * 1.7);     // in segment units
                 float lineMask = step(abs(frac(a * _Lines) - 0.5), halfWidth);
                 float startR = 0.10 + 0.25 * hash(seed * 3.3);
                 float radial = smoothstep(startR, startR + 0.12, r);
-                float alpha = on * lineMask * radial * (0.5 + 0.5 * hash(seed * 5.1));
+                float alpha = on * lineMask * radial * (0.35 + 0.65 * hash(seed * 5.1)) * saturate(0.45 + _Intensity);
                 return fixed4(_InkColor.rgb, alpha * _InkColor.a);
             }
             ENDCG

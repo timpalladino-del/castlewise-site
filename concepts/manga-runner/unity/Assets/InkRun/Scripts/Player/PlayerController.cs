@@ -23,7 +23,7 @@ namespace InkRun.Player
         public float Height { get; private set; }           // meters above ground
 
         Tuning T => GameManager.Instance.Tuning;
-        float _laneX, _jumpT = -1f, _slideT = -1f;
+        float _laneX, _jumpT = -1f, _slideT = -1f, _squash;
         CapsuleCollider _capsule;
         float _capsuleHeight, _capsuleCenterY;
 
@@ -49,11 +49,11 @@ namespace InkRun.Player
                 case Swipe.Left: if (Lane > 0) Lane--; break;
                 case Swipe.Right: if (Lane < 2) Lane++; break;
                 case Swipe.Up:
-                    if (_jumpT < 0f) { _jumpT = 0f; _slideT = -1f; gm.Run.Jumps++; InkAudio.Play("jump"); Animator?.SetTrigger("Jump"); SfxWords.Pop("HUP!", transform.position + new Vector3(0.8f, 2.6f, 0f), 0.6f); }
+                    if (_jumpT < 0f) { _jumpT = 0f; _slideT = -1f; gm.Run.Jumps++; InkAudio.Play("jump"); Trigger("Jump"); SfxWords.Pop("HUP!", transform.position + new Vector3(0.8f, 2.6f, 0f), 0.6f); }
                     break;
                 case Swipe.Down:
                     if (_jumpT >= 0f) _jumpT = Mathf.Max(_jumpT, 0.8f);               // fast fall
-                    else if (_slideT < 0f) { _slideT = 0f; gm.Run.Slides++; InkAudio.Play("slide"); Animator?.SetTrigger("Slide"); SfxWords.Pop("SHHK!", transform.position + new Vector3(-0.9f, 0.8f, 0f), 0.55f); }
+                    else if (_slideT < 0f) { _slideT = 0f; gm.Run.Slides++; InkAudio.Play("slide"); Trigger("Slide"); SfxWords.Pop("SHHK!", transform.position + new Vector3(-0.9f, 0.8f, 0f), 0.55f); }
                     break;
             }
         }
@@ -67,20 +67,27 @@ namespace InkRun.Player
             float targetX = (Lane - 1) * T.LaneWidth;
             _laneX = Mathf.Lerp(_laneX, targetX, Mathf.Min(1f, dt * T.LaneChangeSpeed));
 
-            if (_jumpT >= 0f) { _jumpT += dt / T.JumpDuration; if (_jumpT >= 1f) _jumpT = -1f; }
-            Height = _jumpT >= 0f ? T.JumpHeight * 4f * _jumpT * (1f - _jumpT) : 0f;
             if (_slideT >= 0f) { _slideT += dt / T.SlideDuration; if (_slideT >= 1f) _slideT = -1f; }
 
+            bool wasAirborne = IsAirborne;
+            if (_jumpT >= 0f) { _jumpT += dt / T.JumpDuration; if (_jumpT >= 1f) _jumpT = -1f; }
+            if (wasAirborne && !IsAirborne) { _squash = 0.14f; InkAudio.Play("land", 0.5f); }   // landing: a quick squash
+            Height = _jumpT >= 0f ? T.JumpHeight * 4f * _jumpT * (1f - _jumpT) : 0f;
+            _squash = Mathf.Max(0f, _squash - dt);
+            float k = _squash / 0.14f;
+
             transform.position = new Vector3(_laneX, Height, 0f);
-            if (Visual != null) Visual.localScale = new Vector3(1f, IsSliding ? 0.55f : 1f, 1f);
+            if (Visual != null) Visual.localScale = new Vector3(1f + 0.18f * k, IsSliding ? 0.55f : 1f - 0.22f * k, 1f);
 
             // slide shrinks the collider so overhead signs pass over
             _capsule.height = IsSliding ? _capsuleHeight * 0.5f : _capsuleHeight;
             _capsule.center = new Vector3(0f, IsSliding ? _capsuleCenterY * 0.5f : _capsuleCenterY, 0f);
 
-            Animator?.SetBool("Running", true);
-            Animator?.SetFloat("Speed", gm.Speed);
+            // Explicit null checks, not ?.: an unassigned serialized field is a Unity "fake null" that ?. lets through.
+            if (Animator != null) { Animator.SetBool("Running", true); Animator.SetFloat("Speed", gm.Speed); }
         }
+
+        void Trigger(string name) { if (Animator != null) Animator.SetTrigger(name); }
 
         void OnTriggerEnter(Collider other)
         {
@@ -91,7 +98,7 @@ namespace InkRun.Player
             if (pickup != null) { pickup.Collect(gm); return; }
 
             var obstacle = other.GetComponentInParent<Obstacle>();
-            if (obstacle != null && !obstacle.IsSafe(this)) { if (gm.HitObstacle(obstacle)) Animator?.SetTrigger("Crash"); }
+            if (obstacle != null && !obstacle.IsSafe(this)) { if (gm.HitObstacle(obstacle)) Trigger("Crash"); }
         }
     }
 }

@@ -23,6 +23,7 @@ namespace InkRun.Meta
             new Def { Id = "harbor", Text = n => "Reach The Harbor in one run",     Targets = new[] { 1 },          Stat = r => r.ReachedHarbor ? 1 : 0, Reward = 200 },
             new Def { Id = "smash",  Text = n => $"Smash {n} obstacles with a dash", Targets = new[] { 3, 6 },      Stat = r => r.Smashes, Reward = 150 },
             new Def { Id = "revive", Text = n => "Keep running after a crash",      Targets = new[] { 1 },          Stat = r => r.Revives, Reward = 100 },
+            new Def { Id = "close",  Text = n => $"Clear {n} obstacles up close",   Targets = new[] { 15, 30 },     Stat = r => r.CloseCalls, Reward = 120 },
         };
 
         static string TodayKey() => DateTime.Now.ToString("yyyy-MM-dd");

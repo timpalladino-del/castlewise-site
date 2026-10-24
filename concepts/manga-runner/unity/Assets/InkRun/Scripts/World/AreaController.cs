@@ -21,7 +21,8 @@ namespace InkRun.World
         public event System.Action<AreaDefinition> ChapterStarted;
 
         static readonly int AccentId = Shader.PropertyToID("_InkAccent");
-        Color _from; float _fadeT = 1f;
+        Color _from, _fromSky; float _fadeT = 1f;
+        public Color SkyNow { get; private set; } = Color.white;
 
         void Awake()
         {
@@ -34,6 +35,7 @@ namespace InkRun.World
             CurrentIndex = 0; _fadeT = 1f;
             AccentNow = _from = Areas[0].Accent;
             Shader.SetGlobalColor(AccentId, AccentNow);
+            SkyNow = _fromSky = Areas[0].Sky;
             ApplySky();
             ChapterStarted?.Invoke(Areas[0]);
         }
@@ -44,7 +46,7 @@ namespace InkRun.World
             int idx = Mathf.FloorToInt(distance / t.AreaLength) % Areas.Length;
             if (idx != CurrentIndex)
             {
-                CurrentIndex = idx; _from = AccentNow; _fadeT = 0f;
+                CurrentIndex = idx; _from = AccentNow; _fromSky = SkyNow; _fadeT = 0f;
                 ApplySky();
                 ChapterStarted?.Invoke(Current);
             }
@@ -53,12 +55,15 @@ namespace InkRun.World
                 _fadeT = Mathf.Min(1f, _fadeT + dt / t.AccentFadeSeconds);
                 AccentNow = Color.Lerp(_from, Current.Accent, _fadeT);
                 Shader.SetGlobalColor(AccentId, AccentNow);
+                SkyNow = Color.Lerp(_fromSky, Current.Sky, _fadeT);
+                ApplySky();
             }
         }
 
         void ApplySky()
         {
             if (MoonMask != null) MoonMask.gameObject.SetActive(Current.CrescentMoon);
+            var cam = Camera.main; if (cam != null) cam.backgroundColor = SkyNow;
         }
 
         public void DressTrackPiece(GameObject piece)

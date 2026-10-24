@@ -78,7 +78,7 @@ namespace InkRun.Tests
         [Test] public void ApplyRunProgressesAndRewards()
         {
             SaveData.UseFresh(); var m = new MissionService(); m.Today();
-            var big = new RunStats { Jumps = 999, Coins = 999, Slides = 999, Distance = 99999f, ReachedHarbor = true, Smashes = 99, Revives = 9 };
+            var big = new RunStats { Jumps = 999, Coins = 999, Slides = 999, Distance = 99999f, ReachedHarbor = true, Smashes = 99, Revives = 9, CloseCalls = 99 };
             var r = m.ApplyRun(big);
             Assert.AreEqual(3, r.Cleared.Length); Assert.Greater(r.CoinsEarned, 0);
             foreach (var v in m.Today()) Assert.IsTrue(v.Done);

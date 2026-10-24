@@ -84,7 +84,10 @@ namespace InkRun.Core
 
             Speed = Tuning.SpeedAt(Run.Distance, Run.Assist, IsDashing);
             float moved = Speed * dt;
+            int beforeMilestone = Mathf.FloorToInt(Run.Distance / Tuning.MilestoneMeters);
             Run.Distance += moved;
+            int milestone = Mathf.FloorToInt(Run.Distance / Tuning.MilestoneMeters);
+            if (milestone > beforeMilestone) { SfxWord?.Invoke((milestone * Tuning.MilestoneMeters).ToString("N0") + "m!", Player.transform.position + new Vector3(1.3f, 2.8f, 1f), 0.8f); InkAudio.Play("ui", 0.7f); }
             World.Advance(moved);
             Spawner.Tick(moved, Tuning.PatternGapAt(Run.Distance, Run.Assist));
             Areas.Tick(Run.Distance, dt);
@@ -105,6 +108,20 @@ namespace InkRun.Core
             Run.Coins++;
             CoinsChanged?.Invoke(Run.Coins);
             InkAudio.Play("coin", 0.8f);
+        }
+
+        static readonly string[] CloseCallWords = { "NICE!", "WHOOSH!", "CLOSE!", "ZIP!" };
+        float _closeCallCooldown;
+
+        /// <summary>An obstacle cleared in the hero's own lane. A small word, nothing more; the reward is the feel.</summary>
+        public void CloseCall(Obstacle obstacle)
+        {
+            if (State != GameState.Running || IsDashing) return;
+            Run.CloseCalls++;
+            if (Time.time < _closeCallCooldown) return;
+            _closeCallCooldown = Time.time + 0.7f;
+            InkAudio.Play("whoosh", 0.6f);
+            SfxWord?.Invoke(CloseCallWords[UnityEngine.Random.Range(0, CloseCallWords.Length)], Player.transform.position + new Vector3(-1.1f, 2.3f, 0.5f), 0.55f);
         }
 
         public void ActivateMagnet() { InkAudio.Play("power"); MagnetTimeLeft = Tuning.MagnetDuration; SfxWord?.Invoke("MAGNET!", Player.transform.position + Vector3.up * 2.5f, 1f); }
@@ -155,10 +172,15 @@ namespace InkRun.Core
 
         // ---- revive flow (the "To Be Continued...?" screen calls these) ----
 
+        bool _reviveRequested;   // a second tap on Keep Running while the ad is up must not revive twice
+
         public void RequestRevive()
         {
+            if (State != GameState.Revive || _reviveRequested) return;
+            _reviveRequested = true;
             Services.Services.Ads.ShowRewarded("revive", rewarded =>
             {
+                _reviveRequested = false;
                 if (rewarded) Revive(); else EndRun();
             });
         }
@@ -177,7 +199,7 @@ namespace InkRun.Core
             Services.Services.Analytics.Log("revive", ("distance", Mathf.FloorToInt(Run.Distance)));
         }
 
-        public void GiveUp() => EndRun();
+        public void GiveUp() { if (State == GameState.Revive && !_reviveRequested) EndRun(); }
 
         // ---- pause ----
 

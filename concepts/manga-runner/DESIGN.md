@@ -118,12 +118,15 @@ after launch.
 
 ## 8. Unity build status
 
-`unity/` holds the real game. Everything in the first-version list is in code: the loop,
-four obstacles, coins and both power-ups, three areas with accent changes, missions,
-three outfits, the revive and haul flows, assist, ad pacing, player groups, remote
-config. A menu item builds a complete gray-box scene from primitives. It runs on the
-Mac; what remains is real art (models, a Japanese font, music), the ad and purchase
-SDK keys, and tuning by play.
+`unity/` holds the real game, and it runs in Unity 6 on the Mac. Everything in the
+first-version list is in code and has been played end to end: the loop, four obstacles, coins
+and both power-ups, three chapters with accent and sky changes, missions, three outfits, the
+revive and haul flows, assist, ad pacing, player groups, remote config. A menu item builds a
+complete gray-box scene from primitives, and a debug AutoPilot can play it for soak tests.
+Feel so far: landing squash, camera bob and roll, slow-motion crash, speed-line bursts on a
+dash, sound-effect words for jumps, slides, smashes and close calls, a kaiju shadow that grows
+on the revive page, caption boxes for the HUD. What remains is real art (models, a Japanese
+font, music), the ad and purchase SDK keys, and tuning by play on a phone.
 
 ## 9. What the browser prototype proves
 

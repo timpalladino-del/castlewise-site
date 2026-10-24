@@ -10,6 +10,7 @@ namespace InkRun.Core
         public int Jumps;
         public int Slides;
         public int Smashes;
+        public int CloseCalls;      // obstacles cleared in the hero's own lane
         public int Revives;
         public bool ReachedHarbor;
         public float Seconds;
