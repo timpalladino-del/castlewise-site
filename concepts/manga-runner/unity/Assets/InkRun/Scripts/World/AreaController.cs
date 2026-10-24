@@ -69,7 +69,7 @@ namespace InkRun.World
             {
                 var prefab = Current.SideProps[Random.Range(0, Current.SideProps.Length)];
                 var prop = Instantiate(prefab, piece.transform);
-                prop.transform.localPosition = new Vector3(side * (t.LaneWidth * 1.9f), 0f, Random.Range(0f, 4f));
+                prop.transform.localPosition = new Vector3(side * (t.LaneWidth * 2.05f), 0f, Random.Range(0f, 4f));   // modeled facades overhang toward the track; keep them off the roof edge
                 if (side < 0) prop.transform.localScale = new Vector3(-1f, 1f, 1f);   // props extend toward +x; mirror the left one outward
             }
         }

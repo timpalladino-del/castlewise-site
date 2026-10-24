@@ -90,7 +90,8 @@ namespace UnityEngine
 namespace TMPro
 {
     public enum TextAlignmentOptions { Left, Center, Right }
-    public class TMP_Text : UnityEngine.MonoBehaviour { public string text; public UnityEngine.Color color; public float fontSize; public TextAlignmentOptions alignment; public bool raycastTarget, enableWordWrapping; public UnityEngine.RectTransform rectTransform; public float outlineWidth; public UnityEngine.Color32 outlineColor; }
+    public enum FontStyles { Normal, Bold, Italic }
+    public class TMP_Text : UnityEngine.MonoBehaviour { public string text; public UnityEngine.Color color; public float fontSize; public TextAlignmentOptions alignment; public bool raycastTarget, enableWordWrapping; public FontStyles fontStyle; public UnityEngine.RectTransform rectTransform; public float outlineWidth; public UnityEngine.Color32 outlineColor; }
     public class TextMeshProUGUI : TMP_Text { }
     public class TMP_Settings { public static TMP_Settings instance; }
     public class TextMeshPro : TMP_Text { }

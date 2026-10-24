@@ -258,8 +258,7 @@ namespace InkRun.EditorTools
             {
                 var go = new GameObject("SfxWord");
                 var t = go.AddComponent<TextMeshPro>();
-                t.text = "WHAM!"; t.fontSize = 8; t.alignment = TextAlignmentOptions.Center; t.color = Color.white;
-                t.outlineWidth = 0.3f; t.outlineColor = new Color32(18, 18, 18, 255);
+                t.text = "WHAM!"; t.fontSize = 8; t.alignment = TextAlignmentOptions.Center; t.color = Ink; t.fontStyle = FontStyles.Bold;   // no outline: setting it here instantiates a material in edit mode
                 p.word = Save("SfxWord", go);
             }
             return p;
@@ -373,19 +372,11 @@ namespace InkRun.EditorTools
                 heroAnim.LegL = Find(heroModel.transform, "LegL"); heroAnim.LegR = Find(heroModel.transform, "LegR");
                 heroAnim.ArmL = Find(heroModel.transform, "ArmL"); heroAnim.ArmR = Find(heroModel.transform, "ArmR");
                 var partsM = new GameObject("Parts"); partsM.transform.SetParent(heroModel.transform, false);
-                Part(partsM, "default", new Vector3(0.01f, 0.01f, 0.01f), new Vector3(0, -5f, 0), _accent);   // goggles are modeled; keep the node for the outfit swap
+                Part(partsM, "default", new Vector3(0.01f, 0.01f, 0.01f), new Vector3(0, 1.0f, 0), _accent);   // goggles are modeled; keep the node (inside the body) for the outfit swap
                 if (!AttachOutfit(heroModel, "delivery")) Part(partsM, "delivery", new Vector3(0.55f, 0.12f, 0.55f), new Vector3(0, 1.78f, 0), _accent);
                 if (!AttachOutfit(heroModel, "ronin")) Part(partsM, "ronin", new Vector3(0.56f, 0.06f, 0.56f), new Vector3(0, 1.64f, 0), _accent);
                 root.AddComponent<HeroOutfit>().PartsRoot = partsM.transform;
                 var pcM = root.AddComponent<PlayerController>(); pcM.Visual = heroModel.transform;
-                var heroLow = Model("Hero_LOD1");
-                if (heroLow != null)
-                {
-                    heroLow.name = "VisualLow"; heroLow.transform.SetParent(root.transform, false);
-                    var la = heroLow.AddComponent<HeroAnimator>();
-                    la.Body = Find(heroLow.transform, "Body"); la.Head = Find(heroLow.transform, "Head"); la.LegL = Find(heroLow.transform, "LegL"); la.LegR = Find(heroLow.transform, "LegR"); la.ArmL = Find(heroLow.transform, "ArmL"); la.ArmR = Find(heroLow.transform, "ArmR");
-                    var qp = root.AddComponent<QualityPicker>(); qp.Full = heroModel; qp.Low = heroLow; heroLow.SetActive(false);
-                }
                 return root;
             }
             var visual = new GameObject("Visual"); visual.transform.SetParent(root.transform, false);
@@ -590,7 +581,7 @@ namespace InkRun.EditorTools
             startView.WardrobeButton = Button(start, "WardrobeButton", "WARDROBE", new Vector2(0.5f, 0f), new Vector2(-200, 110), new Vector2(360, 100), Color.white, Ink);
             startView.SoundButton = Button(start, "SoundButton", "SOUND: ON", new Vector2(0.5f, 0f), new Vector2(200, 110), new Vector2(360, 100), Color.white, Ink);
             startView.SoundLabel = startView.SoundButton.GetComponentInChildren<TMP_Text>();
-            startView.VersionText = Text(start, "Version", Story.Build, 24, new Vector2(0.5f, 0f), new Vector2(0, 30));
+            startView.VersionText = Text(start, "Version", Story.Build, 30, new Vector2(0.5f, 0f), new Vector2(0, 30)); startView.VersionText.fontStyle = FontStyles.Bold;
             var chip = Text(start, "AssistChip", "Assist on: slower start, fewer obstacles", 28, new Vector2(0.5f, 1f), new Vector2(0, -1250)); startView.AssistChip = chip.gameObject; chip.gameObject.SetActive(false);
             var bundle = Group(start, "StarterBundle", new Vector2(0.5f, 1f), new Vector2(900, 100)); bundle.anchoredPosition = new Vector2(0, -1290); Panel(bundle, Color.white, Ink);
             Text(bundle, "Text", "Starter bundle: 1,500 coins + Delivery outfit", 30, new Vector2(0.35f, 0.5f), Vector2.zero);
@@ -639,15 +630,15 @@ namespace InkRun.EditorTools
             var reviveView = Full(root, "Revive").gameObject.AddComponent<ReviveView>();
             var revive = Safe(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.84f), Color.clear); revive.gameObject.SetActive(false);
             var p1 = Group(revive, "Panel1", new Vector2(0.5f, 1f), new Vector2(940, 180)); p1.anchoredPosition = new Vector2(0, -420); Panel(p1, Ink, Ink);
-            reviveView.Panel1 = Text(p1, "Text", Story.RevivePanels[0], 38, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel1.color = Color.white;
+            reviveView.Panel1 = Text(p1, "Text", Story.RevivePanels[0], 38, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel1.color = Color.white; reviveView.Panel1.rectTransform.sizeDelta = new Vector2(880, 170);
             var p2 = Group(revive, "Panel2", new Vector2(0.5f, 1f), new Vector2(940, 160)); p2.anchoredPosition = new Vector2(0, -610); Panel(p2, Color.white, Ink);
-            reviveView.Panel2 = Text(p2, "Text", Story.RevivePanels[1], 36, new Vector2(0.5f, 0.5f), Vector2.zero);
+            reviveView.Panel2 = Text(p2, "Text", Story.RevivePanels[1], 36, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel2.rectTransform.sizeDelta = new Vector2(880, 150);
             reviveView.DistanceLine = Text(revive, "DistanceLine", "0m and counting.", 34, new Vector2(0.5f, 1f), new Vector2(0, -810));
-            var title = Text(revive, "Title", "TO BE\nCONTINUED...?", 110, new Vector2(0.5f, 0.5f), new Vector2(0, 40)); title.color = Red;
-            reviveView.Countdown = Text(revive, "Countdown", "5", 80, new Vector2(0.5f, 0.5f), new Vector2(0, -150));
-            reviveView.KeepRunning = Button(revive, "KeepRunning", "KEEP RUNNING", new Vector2(0.5f, 0.5f), new Vector2(0, -330), new Vector2(760, 140), Red, Color.white);
-            Text(revive, "Note", "Revive = one rewarded ad", 28, new Vector2(0.5f, 0.5f), new Vector2(0, -440));
-            reviveView.GiveUp = Button(revive, "GiveUp", "Give up", new Vector2(0.5f, 0.5f), new Vector2(0, -560), new Vector2(300, 90), Color.clear, Ink);
+            var title = Text(revive, "Title", "TO BE\nCONTINUED...?", 110, new Vector2(0.5f, 0.5f), new Vector2(0, -90)); title.color = Red;
+            reviveView.Countdown = Text(revive, "Countdown", "5", 80, new Vector2(0.5f, 0.5f), new Vector2(0, -290));
+            reviveView.KeepRunning = Button(revive, "KeepRunning", "KEEP RUNNING", new Vector2(0.5f, 0.5f), new Vector2(0, -430), new Vector2(760, 140), Red, Color.white);
+            Text(revive, "Note", "Revive = one rewarded ad", 28, new Vector2(0.5f, 0.5f), new Vector2(0, -540));
+            reviveView.GiveUp = Button(revive, "GiveUp", "Give up", new Vector2(0.5f, 0.5f), new Vector2(0, -650), new Vector2(300, 90), Color.clear, Ink);
 
             // Results
             var resultsView = Full(root, "Results").gameObject.AddComponent<ResultsView>();
@@ -703,7 +694,7 @@ namespace InkRun.EditorTools
         {
             var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(parent, false);
             var rt = go.GetComponent<RectTransform>(); rt.anchorMin = rt.anchorMax = anchor; rt.pivot = new Vector2(0.5f, anchor.y); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(980, size * 1.4f * (text.Split('\n').Length) + 10f);
-            var t = go.AddComponent<TextMeshProUGUI>(); t.text = text; t.fontSize = size; t.alignment = TextAlignmentOptions.Center; t.color = Ink; t.raycastTarget = false;
+            var t = go.AddComponent<TextMeshProUGUI>(); t.text = text; t.fontSize = size; t.alignment = TextAlignmentOptions.Center; t.color = Ink; t.raycastTarget = false; t.enableWordWrapping = true;
             return t;
         }
 
