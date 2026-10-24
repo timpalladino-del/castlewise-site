@@ -48,7 +48,7 @@ namespace InkRun.UI
         {
             if (!_playing) return;
             _t += Time.unscaledDeltaTime;                     // the crash runs in slow motion; cuts stay on real time
-            int want = Mathf.Min(2, (int)(_t / CutSeconds));
+            int want = Mathf.FloorToInt(_t / CutSeconds); if (want > 2) want = 2;
             if (want != _panel) ShowPanel(want);
             // flash fades, impact shake
             if (Flash != null) { var c = Flash.color; c.a = Mathf.Max(0f, c.a - Time.unscaledDeltaTime * 8f); Flash.color = c; }
