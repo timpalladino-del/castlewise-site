@@ -33,9 +33,10 @@ namespace InkRun.UI
         void OnState(GameState s)
         {
             Panel.SetActive(s == GameState.Running || s == GameState.Crashed);
-            if (s == GameState.Running) { Best.text = "BEST " + SaveData.Current.BestDistance.ToString("N0"); AssistTag.SetActive(GameManager.Instance.Run.Assist); }
+            if (s == GameState.Running) { Best.text = "BEST " + SaveData.Current.BestDistance.ToString("N0"); AssistTag.SetActive(GameManager.Instance.Run.Assist); OnCoins(GameManager.Instance.Run.Coins); }
         }
-        void OnCoins(int c) => Coins.text = c.ToString("N0");
+        float _coinPunch;
+        void OnCoins(int c) { Coins.text = c.ToString("N0"); if (c > 0) _coinPunch = 1f; }
 
         void OnNearRecord()
         {
@@ -58,11 +59,14 @@ namespace InkRun.UI
         {
             if (!Panel.activeSelf) return;
             var gm = GameManager.Instance;
+            // the coin counter punches up when a coin lands
+            _coinPunch = Mathf.Max(0f, _coinPunch - Time.deltaTime * 6f);
+            Coins.transform.localScale = Vector3.one * (1f + 0.35f * _coinPunch * _coinPunch);
             Distance.text = Mathf.FloorToInt(gm.Run.Distance).ToString("N0") + "m";
             DashBar.transform.parent.gameObject.SetActive(gm.DashTimeLeft > 0f);
             MagnetBar.transform.parent.gameObject.SetActive(gm.MagnetTimeLeft > 0f);
-            DashBar.fillAmount = gm.DashTimeLeft / gm.Tuning.DashDuration;
-            MagnetBar.fillAmount = gm.MagnetTimeLeft / gm.Tuning.MagnetDuration;
+            UiFill.Set(DashBar, gm.DashTimeLeft / gm.Tuning.DashDuration);
+            UiFill.Set(MagnetBar, gm.MagnetTimeLeft / gm.Tuning.MagnetDuration);
         }
     }
 }

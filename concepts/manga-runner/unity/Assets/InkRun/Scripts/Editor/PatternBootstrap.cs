@@ -6,8 +6,8 @@ using InkRun.World;
 namespace InkRun.EditorTools
 {
     /// <summary>
-    /// Menu: Ink Run > Create default patterns. Builds the six spawn patterns the browser
-    /// prototype used, as PatternDefinition assets in Assets/InkRun/Data/Patterns.
+    /// Menu: Ink Run > Create default patterns. Builds the spawn patterns (the browser
+    /// prototype's plus dash and magnet set-ups), as PatternDefinition assets in Assets/InkRun/Data/Patterns.
     /// Edit them in the inspector afterwards; code never needs to change for new patterns.
     /// </summary>
     public static class PatternBootstrap
@@ -89,6 +89,50 @@ namespace InkRun.EditorTools
                 p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Gap, Lane = 0, ZOffset = 0f });
                 p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Gap, Lane = 1, ZOffset = 0f });
                 p.AddCoinLine(2, -2f, 6); p.Length = 12f;
+            });
+            Make("P13_DashRunway", 0.6f, 300f, p =>
+            {
+                // a dash in the middle, then a wall of things to smash through: the one place the WHAM! pays off
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Dash, Lane = 1, ZOffset = 0f, Height = 0.6f });
+                for (int l = 0; l < 3; l++) p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Barrier, Lane = l, ZOffset = 14f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Sign, Lane = 1, ZOffset = 24f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Wall, Lane = 0, ZOffset = 32f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Wall, Lane = 2, ZOffset = 32f });
+                p.AddCoinLine(1, 16f, 10, 2.2f);
+                p.Length = 44f;
+            });
+            Make("P14_DashSide", 0.4f, 600f, p =>
+            {
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Dash, Lane = 0, ZOffset = 0f, Height = 0.6f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Wall, Lane = 1, ZOffset = 2f });
+                p.AddCoinLine(2, -2f, 6);
+                p.Length = 14f;
+            });
+            Make("P15_MagnetArc", 0.5f, 450f, p =>
+            {
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Magnet, Lane = 1, ZOffset = 0f, Height = 0.6f });
+                for (int l = 0; l < 3; l++) p.AddCoinLine(l, 6f, 6, 1.8f, i => l == 1 ? 1.5f * (1f - Mathf.Pow((i - 2.5f) / 2.5f, 2f)) : 0f);
+                p.Length = 20f;
+            });
+            Make("P16_TrainCorridor", 0.9f, 1000f, p =>
+            {
+                // trains on both sides, two barriers down the middle: jump, land, jump
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Wall, Lane = 0, ZOffset = 0f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Wall, Lane = 2, ZOffset = 0f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Barrier, Lane = 1, ZOffset = 2f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Barrier, Lane = 1, ZOffset = 12f });
+                p.AddCoinLine(1, 5f, 3, 1.8f, i => 1.4f * (1f - Mathf.Pow((i - 1f), 2f)));
+                p.Length = 18f;
+            });
+            Make("P17_Stagger", 1.0f, 1400f, p =>
+            {
+                // sign, barrier, sign staggered across the lanes: every lane needs a different move
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Sign, Lane = 0, ZOffset = 0f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Barrier, Lane = 1, ZOffset = 4f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Sign, Lane = 2, ZOffset = 8f });
+                p.Entries.Add(new PatternDefinition.Entry { Kind = EntryKind.Gap, Lane = 1, ZOffset = 12f });
+                p.AddCoinLine(0, 3f, 4); p.AddCoinLine(2, 11f, 4);
+                p.Length = 18f;
             });
             AssetDatabase.SaveAssets();
             Debug.Log("Ink Run: default patterns created in " + Folder);

@@ -1,0 +1,83 @@
+using UnityEngine;
+using InkRun.Core;
+
+namespace InkRun.World
+{
+    /// <summary>
+    /// The rival gang: three ink silhouettes jeering from the roof edge beside the track when a
+    /// chapter starts. They scroll past with the world and hide once behind the camera. Volume 1
+    /// shows them only here. Built from primitives at runtime; materials come from the scene builder.
+    /// </summary>
+    public class RivalGang : MonoBehaviour
+    {
+        public Material Ink, Paper;
+        public float SpawnZ = 30f, HideZ = -9f, EdgeX = -3.45f;
+
+        Transform[] _guys; Transform[][] _arms; bool _live; float _phase;
+
+        void Start()
+        {
+            var gm = GameManager.Instance;
+            gm.Areas.ChapterStarted += OnChapter; gm.StateChanged += OnState;
+            Build();
+            SetVisible(false);
+        }
+        void OnDestroy() { var gm = GameManager.Instance; if (gm == null) return; gm.Areas.ChapterStarted -= OnChapter; gm.StateChanged -= OnState; }
+
+        void OnChapter(AreaDefinition a)
+        {
+            var gm = GameManager.Instance; if (gm == null || gm.State != GameState.Running) return;
+            transform.position = new Vector3(EdgeX, 0f, SpawnZ);
+            _live = true; SetVisible(true);
+        }
+        void OnState(GameState s) { if (s != GameState.Running) { _live = false; SetVisible(false); } }
+
+        void Build()
+        {
+            _guys = new Transform[3]; _arms = new Transform[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                var g = new GameObject("Thug" + i).transform; g.SetParent(transform, false);
+                g.localPosition = new Vector3(i == 1 ? -0.5f : 0f, 0f, i * 1.1f);
+                g.localRotation = Quaternion.Euler(0f, 90f, 0f);                                             // face the track
+                Prim(PrimitiveType.Capsule, g, new Vector3(0, 0.95f, 0), new Vector3(0.62f, 0.46f, 0.5f), Ink);
+                Prim(PrimitiveType.Sphere, g, new Vector3(0, 1.6f, 0), Vector3.one * 0.46f, Ink);
+                Prim(PrimitiveType.Cube, g, new Vector3(0, 1.66f, 0), new Vector3(0.5f, 0.07f, 0.5f), Paper);   // bandana
+                Prim(PrimitiveType.Cube, g, new Vector3(-0.15f, 0.3f, 0), new Vector3(0.17f, 0.6f, 0.17f), Ink);
+                Prim(PrimitiveType.Cube, g, new Vector3(0.15f, 0.3f, 0), new Vector3(0.17f, 0.6f, 0.17f), Ink);
+                _arms[i] = new[] { Arm(g, -0.36f), Arm(g, 0.36f) };
+                _guys[i] = g;
+            }
+        }
+        Transform Arm(Transform parent, float x)
+        {
+            var pivot = new GameObject("Arm").transform; pivot.SetParent(parent, false); pivot.localPosition = new Vector3(x, 1.35f, 0);
+            Prim(PrimitiveType.Cube, pivot, new Vector3(0, -0.28f, 0), new Vector3(0.14f, 0.56f, 0.14f), Ink);
+            return pivot;
+        }
+        void Prim(PrimitiveType type, Transform parent, Vector3 pos, Vector3 scale, Material m)
+        {
+            var go = GameObject.CreatePrimitive(type); Destroy(go.GetComponent<Collider>());
+            go.transform.SetParent(parent, false); go.transform.localPosition = pos; go.transform.localScale = scale;
+            if (m != null) go.GetComponent<Renderer>().sharedMaterial = m;
+        }
+
+        void SetVisible(bool v) { if (_guys != null) foreach (var g in _guys) g.gameObject.SetActive(v); }
+
+        void Update()
+        {
+            if (!_live) return;
+            var gm = GameManager.Instance; if (gm == null) return;
+            transform.position -= new Vector3(0f, 0f, gm.Speed * Time.deltaTime);      // scroll with the world
+            _phase += Time.deltaTime * 9f;
+            for (int i = 0; i < _guys.Length; i++)
+            {
+                float ph = _phase + i * 2.1f;
+                var g = _guys[i]; var lp = g.localPosition; lp.y = Mathf.Max(0f, Mathf.Sin(ph)) * 0.18f; g.localPosition = lp;   // hopping and jeering
+                _arms[i][0].localRotation = Quaternion.Euler(0, 0, 150f + Mathf.Sin(ph) * 20f);                                    // fist in the air
+                _arms[i][1].localRotation = Quaternion.Euler(0, 0, -40f + Mathf.Sin(ph * 1.3f) * 25f);                             // pointing at the hero
+            }
+            if (transform.position.z < HideZ) { _live = false; SetVisible(false); }
+        }
+    }
+}

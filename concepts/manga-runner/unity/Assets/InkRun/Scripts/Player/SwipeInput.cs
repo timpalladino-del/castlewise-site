@@ -21,6 +21,9 @@ namespace InkRun.Player
         Vector2 _start;
         bool _tracking;
 
+        /// <summary>Feed a swipe from code (the debug AutoPilot, tests). Goes through the same event as a real swipe.</summary>
+        public void Inject(Swipe s) { if (s != Swipe.None) Swiped?.Invoke(s); }
+
         void Update()
         {
             Swipe s = Swipe.None;

@@ -11,9 +11,9 @@ namespace InkRun.Core
     public class Tuning : ScriptableObject
     {
         [Header("Speed (meters per second)")]
-        public float BaseSpeed = 12f;
-        public float MaxSpeedBonus = 12f;       // speed = Base + Bonus * ramp
-        public float RampDistance = 2600f;      // ramp = 1 - exp(-distance / RampDistance)
+        public float BaseSpeed = 13f;
+        public float MaxSpeedBonus = 13f;       // speed = Base + Bonus * ramp
+        public float RampDistance = 2400f;      // ramp = 1 - exp(-distance / RampDistance)
         public float DashMultiplier = 1.7f;
         public float AssistSpeedMultiplier = 0.85f;
 
@@ -26,8 +26,8 @@ namespace InkRun.Core
 
         [Header("Spawning (meters)")]
         public float SpawnDistance = 70f;
-        public float PatternGapStart = 22f;
-        public float PatternGapMin = 13f;
+        public float PatternGapStart = 12f;      // clear track between the end of one pattern and the next
+        public float PatternGapMin = 6f;
         public float AssistGapMultiplier = 1.3f;
         public float DespawnBehind = 14f;
 
@@ -45,6 +45,7 @@ namespace InkRun.Core
         public int ReviveCountdownSeconds = 5;
         public int RevivesPerRun = 1;
         public float NearRecordMeters = 200f;
+        public int MilestoneMeters = 500;       // a word pops every N meters
         public int AssistAfterQuickRuns = 3;
         public float QuickRunSeconds = 20f;
         public float AssistClearsAfterSeconds = 40f;

@@ -116,6 +116,7 @@ namespace InkRun.EditorTools
         {
             var a = Asset<AreaDefinition>("Data/Areas/" + file + ".asset");
             a.ChapterLabel = chapter; a.DisplayName = name; a.Accent = accent; a.CrescentMoon = moon; a.SideProps = new[] { prop };
+            a.Sky = moon ? new Color(0.11f, 0.10f, 0.15f) : Color.white;   // night alley: ink sky, white shapes
             EditorUtility.SetDirty(a);
             return a;
         }
@@ -158,7 +159,7 @@ namespace InkRun.EditorTools
                 Box("PostL", new Vector3(0.1f, 2.2f, 0.1f), new Vector3(-0.75f, 1.1f, 0), _ink, false).transform.SetParent(root.transform, false);
                 Box("PostR", new Vector3(0.1f, 2.2f, 0.1f), new Vector3(0.75f, 1.1f, 0), _ink, false).transform.SetParent(root.transform, false);
                 var kanji = new GameObject("Kanji"); kanji.transform.SetParent(root.transform, false); kanji.transform.localPosition = new Vector3(0, 1.75f, -0.17f);
-                var kt = kanji.AddComponent<TextMeshPro>(); kt.text = "STOP"; kt.fontSize = 4; kt.alignment = TextAlignmentOptions.Center; kt.color = new Color(0.878f, 0.125f, 0.165f);   // swap for 止 once a Japanese TMP font is added
+                var kt = kanji.AddComponent<TextMeshPro>(); kt.text = "STOP"; kt.fontSize = 4; kt.alignment = TextAlignmentOptions.Center; kt.color = new Color(0.878f, 0.125f, 0.165f); kanji.AddComponent<AccentText>();   // swap for 止 once a Japanese TMP font is added
                 root.AddComponent<Obstacle>().Kind = ObstacleKind.Sign;
                 p.sign = Save("Sign", root);
             }
@@ -259,7 +260,18 @@ namespace InkRun.EditorTools
                 var go = new GameObject("SfxWord");
                 var t = go.AddComponent<TextMeshPro>();
                 t.text = "WHAM!"; t.fontSize = 8; t.alignment = TextAlignmentOptions.Center; t.color = Color.white;
-                t.outlineWidth = 0.3f; t.outlineColor = new Color32(18, 18, 18, 255);
+                var font = TMP_Settings.defaultFontAsset;
+                if (font != null && font.material != null)
+                {
+                    // a saved material preset with the ink outline; setting outlineWidth here would instantiate one per word
+                    string fp = Root + "/Materials/SfxWordFont.mat";
+                    var fm = AssetDatabase.LoadAssetAtPath<Material>(fp);
+                    if (fm == null) { fm = new Material(font.material); AssetDatabase.CreateAsset(fm, fp); }
+                    fm.CopyPropertiesFromMaterial(font.material);
+                    fm.EnableKeyword("OUTLINE_ON"); fm.SetFloat("_OutlineWidth", 0.3f); fm.SetColor("_OutlineColor", new Color(0.07f, 0.07f, 0.07f, 1f));
+                    EditorUtility.SetDirty(fm);
+                    t.fontSharedMaterial = fm;
+                }
                 p.word = Save("SfxWord", go);
             }
             return p;
@@ -397,15 +409,38 @@ namespace InkRun.EditorTools
             Object.DestroyImmediate(head.GetComponent<Collider>());
             head.transform.SetParent(visual.transform, false); head.transform.localPosition = new Vector3(0, 1.55f, 0); head.transform.localScale = Vector3.one * 0.5f;
             head.GetComponent<Renderer>().sharedMaterial = _paper;
+            // spiky hair: three ink wedges on top, parented to the head so they bob with it (head is scaled 0.5, so local sizes are doubled)
+            foreach (var (hx, hz, rz) in new[] { (-0.3f, -0.1f, 32f), (0f, -0.05f, 0f), (0.3f, -0.1f, -32f) })
+            {
+                var spike = Box("Hair", new Vector3(0.22f, 0.5f, 0.2f), new Vector3(hx, 0.62f, hz), _ink, false);
+                spike.transform.SetParent(head.transform, false); spike.transform.localRotation = Quaternion.Euler(-12f, 0f, rz);
+            }
             var anim = visual.AddComponent<HeroAnimator>(); anim.Body = body.transform; anim.Head = head.transform;
             anim.LegL = Limb(visual, "LegL", new Vector3(-0.14f, 0.55f, 0), 0.5f, 0.16f, _ink);
             anim.LegR = Limb(visual, "LegR", new Vector3(0.14f, 0.55f, 0), 0.5f, 0.16f, _ink);
             anim.ArmL = Limb(visual, "ArmL", new Vector3(-0.36f, 1.15f, 0), 0.45f, 0.13f, _accent);
             anim.ArmR = Limb(visual, "ArmR", new Vector3(0.36f, 1.15f, 0), 0.45f, 0.13f, _accent);
             var parts = new GameObject("Parts"); parts.transform.SetParent(visual.transform, false);
-            Part(parts, "default", new Vector3(0.5f, 0.08f, 0.3f), new Vector3(0, 1.72f, 0.05f), _accent);
-            Part(parts, "delivery", new Vector3(0.55f, 0.12f, 0.55f), new Vector3(0, 1.8f, 0), _accent);
-            Part(parts, "ronin", new Vector3(0.56f, 0.06f, 0.56f), new Vector3(0, 1.66f, 0), _accent);
+            {
+                var d = new GameObject("default"); d.transform.SetParent(parts.transform, false);
+                Box("Strap", new Vector3(0.54f, 0.06f, 0.54f), new Vector3(0, 1.66f, 0), _ink, false).transform.SetParent(d.transform, false);       // goggle strap, seen from behind
+                Box("Hood", new Vector3(0.46f, 0.3f, 0.2f), new Vector3(0, 1.5f, -0.2f), _accent, false).transform.SetParent(d.transform, false);     // hood bunched at the back of the neck
+            }
+            {
+                // delivery: a cap with a brim and a parcel strapped to the back
+                var d = new GameObject("delivery"); d.transform.SetParent(parts.transform, false);
+                Box("Cap", new Vector3(0.56f, 0.12f, 0.56f), new Vector3(0, 1.8f, 0), _ink, false).transform.SetParent(d.transform, false);
+                Box("Brim", new Vector3(0.34f, 0.04f, 0.22f), new Vector3(0, 1.76f, 0.34f), _ink, false).transform.SetParent(d.transform, false);
+                Box("Parcel", new Vector3(0.5f, 0.42f, 0.3f), new Vector3(0, 1.05f, -0.42f), _tone, false).transform.SetParent(d.transform, false);
+                Box("Tape", new Vector3(0.52f, 0.06f, 0.32f), new Vector3(0, 1.05f, -0.42f), _accent, false).transform.SetParent(d.transform, false);
+            }
+            {
+                // ronin: a headband with tails and a bokken across the back
+                var r = new GameObject("ronin"); r.transform.SetParent(parts.transform, false);
+                Box("Headband", new Vector3(0.56f, 0.07f, 0.56f), new Vector3(0, 1.62f, 0), _accent, false).transform.SetParent(r.transform, false);
+                var tail = Box("Tail", new Vector3(0.06f, 0.34f, 0.03f), new Vector3(0.18f, 1.46f, -0.3f), _accent, false); tail.transform.SetParent(r.transform, false); tail.transform.localRotation = Quaternion.Euler(10f, 0f, -20f);
+                var bokken = Box("Bokken", new Vector3(0.06f, 1.15f, 0.06f), new Vector3(0.2f, 1.0f, -0.36f), _ink, false); bokken.transform.SetParent(r.transform, false); bokken.transform.localRotation = Quaternion.Euler(0f, 0f, 32f);
+            }
             root.AddComponent<HeroOutfit>().PartsRoot = parts.transform;
             var pc = root.AddComponent<PlayerController>(); pc.Visual = visual.transform;
             return root;
@@ -518,6 +553,7 @@ namespace InkRun.EditorTools
             gm.Tuning = tuning; gm.Player = hero.GetComponent<PlayerController>(); gm.World = world; gm.Spawner = spawner; gm.Areas = areaCtl; gm.Outfits = outfits;
 
             var words = new GameObject("SfxWords").AddComponent<SfxWords>(); words.WordPrefab = p.word.GetComponent<TMP_Text>();
+            var gang = new GameObject("RivalGang").AddComponent<RivalGang>(); gang.Ink = _ink; gang.Paper = _paper;
 
             UI(p);
 
@@ -560,13 +596,17 @@ namespace InkRun.EditorTools
             // HUD
             var hudView = Full(root, "HUD").gameObject.AddComponent<HudView>();
             var hud = Safe(hudView.transform, "Panel"); hudView.Panel = hud.gameObject; hud.gameObject.SetActive(false);
-            hudView.PauseButton = Button(hud, "PauseButton", "II", new Vector2(1f, 1f), new Vector2(-70, -240), new Vector2(90, 70), Color.white, Ink);
-            hudView.Distance = Text(hud, "Distance", "0m", 72, new Vector2(0.5f, 1f), new Vector2(0, -90));
-            hudView.Coins = Text(hud, "Coins", "0", 52, new Vector2(1f, 1f), new Vector2(-90, -80));
-            hudView.Best = Text(hud, "Best", "BEST 0", 34, new Vector2(0f, 1f), new Vector2(160, -80));
-            var assist = Text(hud, "AssistTag", "ASSIST", 28, new Vector2(0f, 1f), new Vector2(110, -130)); hudView.AssistTag = assist.gameObject; assist.gameObject.SetActive(false);
-            hudView.DashBar = Bar(hud, "DashBar", new Vector2(0, -170)); hudView.MagnetBar = Bar(hud, "MagnetBar", new Vector2(0, -205));
-            var card = Group(hud, "ChapterCard", new Vector2(0.5f, 0.78f), new Vector2(900, 220));
+            hudView.PauseButton = Button(hud, "PauseButton", "II", new Vector2(1f, 1f), new Vector2(-85, -210), new Vector2(90, 70), Color.white, Ink);
+            // caption boxes behind the readouts, so they stay readable on the night chapter's ink sky
+            var capDist = Group(hud, "DistanceBox", new Vector2(0.5f, 1f), new Vector2(460, 120)); capDist.anchoredPosition = new Vector2(0, -70); Panel(capDist, Color.white, Ink);
+            var capCoins = Group(hud, "CoinsBox", new Vector2(1f, 1f), new Vector2(220, 84)); capCoins.anchoredPosition = new Vector2(-40, -70); Panel(capCoins, Color.white, Ink);
+            var capBest = Group(hud, "BestBox", new Vector2(0f, 1f), new Vector2(280, 70)); capBest.anchoredPosition = new Vector2(40, -70); Panel(capBest, Color.white, Ink);
+            hudView.Distance = Text(capDist, "Distance", "0m", 72, new Vector2(0.5f, 0.5f), new Vector2(0, 0));
+            hudView.Coins = Text(capCoins, "Coins", "0", 52, new Vector2(0.5f, 0.5f), new Vector2(0, 0));
+            hudView.Best = Text(capBest, "Best", "BEST 0", 34, new Vector2(0.5f, 0.5f), new Vector2(0, 0));
+            var assist = Text(hud, "AssistTag", "ASSIST", 28, new Vector2(0f, 1f), new Vector2(180, -160)); hudView.AssistTag = assist.gameObject; assist.gameObject.SetActive(false);
+            hudView.DashBar = Bar(hud, "DashBar", new Vector2(0, -225)); hudView.MagnetBar = Bar(hud, "MagnetBar", new Vector2(0, -262));
+            var card = Group(hud, "ChapterCard", new Vector2(0.5f, 0.78f), new Vector2(900, 220)); Panel(card, Color.white, Ink);
             hudView.ChapterLabel = Text(card, "Label", "CHAPTER 1", 64, new Vector2(0.5f, 0.5f), new Vector2(0, 50));
             hudView.ChapterName = Text(card, "Name", "CITY ROOFTOPS", 48, new Vector2(0.5f, 0.5f), new Vector2(0, -40)); hudView.ChapterName.color = Red;
             hudView.ChapterCard = card.gameObject; card.gameObject.SetActive(false);
@@ -587,10 +627,10 @@ namespace InkRun.EditorTools
             var missions = Group(start, "Missions", new Vector2(0.5f, 1f), new Vector2(900, 330)); missions.anchoredPosition = new Vector2(0, -1400);
             var vlg = missions.gameObject.AddComponent<VerticalLayoutGroup>(); vlg.spacing = 12; vlg.childForceExpandHeight = false; vlg.childControlHeight = false; vlg.childControlWidth = true; vlg.childForceExpandWidth = true;
             var mlv = startView.gameObject.AddComponent<MissionListView>(); mlv.Container = missions; mlv.RowPrefab = MissionRow(); startView.Missions = mlv;
-            startView.WardrobeButton = Button(start, "WardrobeButton", "WARDROBE", new Vector2(0.5f, 0f), new Vector2(-200, 110), new Vector2(360, 100), Color.white, Ink);
-            startView.SoundButton = Button(start, "SoundButton", "SOUND: ON", new Vector2(0.5f, 0f), new Vector2(200, 110), new Vector2(360, 100), Color.white, Ink);
+            startView.WardrobeButton = Button(start, "WardrobeButton", "WARDROBE", new Vector2(0.5f, 0f), new Vector2(-200, 130), new Vector2(360, 100), Color.white, Ink);
+            startView.SoundButton = Button(start, "SoundButton", "SOUND: ON", new Vector2(0.5f, 0f), new Vector2(200, 130), new Vector2(360, 100), Color.white, Ink);
             startView.SoundLabel = startView.SoundButton.GetComponentInChildren<TMP_Text>();
-            startView.VersionText = Text(start, "Version", Story.Build, 24, new Vector2(0.5f, 0f), new Vector2(0, 30));
+            startView.VersionText = Text(start, "Version", Story.Build, 22, new Vector2(0.5f, 0f), new Vector2(0, 22)); startView.VersionText.color = new Color(0.45f, 0.45f, 0.45f);
             var chip = Text(start, "AssistChip", "Assist on: slower start, fewer obstacles", 28, new Vector2(0.5f, 1f), new Vector2(0, -1250)); startView.AssistChip = chip.gameObject; chip.gameObject.SetActive(false);
             var bundle = Group(start, "StarterBundle", new Vector2(0.5f, 1f), new Vector2(900, 100)); bundle.anchoredPosition = new Vector2(0, -1290); Panel(bundle, Color.white, Ink);
             Text(bundle, "Text", "Starter bundle: 1,500 coins + Delivery outfit", 30, new Vector2(0.35f, 0.5f), Vector2.zero);
@@ -598,7 +638,7 @@ namespace InkRun.EditorTools
             startView.StarterBundlePanel = bundle.gameObject;
 
             // Wardrobe (toggles itself)
-            var wardrobe = Safe(root, "Wardrobe"); var wv = wardrobe.gameObject.AddComponent<WardrobeView>(); Panel(wardrobe, new Color(1, 1, 1, 0.95f), Color.clear);
+            var wardrobe = Safe(root, "Wardrobe"); var wv = wardrobe.gameObject.AddComponent<WardrobeView>(); Panel(wardrobe, Color.white, Color.clear);
             Text(wardrobe, "Kicker", "WARDROBE", 48, new Vector2(0.5f, 1f), new Vector2(0, -330));
             var cards = Group(wardrobe, "Cards", new Vector2(0.5f, 0.55f), new Vector2(1000, 520));
             var hlg = cards.gameObject.AddComponent<HorizontalLayoutGroup>(); hlg.spacing = 20; hlg.childAlignment = TextAnchor.MiddleCenter; hlg.childForceExpandWidth = false; hlg.childForceExpandHeight = false; hlg.childControlWidth = false; hlg.childControlHeight = false;
@@ -638,21 +678,23 @@ namespace InkRun.EditorTools
             // Revive
             var reviveView = Full(root, "Revive").gameObject.AddComponent<ReviveView>();
             var revive = Safe(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.92f), Color.clear); revive.gameObject.SetActive(false);
-            var p1 = Group(revive, "Panel1", new Vector2(0.5f, 1f), new Vector2(940, 180)); p1.anchoredPosition = new Vector2(0, -420); Panel(p1, Ink, Ink);
-            reviveView.Panel1 = Text(p1, "Text", Story.RevivePanels[0], 34, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel1.color = Color.white;
-            var p2 = Group(revive, "Panel2", new Vector2(0.5f, 1f), new Vector2(940, 160)); p2.anchoredPosition = new Vector2(0, -610); Panel(p2, Color.white, Ink);
-            reviveView.Panel2 = Text(p2, "Text", Story.RevivePanels[1], 32, new Vector2(0.5f, 0.5f), Vector2.zero);
-            reviveView.DistanceLine = Text(revive, "DistanceLine", "0m and counting.", 34, new Vector2(0.5f, 1f), new Vector2(0, -810));
-            var title = Text(revive, "Title", "TO BE\nCONTINUED...?", 110, new Vector2(0.5f, 0.5f), new Vector2(0, 40)); title.color = Red;
-            reviveView.Countdown = Text(revive, "Countdown", "5", 80, new Vector2(0.5f, 0.5f), new Vector2(0, -150));
-            reviveView.KeepRunning = Button(revive, "KeepRunning", "KEEP RUNNING", new Vector2(0.5f, 0.5f), new Vector2(0, -330), new Vector2(760, 140), Red, Color.white);
-            Text(revive, "Note", "Revive = one rewarded ad", 28, new Vector2(0.5f, 0.5f), new Vector2(0, -440));
-            reviveView.GiveUp = Button(revive, "GiveUp", "Give up", new Vector2(0.5f, 0.5f), new Vector2(0, -560), new Vector2(300, 90), Color.clear, Ink);
+            var shadow = Group(revive, "KaijuShadow", new Vector2(0.78f, 0.62f), new Vector2(1100, 1100));   // the kaiju, only ever a shadow in Volume 1
+            var shadowImg = shadow.gameObject.AddComponent<Image>(); shadowImg.color = new Color(0.07f, 0.07f, 0.07f, 0.5f); shadowImg.raycastTarget = false; reviveView.KaijuShadow = shadowImg;
+            var p1 = Group(revive, "Panel1", new Vector2(0.5f, 1f), new Vector2(940, 190)); p1.anchoredPosition = new Vector2(0, -360); Panel(p1, Ink, Ink);
+            reviveView.Panel1 = Text(p1, "Text", Story.RevivePanels[0], 34, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel1.color = Color.white; reviveView.Panel1.rectTransform.sizeDelta = new Vector2(880, 160);
+            var p2 = Group(revive, "Panel2", new Vector2(0.5f, 1f), new Vector2(940, 190)); p2.anchoredPosition = new Vector2(0, -570); Panel(p2, Color.white, Ink);
+            reviveView.Panel2 = Text(p2, "Text", Story.RevivePanels[1], 32, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel2.rectTransform.sizeDelta = new Vector2(880, 160);
+            reviveView.DistanceLine = Text(revive, "DistanceLine", "0m and counting.", 34, new Vector2(0.5f, 1f), new Vector2(0, -790));
+            var title = Text(revive, "Title", "TO BE\nCONTINUED...?", 110, new Vector2(0.5f, 0.5f), new Vector2(0, -80)); title.color = Red;
+            reviveView.Countdown = Text(revive, "Countdown", "5", 80, new Vector2(0.5f, 0.5f), new Vector2(0, -300));
+            reviveView.KeepRunning = Button(revive, "KeepRunning", "KEEP RUNNING", new Vector2(0.5f, 0.5f), new Vector2(0, -460), new Vector2(760, 140), Red, Color.white);
+            Text(revive, "Note", "Revive = one rewarded ad", 28, new Vector2(0.5f, 0.5f), new Vector2(0, -560));
+            reviveView.GiveUp = Button(revive, "GiveUp", "Give up", new Vector2(0.5f, 0.5f), new Vector2(0, -670), new Vector2(300, 90), Color.clear, Ink);
 
             // Results
             var resultsView = Full(root, "Results").gameObject.AddComponent<ResultsView>();
             var results = Safe(resultsView.transform, "Panel"); resultsView.Panel = results.gameObject; Panel(results, new Color(1, 1, 1, 0.92f), Color.clear); results.gameObject.SetActive(false);
-            var burst = Text(results, "RecordBurst", "NEW RECORD!", 56, new Vector2(0.2f, 0.85f), Vector2.zero); burst.color = Red; resultsView.RecordBurst = burst.gameObject; burst.gameObject.SetActive(false);
+            var burst = Text(results, "RecordBurst", "NEW RECORD!", 84, new Vector2(0.5f, 0.84f), Vector2.zero); burst.color = Red; burst.rectTransform.localRotation = Quaternion.Euler(0f, 0f, 7f); resultsView.RecordBurst = burst.gameObject; burst.gameObject.SetActive(false);
             resultsView.Kicker = Text(results, "Kicker", "END OF CHAPTER 1", 40, new Vector2(0.5f, 0.5f), new Vector2(0, 330));
             resultsView.Distance = Text(results, "Distance", "0", 90, new Vector2(0.5f, 0.5f), new Vector2(-300, 180)); Text(results, "DistanceLabel", "METERS", 26, new Vector2(0.5f, 0.5f), new Vector2(-300, 110));
             resultsView.Coins = Text(results, "Coins", "0", 90, new Vector2(0.5f, 0.5f), new Vector2(0, 180)); Text(results, "CoinsLabel", "COINS", 26, new Vector2(0.5f, 0.5f), new Vector2(0, 110));
@@ -703,7 +745,7 @@ namespace InkRun.EditorTools
         {
             var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(parent, false);
             var rt = go.GetComponent<RectTransform>(); rt.anchorMin = rt.anchorMax = anchor; rt.pivot = new Vector2(0.5f, anchor.y); rt.anchoredPosition = pos; rt.sizeDelta = new Vector2(980, size * 1.4f * (text.Split('\n').Length) + 10f);
-            var t = go.AddComponent<TextMeshProUGUI>(); t.text = text; t.fontSize = size; t.alignment = TextAlignmentOptions.Center; t.color = Ink; t.raycastTarget = false;
+            var t = go.AddComponent<TextMeshProUGUI>(); t.text = text; t.fontSize = size; t.alignment = TextAlignmentOptions.Center; t.color = Ink; t.raycastTarget = false; t.textWrappingMode = TextWrappingModes.Normal;
             return t;
         }
 
@@ -723,8 +765,8 @@ namespace InkRun.EditorTools
             var rootRt = Group(parent, name + "Root", new Vector2(0.5f, 1f), new Vector2(300, 24)); rootRt.anchoredPosition = pos;
             var bg = rootRt.gameObject.AddComponent<Image>(); bg.color = Color.white;
             var o = rootRt.gameObject.AddComponent<Outline>(); o.effectColor = Ink; o.effectDistance = new Vector2(2, -2);
-            var fill = Full(rootRt, "Fill"); var img = fill.gameObject.AddComponent<Image>(); img.color = Red; img.type = Image.Type.Filled; img.fillMethod = Image.FillMethod.Horizontal;
-            Text(rootRt, "Label", name.Replace("Bar", "").ToUpper(), 20, new Vector2(0f, 0.5f), new Vector2(-120, 0));
+            var fill = Full(rootRt, "Fill"); var img = fill.gameObject.AddComponent<Image>(); img.color = Red;
+            var label = Text(rootRt, "Label", name.Replace("Bar", "").ToUpper(), 20, new Vector2(0f, 0.5f), new Vector2(-70, 0)); label.alignment = TextAlignmentOptions.Right; label.rectTransform.sizeDelta = new Vector2(120, 30);
             rootRt.gameObject.SetActive(false);
             return img;
         }
@@ -736,8 +778,8 @@ namespace InkRun.EditorTools
             var img = row.AddComponent<Image>(); img.color = Color.white; var o = row.AddComponent<Outline>(); o.effectColor = Ink; o.effectDistance = new Vector2(3, -3);
             var t = Text(row.transform, "Text", "Jump 50 times", 30, new Vector2(0f, 0.7f), new Vector2(330, 0)); t.alignment = TextAlignmentOptions.Left; t.rectTransform.sizeDelta = new Vector2(640, 44);
             var c = Text(row.transform, "Count", "0/50", 30, new Vector2(1f, 0.7f), new Vector2(-100, 0)); c.alignment = TextAlignmentOptions.Right; c.rectTransform.sizeDelta = new Vector2(180, 44);
-            var bar = Group(row.transform, "Bar", new Vector2(0.5f, 0.15f), new Vector2(860, 12));
-            var bi = bar.gameObject.AddComponent<Image>(); bi.color = Red; bi.type = Image.Type.Filled; bi.fillMethod = Image.FillMethod.Horizontal;
+            var track = Group(row.transform, "Track", new Vector2(0.5f, 0.15f), new Vector2(860, 12)); track.gameObject.AddComponent<Image>().color = new Color(0.88f, 0.88f, 0.88f);
+            var bar = Full(track, "Bar"); var bi = bar.gameObject.AddComponent<Image>(); bi.color = Red;
             return Save("MissionRow", row);
         }
 

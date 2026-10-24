@@ -5,12 +5,12 @@ This folder holds the game code for the Unity build. It mirrors the browser prot
 revive flow, missions, outfits and playbook rules. When the prototype feels right,
 this is where the real game is built.
 
-**Status:** scripts compile-checked outside Unity against stand-in Unity APIs
-(`Tools/compile-check/check.sh`, both the editor and device build paths), and the
-pure-logic tests pass (15 tests: speed curve, assist rules, ad pacing, missions). Not
-yet run inside Unity, so expect small API fixes on the first open, and the shaders are
-unverified. This folder is meant to be moved into its own repository once the Unity
-project exists.
+**Status:** runs in Unity 6 (6000.3) on the Mac. The gray-box scene builds from the menu, the
+loop plays end to end (title, run, crash, revive, results, missions, wardrobe), and the scripts are
+compile-checked outside Unity by `Tools/compile-check/check.sh` (Mono if installed, otherwise the
+Roslyn compiler bundled inside any installed Unity 6 Editor, so it needs no extra install on a Mac).
+15 pure-logic tests pass. This folder is meant to be moved into its own repository once the
+project is stable.
 
 ## 1. Create the project
 
@@ -34,6 +34,35 @@ Game view: set Scale to 1x and pick a portrait size (dropdown next to Free Aspec
 
 After pulling new commits, rerun the menu only when prefabs or the scene changed; script
 changes recompile on their own.
+
+### Driving the Editor from a terminal
+
+The project has Unity's `com.unity.pipeline` package (`unity pipeline install`), so the
+[Unity CLI](https://unity.com/install.sh) can drive the open Editor without touching the mouse.
+The loop used for development:
+
+```bash
+unity status                                                   # "ready" once the Editor is focused and compiled
+unity command editor invoke_menu --path "Ink Run/Build gray-box scene"
+unity command editor set_auto_tick --enable true               # keep ticking while unfocused
+unity command editor.playmode set_run_in_background --enable true
+unity command editor.playmode start
+unity command capture game_view --width 1080 --height 1920 --save_path Temp/shot.png
+unity command console get --level warn --tail 20
+unity command script eval --code 'new UnityEngine.GameObject("AutoPilot").AddComponent<InkRun.DebugTools.AutoPilot>();'
+```
+
+`runtime simulate_key` does not reach the game (it flushes the Input System before the player
+loop reads it). To press a key, queue a `KeyboardState` through `script eval` instead:
+`InputSystem.QueueStateEvent(Keyboard.current, new KeyboardState(Key.UpArrow)); InputSystem.QueueStateEvent(Keyboard.current, new KeyboardState());`
+
+### AutoPilot (debug)
+
+`Scripts/Debug/AutoPilot.cs` plays the game by itself through the real swipe path
+(`SwipeInput.Inject`): jumps barriers and gaps, slides under signs, changes lane for trains,
+drifts toward coins, taps through the title, revive and results pages. `MistakeChance` makes it
+crash on purpose so the revive and results flows get exercised. Add it to any object at runtime,
+destroy it to stop. Not part of the shipped game.
 
 Input: works with either backend. Unity 6 templates use the Input System package; the
 scripts detect it (`ENABLE_INPUT_SYSTEM`) and fall back to the legacy Input class otherwise.
@@ -74,7 +103,9 @@ Lanes are at x = -2, 0, +2 (`Tuning.LaneWidth`). The track is a strip of 10 m pi
 
 ## 3. Data assets (Assets > Create > Ink Run)
 
-- **Tuning**: one asset. Every number Remote Config can change.
+- **Tuning**: one asset. Every number Remote Config can change. The menu creates it once and
+  never overwrites it, so after changing a default in `Core/Tuning.cs` delete
+  `Data/Tuning.asset` and rerun the menu (or edit the asset by hand).
 - **Area** × 3: City Rooftops (red `#E0202A`), The Harbor (blue `#1E6FE0`),
   Night Alley (purple `#7B2FE0`, Crescent Moon on). Assign side-prop prefabs.
 - **Pattern**: menu **Ink Run > Create default patterns** builds the seven starting patterns.

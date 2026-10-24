@@ -19,9 +19,9 @@ namespace InkRun.UI
                 var row = Instantiate(RowPrefab, Container);
                 row.transform.Find("Text").GetComponent<TMP_Text>().text = m.Text + (m.Done ? " - done" : "");
                 row.transform.Find("Count").GetComponent<TMP_Text>().text = m.Done ? "+" + m.Reward : m.Progress + "/" + m.Target;
-                var bar = row.transform.Find("Bar");
-                bar.gameObject.SetActive(!m.Done);
-                bar.GetComponent<Image>().fillAmount = (float)m.Progress / m.Target;
+                var track = row.transform.Find("Track");
+                track.gameObject.SetActive(!m.Done);
+                UiFill.Set(track.Find("Bar").GetComponent<Image>(), (float)m.Progress / m.Target);
             }
         }
     }

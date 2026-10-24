@@ -29,6 +29,8 @@ namespace InkRun.World
         float _untilNextPattern;
         float _nextTrackAhead;      // meters ahead of the hero where the next track piece starts
         readonly List<GameObject> _live = new List<GameObject>();
+        /// <summary>Everything spawned and not yet despawned (track pieces, obstacles, pickups). Read-only; for the debug AutoPilot.</summary>
+        public IReadOnlyList<GameObject> Live => _live;
 
         public void ResetTrack()
         {
@@ -46,8 +48,10 @@ namespace InkRun.World
             _nextTrackAhead -= moved;
             if (_untilNextPattern <= 0f)
             {
-                SpawnPattern(Pick(GameManager.Instance.Run.Distance));
-                _untilNextPattern = gap + Random.Range(0f, 4f);
+                var p = Pick(GameManager.Instance.Run.Distance);
+                SpawnPattern(p);
+                // the gap is measured from the end of this pattern, so long patterns never overlap the next one
+                _untilNextPattern = (p != null ? p.Length : 0f) + gap + Random.Range(0f, 4f);
             }
             FillTrack();
             Despawn();
