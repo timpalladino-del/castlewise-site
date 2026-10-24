@@ -136,7 +136,7 @@ def quantize(ob):
         r, g, b = col; lum = 0.3*r + 0.59*g + 0.11*b; red = r - max(g, b)
         if red > 0.25 and r > 0.4: n = 'InkAccent'
         elif lum < 0.3: n = 'Ink'
-        elif r > 0.75 and g > 0.62 and b > 0.5 and (r - b) > 0.08 and lum < 0.93: n = 'InkSkin'
+        elif r > 0.75 and g > 0.62 and b > 0.5 and (r - b) > 0.06 and lum < 0.985: n = 'InkSkin'
         elif lum < 0.78: n = 'InkTone'
         else: n = 'InkPaper'
         new_index.append(names.index(n))

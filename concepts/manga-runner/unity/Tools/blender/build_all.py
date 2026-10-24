@@ -11,3 +11,7 @@ for name, fn in props_bl.MODELS.items():
     K.reset(); fn(); print(f'{name:14s} {K.tri_count():7d} tris'); K.export_glb(os.path.join(out, name + '.glb'))
 for name, fn in outfits_bl.OUTFITS.items():
     outfits_bl.build(fn, name); print(f'{name:14s} {K.tri_count():7d} tris'); K.export_glb(os.path.join(out, name + '.glb'))
+# low-poly visuals for low-end phones (QualityPicker swaps them in)
+import subprocess
+for name, budget in (('Hero', 12000), ('Crew', 8000)):
+    subprocess.run([sys.executable, os.path.join(here, 'import_gen.py'), os.path.join(out, name + '.glb'), os.path.join(out, name + '_LOD1.glb'), '--height', '1.918', '--budget', str(budget), '--hero', '--name', name], check=True)

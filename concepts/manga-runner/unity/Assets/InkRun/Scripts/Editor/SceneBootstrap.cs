@@ -378,6 +378,14 @@ namespace InkRun.EditorTools
                 if (!AttachOutfit(heroModel, "ronin")) Part(partsM, "ronin", new Vector3(0.56f, 0.06f, 0.56f), new Vector3(0, 1.64f, 0), _accent);
                 root.AddComponent<HeroOutfit>().PartsRoot = partsM.transform;
                 var pcM = root.AddComponent<PlayerController>(); pcM.Visual = heroModel.transform;
+                var heroLow = Model("Hero_LOD1");
+                if (heroLow != null)
+                {
+                    heroLow.name = "VisualLow"; heroLow.transform.SetParent(root.transform, false);
+                    var la = heroLow.AddComponent<HeroAnimator>();
+                    la.Body = Find(heroLow.transform, "Body"); la.Head = Find(heroLow.transform, "Head"); la.LegL = Find(heroLow.transform, "LegL"); la.LegR = Find(heroLow.transform, "LegR"); la.ArmL = Find(heroLow.transform, "ArmL"); la.ArmR = Find(heroLow.transform, "ArmR");
+                    var qp = root.AddComponent<QualityPicker>(); qp.Full = heroModel; qp.Low = heroLow; heroLow.SetActive(false);
+                }
                 return root;
             }
             var visual = new GameObject("Visual"); visual.transform.SetParent(root.transform, false);
@@ -479,6 +487,12 @@ namespace InkRun.EditorTools
                 ch.LegL = Find(crewModel.transform, "LegL"); ch.LegR = Find(crewModel.transform, "LegR");
                 ch.ArmL = Find(crewModel.transform, "ArmL"); ch.ArmR = Find(crewModel.transform, "ArmR");
                 crew.transform.position = new Vector3(0, 0, -2.4f);
+                var crewLow = Model("Crew_LOD1");
+                if (crewLow != null)
+                {
+                    crewLow.name = "VisualLow"; crewLow.transform.SetParent(crew.transform, false); crewLow.SetActive(false);
+                    var qp = crew.AddComponent<QualityPicker>(); qp.Full = crewModel; qp.Low = crewLow;
+                }
             }
             var kaijuModel = Model("KaijuShadow");
             if (kaijuModel != null)
@@ -593,6 +607,19 @@ namespace InkRun.EditorTools
             wv.Back = Button(wardrobe, "Back", "BACK", new Vector2(0.5f, 0f), new Vector2(0, 260), new Vector2(360, 110), Red, Color.white);
             startView.WardrobePanel = wardrobe.gameObject; wardrobe.gameObject.SetActive(false);
 
+            // Chapter strip: three captions over the live run at a chapter change (and the cold open)
+            {
+                var csRoot = Full(root, "ChapterStrip"); var cs = csRoot.gameObject.AddComponent<ChapterStripView>();
+                var csPanel = Full(csRoot, "Panel"); cs.Panel = csPanel.gameObject;
+                for (int i = 0; i < 3; i++)
+                {
+                    var t = Text(csPanel, "Caption" + i, "", 34, new Vector2(0.5f, 1f), new Vector2(0, -230 - i * 84)); t.color = Color.black;
+                    var bgGo = new GameObject("Box"); bgGo.transform.SetParent(t.transform, false); bgGo.transform.SetAsFirstSibling();
+                    var bgRt = bgGo.AddComponent<RectTransform>(); bgRt.anchorMin = Vector2.zero; bgRt.anchorMax = Vector2.one; bgRt.sizeDelta = new Vector2(40f, 20f);
+                    var bgImg = bgGo.AddComponent<Image>(); bgImg.color = new Color(1f, 1f, 1f, 0.92f); bgImg.raycastTarget = false;
+                    cs.Captions[i] = t;
+                }
+            }
             // Crash strip (plays during the Crashed freeze-frame, under the revive page)
             {
                 var stripRoot = Full(root, "CrashStrip"); var csv = stripRoot.gameObject.AddComponent<CrashStripView>();
