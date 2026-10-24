@@ -28,9 +28,10 @@ def args():
     p.add_argument('--budget', type=int, default=15000, help='target triangle count')
     p.add_argument('--hero', action='store_true', help='split into Body/Head/LegL/LegR/ArmL/ArmR joint nodes')
     p.add_argument('--name', default=None, help='root node name (default: output basename)')
-    p.add_argument('--keep-texture', action='store_true', help='keep the generated texture instead of quantizing')
+    p.add_argument('--keep-texture', action='store_true', help='keep the generated texture instead of quantizing (the bpy wheel exporter crashes on textured imports; use only with a full Blender)')
     p.add_argument('--ref', default=None, help='front reference drawing: paints an untextured mesh by projection')
     p.add_argument('--auto-joints', action='store_true', help='measure hip/shoulder/neck from the mesh instead of the brief constants')
+    p.add_argument('--anchor', default='center', choices=['center', 'front', 'corner'], help='pivot placement: center (characters, props), front (trains), corner (side buildings)')
     return p.parse_args(sys.argv[1:])
 
 def import_glb(path):
@@ -62,13 +63,18 @@ def join_all(meshes, name):
     ob = bpy.data.objects.new(name, me); bpy.context.scene.collection.objects.link(ob)
     return ob
 
-def normalize(ob, height, yaw):
-    """Face +z (Unity) = -y (Blender); feet on the ground; scale to height."""
+def normalize(ob, height, yaw, anchor='center'):
+    """Face +z (Unity) = -y (Blender); feet on the ground; scale to height.
+    anchor: 'center' (characters, props: pivot under the middle), 'front' (trains: pivot under the nose, body
+    extends +z), 'corner' (side buildings: pivot at the track-side front-bottom corner, body extends +x and +z,
+    the way AreaController places SideProps)."""
     if yaw: ob.data.transform(Matrix.Rotation(math.radians(yaw), 4, 'Z'))
     xs = [v.co for v in ob.data.vertices]
     lo = Vector((min(v.x for v in xs), min(v.y for v in xs), min(v.z for v in xs))); hi = Vector((max(v.x for v in xs), max(v.y for v in xs), max(v.z for v in xs)))
     s = height / max(1e-6, (hi.z - lo.z))
-    ob.data.transform(Matrix.Translation((-(lo.x + hi.x)/2, -(lo.y + hi.y)/2, -lo.z)) )
+    dx = -(lo.x + hi.x)/2 if anchor != 'corner' else -lo.x
+    dy = -(lo.y + hi.y)/2 if anchor == 'center' else -hi.y          # Unity z = -Blender y: z-min at the pivot means Blender y-max = 0
+    ob.data.transform(Matrix.Translation((dx, dy, -lo.z)))
     ob.data.transform(Matrix.Diagonal((s, s, s, 1)))
     return s
 
@@ -272,7 +278,7 @@ def main():
     meshes = import_glb(a.src)
     name = a.name or os.path.splitext(os.path.basename(a.dst))[0]
     ob = join_all(meshes, name)
-    normalize(ob, a.height, a.yaw)
+    normalize(ob, a.height, a.yaw, a.anchor)
     J = None
     if a.ref or a.auto_joints:
         import paint_ref as PR

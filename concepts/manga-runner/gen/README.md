@@ -7,13 +7,19 @@
    - Or run an open-source generator on the Mac (Hunyuan3D-2, TripoSR) — see `../unity/Tools/blender/GEN-PIPELINE.md`.
 2. Save the GLB into `gen/in/` with one of these names (the ingest maps names to heights and node layouts):
 
-   | file | what | height (m) | layout |
-   |---|---|---|---|
-   | `Hero.glb` | Nozomi | 1.70 (hair adds to ~1.95; use 1.95 if the mesh includes the full spikes) | 6 joint nodes |
-   | `Train.glb` | tram | 2.6 (nose toward -z after `--yaw`) | single |
-   | `Gang.glb` | rival courier chaser | 1.75 | 6 joint nodes |
-   | `Kaiju.glb` | kaiju chaser | 6.0 | single |
-   | `Barrier.glb`, `Sign.glb`, `Coin.glb`, `Lantern.glb` | props | 1.1 / 2.3 / 0.7 / 1.3 | single |
+   | file | what | height (m) | pivot | layout |
+   |---|---|---|---|---|
+   | `Hero.glb` | Nozomi (done, build 16) | 1.95 incl. hair | centre | 6 joint nodes |
+   | `Crew.glb` (or `Gang.glb`) | Smudge Crew chaser, black jacket, white bandana, red scarf | 1.75 | centre | 6 joint nodes |
+   | `Train.glb` | tram, nose toward the camera (-z) | 3.0 | under the nose, body extends +z | single |
+   | `BuildingCity.glb` | chapter 1 facade: 2 storeys + shopfront, ~3.6 m wide, 4.6 m deep | 7.7 | track-side front corner, extends +x and +z | single |
+   | `BuildingAlley.glb` | chapter 3 facade: narrow 3 storeys, lantern arm over the street | 9.1 | track-side front corner | single |
+   | `Containers.glb` | chapter 2 harbor: stacked containers + crane | 8.2 | track-side front corner | single |
+   | `Barrier.glb`, `Sign.glb`, `Coin.glb`, `Lantern.glb` | props | 1.2 / 2.3 / 0.75 / 1.3 | centre | single |
+   | `Kaiju.glb` | the kaiju itself (Volume 2; only its shadow is used now) | 6.0 | centre | single |
+
+   Side buildings must face the track: generate them so the shopfront is the long face, and run the ingest with
+   `YAW=90` or `YAW=-90` if the review sheet shows the facade pointing down the track instead of across it.
 
 3. Run the ingest (needs `pip install bpy fast-simplification trimesh`):
 
