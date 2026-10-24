@@ -10,6 +10,8 @@ names=("$@"); if [ ${#names[@]} -eq 0 ]; then for f in "$IN"/*.glb; do [ -e "$f"
 for n in "${names[@]}"; do
   src="$IN/$n.glb"; [ -e "$src" ] || { echo "missing $src"; continue; }
   h="${HEIGHT[$n]:-1.0}"; extra=""; [ -n "${HERO[$n]:-}" ] && extra="--hero"
-  python3 "$HERE/import_gen.py" "$src" "$OUT/$n.glb" --height "$h" --yaw "${YAW:-0}" --budget "${BUDGET:-15000}" $extra 2>&1 | grep -v "INFO\|Draco\|MeshOpt" | tail -2
+  ref=""; [ -e "$ROOT/gen/refs/$(echo $n | tr A-Z a-z)_front.jpg" ] && ref="--ref $ROOT/gen/refs/$(echo $n | tr A-Z a-z)_front.jpg"
+  [ "$n" = "Hero" ] && [ -e "$ROOT/gen/refs/nozomi_front.jpg" ] && ref="--ref $ROOT/gen/refs/nozomi_front.jpg"
+  python3 "$HERE/import_gen.py" "$src" "$OUT/$n.glb" --height "$h" --yaw "${YAW:-0}" --budget "${BUDGET:-15000}" $extra --auto-joints $ref 2>&1 | grep -v "INFO\|Draco\|MeshOpt" | tail -2
 done
 echo "done -> $OUT"

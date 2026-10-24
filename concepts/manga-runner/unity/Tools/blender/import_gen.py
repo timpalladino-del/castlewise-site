@@ -29,6 +29,8 @@ def args():
     p.add_argument('--hero', action='store_true', help='split into Body/Head/LegL/LegR/ArmL/ArmR joint nodes')
     p.add_argument('--name', default=None, help='root node name (default: output basename)')
     p.add_argument('--keep-texture', action='store_true', help='keep the generated texture instead of quantizing')
+    p.add_argument('--ref', default=None, help='front reference drawing: paints an untextured mesh by projection')
+    p.add_argument('--auto-joints', action='store_true', help='measure hip/shoulder/neck from the mesh instead of the brief constants')
     return p.parse_args(sys.argv[1:])
 
 def import_glb(path):
@@ -145,25 +147,99 @@ def quantize(ob):
     for poly, i in zip(me.polygons, new_index): poly.material_index = i
     me.uv_layers.remove(uv) if uv else None
 
-def split_hero(ob):
-    """Cut the single mesh into the six animator nodes by region planes (Unity coords)."""
-    def region(p):  # p in Unity coords
-        x, y, z = p
-        if y > HEAD + 0.02: return 'Head'
-        if y > HIP - 0.02 and abs(x) > 0.2 and y < SH + 0.08: return 'ArmL' if x < 0 else 'ArmR'
-        if y < HIP + 0.02: return 'LegL' if x < 0 else 'LegR'
-        return 'Body'
+
+def boundary_loops(bm):
+    """Ordered vertex loops along the open boundary of a bmesh."""
+    bm.edges.ensure_lookup_table()
+    edges = {e for e in bm.edges if e.is_boundary}
+    loops = []
+    while edges:
+        e = edges.pop(); start = e.verts[0]; v = e.verts[1]; loop = [start, v]; prev = e
+        guard = 0
+        while v is not start and guard < 5000:
+            guard += 1
+            nxt = next((x for x in v.link_edges if x in edges), None)
+            if nxt is None: break
+            edges.discard(nxt); v = nxt.other_vert(v)
+            if v is not start: loop.append(v)
+            prev = nxt
+        if v is start and len(loop) >= 3: loops.append(loop)
+    return loops
+
+def split_hero(ob, J=None):
+    """Cut the single mesh at the joint planes, then label connected components (head, torso, two arms with
+    hands, two legs) by where they sit. Pivots at the joints so HeroAnimator can swing them."""
+    J = J or {'HIP': HIP, 'SH': SH, 'HEAD': HEAD, 'HIP_X': HIP_X, 'SH_X': SH_X, 'ARM_PLANE': 0.2}
+    HIPj, SHj, HEADj, HIPXj, SHXj, ARM = J['HIP'], J['SH'], J['HEAD'], J['HIP_X'], J['SH_X'], J['ARM_PLANE']
     bm = bmesh.new(); bm.from_mesh(ob.data)
-    # bisect at the joint planes so the cut edges are clean, then classify faces by centre
-    planes = [((0, HEAD + 0.02, 0), (0, 1, 0)), ((0, HIP + 0.02, 0), (0, 1, 0)), ((0, HIP - 0.02, 0), (0, 1, 0)), ((0, SH + 0.08, 0), (0, 1, 0)),
-              ((-0.2, 0, 0), (1, 0, 0)), ((0.2, 0, 0), (1, 0, 0)), ((0, 0, 0), (1, 0, 0))]
-    for co, no in planes:
-        geom = bm.verts[:] + bm.edges[:] + bm.faces[:]
-        bmesh.ops.bisect_plane(bm, geom=geom, plane_co=K.U(co), plane_no=K.U(no) - K.U((0, 0, 0)), clear_inner=False, clear_outer=False)
+    def ucenter(f):
+        c = f.calc_center_median(); return (c.x, c.z, -c.y)
+    def cut(co, no, pick=None):
+        faces = [f for f in bm.faces if pick is None or pick(ucenter(f))]
+        verts = {v for f in faces for v in f.verts}; edges = {e for f in faces for e in f.edges}
+        geom = list(verts) + list(edges) + faces
+        res = bmesh.ops.bisect_plane(bm, geom=geom, plane_co=K.U(co), plane_no=K.U(no) - K.U((0, 0, 0)), clear_inner=False, clear_outer=False)
+        cut_edges = [g for g in res['geom_cut'] if isinstance(g, bmesh.types.BMEdge)]
+        if cut_edges: bmesh.ops.split_edges(bm, edges=cut_edges)      # actually separate the two sides
+    # where do the hands hang? histogram |x| of face centres in the thigh band; the widest empty gap outside the
+    # legs is the leg/hand separation (Tripo meshes have the hands touching the thighs, so connectivity is useless)
+    def hand_plane():
+        xs = sorted(abs(ucenter(f)[0]) for f in bm.faces if HIPj - 0.32 < ucenter(f)[1] < HIPj - 0.02)
+        if not xs: return HIPXj + 0.1
+        step = 0.01; bins = int(xs[-1] / step) + 2; hist = [0] * bins
+        for x in xs: hist[int(x / step)] += 1
+        best = (0, None); run = 0; i0 = int((HIPXj + 0.03) / step)
+        for i in range(i0, bins):
+            run = run + 1 if hist[i] == 0 else 0
+            if run > best[0]: best = (run, i)
+        if best[1] is None or best[0] < 2: return HIPXj + 0.1
+        return (best[1] - best[0] / 2 + 0.5) * step
+    HAND_X = hand_plane(); print('hand plane |x| =', round(HAND_X, 3))
+    SLEEVE = SHXj - 0.02                                                                      # just inside the shoulder socket: the sleeve wraps the torso side
+    cut((0, HEADj + 0.02, 0), (0, 1, 0))                                                   # head off
+    cut((0, HIPj + 0.02, 0), (0, 1, 0), lambda p: abs(p[0]) < HAND_X)                        # legs off the pelvis (not the hands)
+    cut((0, 0, 0), (1, 0, 0), lambda p: p[1] < HIPj + 0.03)                                 # left / right leg
+    for sx in (-1, 1):
+        cut((sx*SLEEVE, 0, 0), (1, 0, 0), lambda p, sx=sx: HIPj - 0.1 < p[1] < SHj + 0.1 and p[0]*sx > 0)   # sleeves off the torso
+        cut((sx*HAND_X, 0, 0), (1, 0, 0), lambda p, sx=sx: HIPj - 0.33 < p[1] < HIPj + 0.03 and p[0]*sx > 0)  # hands off the thighs (not the shoes)
+    bm.faces.ensure_lookup_table()
+    # label every face by the region its centre falls in (connectivity is not trusted: sleeves touch hips,
+    # hands touch thighs), then clean up slivers by merging tiny same-label islands into their neighbour
+    def region(c):
+        cx, cy = c[0], c[1]
+        if cy > HEADj + 0.02: return 'Head'
+        if cy < HIPj + 0.02:
+            if abs(cx) > HAND_X and cy > HIPj - 0.33: return 'ArmL' if cx < 0 else 'ArmR'   # hands hang beside the thighs; shoes are wider but lower
+            return 'LegL' if cx < 0 else 'LegR'
+        if abs(cx) > SLEEVE: return 'ArmL' if cx < 0 else 'ArmR'
+        return 'Body'
+    lab = {f.index: region(ucenter(f)) for f in bm.faces}
+    total = len(bm.faces)
+    for _ in range(3):
+        seen = set(); changed = 0
+        for f in bm.faces:
+            if f.index in seen: continue
+            stack = [f]; members = []; seen.add(f.index); L = lab[f.index]
+            while stack:
+                g = stack.pop(); members.append(g)
+                for e in g.edges:
+                    for h in e.link_faces:
+                        if h.index not in seen and lab[h.index] == L: seen.add(h.index); stack.append(h)
+            if len(members) >= max(40, 0.01 * total): continue
+            border = {}
+            for g in members:
+                for e in g.edges:
+                    for h in e.link_faces:
+                        if lab[h.index] != L: border[lab[h.index]] = border.get(lab[h.index], 0) + 1
+            if border:
+                nl = max(border, key=border.get)
+                for g in members: lab[g.index] = nl
+                changed += len(members)
+        if not changed: break
     groups = {}
-    for f in bm.faces:
-        c = f.calc_center_median(); groups.setdefault(region((c.x, c.z, -c.y)), []).append(f)
-    pivots = {'Body': (0, 0, 0), 'Head': (0, HEAD, 0), 'LegL': (-HIP_X, HIP, 0), 'LegR': (HIP_X, HIP, 0), 'ArmL': (-SH_X, SH, 0), 'ArmR': (SH_X, SH, 0)}
+    for f in bm.faces: groups.setdefault(lab[f.index], []).append(f)
+    print('split faces per node', {k: len(v) for k, v in groups.items()})
+    pivots = {'Body': (0, 0, 0), 'Head': (0, HEADj, 0), 'LegL': (-HIPXj, HIPj, 0), 'LegR': (HIPXj, HIPj, 0), 'ArmL': (-SHXj, SHj, 0), 'ArmR': (SHXj, SHj, 0)}
     out = []
     for name, faces in groups.items():
         sub = bmesh.new(); vmap = {}
@@ -174,11 +250,14 @@ def split_hero(ob):
                 vs.append(vmap[v])
             try: nf = sub.faces.new(vs); nf.material_index = f.material_index; nf.smooth = True
             except ValueError: pass
-        # close the cut with a cap so the joint never shows a hole when it swings
-        bound = [e for e in sub.edges if e.is_boundary]
-        if bound:
-            try: bmesh.ops.holes_fill(sub, edges=bound, sides=0)
-            except Exception: pass
+        for loop in boundary_loops(sub):
+            if not (3 <= len(loop) <= 200): continue
+            xs = [v.co.x for v in loop]; ys = [v.co.y for v in loop]; zs = [v.co.z for v in loop]
+            thick = min(max(xs)-min(xs), max(ys)-min(ys), max(zs)-min(zs)); span = max(max(xs)-min(xs), max(ys)-min(ys), max(zs)-min(zs))
+            if thick > 0.012 or span > 0.6: continue
+            mats = [f.material_index for v in loop for f in v.link_faces]
+            try: sub.faces.new(loop).material_index = max(set(mats), key=mats.count) if mats else 0
+            except ValueError: pass
         O = K.U(pivots[name]); bmesh.ops.translate(sub, vec=-O, verts=sub.verts)
         me = bpy.data.meshes.new(name); sub.to_mesh(me); sub.free()
         for m in ob.data.materials: me.materials.append(m)
@@ -194,12 +273,19 @@ def main():
     name = a.name or os.path.splitext(os.path.basename(a.dst))[0]
     ob = join_all(meshes, name)
     normalize(ob, a.height, a.yaw)
-    if not a.keep_texture: quantize(ob)
+    J = None
+    if a.ref or a.auto_joints:
+        import paint_ref as PR
+        J = PR.measure_joints_from_ref(ob, a.ref) if a.ref else PR.measure_joints(ob); print('joints', {k: round(v, 3) for k, v in J.items()})
+    if a.ref:
+        counts = PR.paint(ob, a.ref, J); print('painted faces per material', counts)
+    elif not a.keep_texture: quantize(ob)
     tris = decimate(ob, a.budget)
     K.shade_smooth(ob, math.radians(50))
-    root = K.empty('Hero' if a.hero else name + 'Root')
+    root = K.empty('_root')
     if a.hero:
-        for part in split_hero(ob): K.parent(part, root)
+        for part in split_hero(ob, J if a.auto_joints else None): K.parent(part, root)
+        root.name = 'Hero'
     else:
         K.parent(ob, root)
     print(f'{name}: {tris} tris, height {a.height} m, nodes: {[o.name for o in bpy.data.objects if o.type == "MESH"]}')

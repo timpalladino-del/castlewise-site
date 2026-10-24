@@ -35,5 +35,4 @@ remain. Two critic rounds were run on these models; their findings drove v2-v6 o
 Technique notes (from the modeling skills this pipeline follows): silhouette before detail,
 Bevel before Subdivision, overlap parts at joins instead of abutting them, skin chains for organic
 masses, spend triangles on the silhouette at the gameplay camera distance, review with rendered
-evidence rather than the viewport. `Hero_LOD1.glb` / `Crew_LOD1.glb` are 12k / 8k decimations made by `import_gen.py`; `QualityPicker` swaps them in on low-end phones. Triangle counts: Hero 50k (subdivided; use Unity mesh LODs
-or lower `subdiv` in `skin_chain` for low-end phones), props 1k–20k each.
+evidence rather than the viewport. `Hero.glb` is now the image-to-3D hero (Tripo mesh from `gen/in/Hero.glb`, 10k tris) run through `import_gen.py`: painted from `gen/refs/nozomi_front.jpg` by projection, then cut into Head/Body/ArmL/ArmR/LegL/LegR at joint planes measured from the same drawing (hands and sleeves are labelled by region, not connectivity, because the generated mesh fuses them to the hips and thighs). It needs no LOD. `Hero_proc.glb` is the procedural v6 hero kept as a fallback (50k tris). `Crew_LOD1.glb` is an 8k decimation that `QualityPicker` swaps in on low-end phones. Props 1k–20k each.
