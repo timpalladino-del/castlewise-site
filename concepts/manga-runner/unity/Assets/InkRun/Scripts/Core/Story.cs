@@ -6,7 +6,7 @@ namespace InkRun.Core
         public const string GameName = "Ink Run";
         public const string HeroName = "Nozomi";
         public const string Volume = "Volume 1";
-        public const string Build = "build 16";   // bump on every push so screenshots show which code is running
+        public const string Build = "build 17";   // bump on every push so screenshots show which code is running
 
         /// <summary>Three-panel crash strips per obstacle kind: approach, impact SFX word, aftermath (STORY.md).</summary>
         public static string[] DeathPanels(InkRun.World.ObstacleKind kind)

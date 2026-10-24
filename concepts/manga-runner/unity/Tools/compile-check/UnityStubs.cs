@@ -112,6 +112,23 @@ namespace UnityEditor
     }
     public static class EditorUtility { public static void SetDirty(UnityEngine.Object o) { } }
     public class MenuItem : Attribute { public MenuItem(string s) { } }
+    public class InitializeOnLoad : Attribute { }
+    public delegate void CallbackFunction();
+    public static class EditorApplication { public static CallbackFunction update; }
+    public static class SessionState { public static bool GetBool(string k, bool d) => d; public static void SetBool(string k, bool v) { } }
+    namespace PackageManager
+    {
+        public enum StatusCode { InProgress, Success, Failure }
+        public class Error { public string message; }
+        public class PackageInfo { public string name, version; }
+        public static class Client { public static Requests.ListRequest List(bool offline, bool includeIndirect) => new Requests.ListRequest(); public static Requests.AddRequest Add(string id) => new Requests.AddRequest(); }
+        namespace Requests
+        {
+            public class Request { public bool IsCompleted => true; public StatusCode Status => StatusCode.Success; public Error Error => null; }
+            public class ListRequest : Request { public System.Collections.Generic.IEnumerable<PackageInfo> Result => new PackageInfo[0]; }
+            public class AddRequest : Request { public PackageInfo Result => new PackageInfo(); }
+        }
+    }
 }
 
 namespace UnityEngine.InputSystem

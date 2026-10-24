@@ -18,7 +18,8 @@ project exists.
 2. New project, template **Universal 3D** (URP), name `InkRun`.
 3. Copy `Assets/InkRun` from here into the project's `Assets` folder.
 4. Window > Package Manager: confirm **TextMeshPro** (part of UGUI) is present. Import TMP Essentials when asked.
-5. Project Settings > Player: Default Orientation **Portrait**, Target API as current store minimums.
+5. The models are `.glb` files and need the **glTFast** package (`com.unity.cloud.gltfast`). `Scripts/Editor/PackageEnsure.cs` adds it on its own the first time the editor loads the scripts (watch the Console); if that fails, add it from Package Manager > Unity Registry > glTFast, or menu **Ink Run > Install glTF importer**. Without it every model falls back to primitives and the Console says "no imported model for X".
+6. Project Settings > Player: Default Orientation **Portrait**, Target API as current store minimums.
 
 ## 2. Build the scene with one click
 

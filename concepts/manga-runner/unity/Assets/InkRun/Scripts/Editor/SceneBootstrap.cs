@@ -624,7 +624,7 @@ namespace InkRun.EditorTools
             {
                 var stripRoot = Full(root, "CrashStrip"); var csv = stripRoot.gameObject.AddComponent<CrashStripView>();
                 var stripPanel = Full(stripRoot, "Panel"); csv.Panel = stripPanel.gameObject;
-                var bg = stripPanel.gameObject.AddComponent<Image>(); bg.color = new Color(1f, 1f, 1f, 0.96f);
+                var bg = stripPanel.gameObject.AddComponent<Image>(); bg.color = new Color(1f, 1f, 1f, 0.80f);   // the crash freeze-frame stays visible behind the strip
                 var imgGo = new GameObject("Strip"); imgGo.transform.SetParent(stripPanel, false);
                 var imgRt = imgGo.AddComponent<RectTransform>(); imgRt.anchorMin = imgRt.anchorMax = new Vector2(0.5f, 0.55f); imgRt.sizeDelta = new Vector2(1000f, 1000f * 9f / 16f * 3f); // one third of a 16:9 strip, shown as a tall panel
                 var stripImg = imgGo.AddComponent<RawImage>(); csv.Strip = stripImg; csv.StripRect = imgRt;
@@ -637,11 +637,11 @@ namespace InkRun.EditorTools
             }
             // Revive
             var reviveView = Full(root, "Revive").gameObject.AddComponent<ReviveView>();
-            var revive = Safe(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.92f), Color.clear); revive.gameObject.SetActive(false);
+            var revive = Safe(reviveView.transform, "Panel"); reviveView.Panel = revive.gameObject; Panel(revive, new Color(1, 1, 1, 0.84f), Color.clear); revive.gameObject.SetActive(false);
             var p1 = Group(revive, "Panel1", new Vector2(0.5f, 1f), new Vector2(940, 180)); p1.anchoredPosition = new Vector2(0, -420); Panel(p1, Ink, Ink);
-            reviveView.Panel1 = Text(p1, "Text", Story.RevivePanels[0], 34, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel1.color = Color.white;
+            reviveView.Panel1 = Text(p1, "Text", Story.RevivePanels[0], 38, new Vector2(0.5f, 0.5f), Vector2.zero); reviveView.Panel1.color = Color.white;
             var p2 = Group(revive, "Panel2", new Vector2(0.5f, 1f), new Vector2(940, 160)); p2.anchoredPosition = new Vector2(0, -610); Panel(p2, Color.white, Ink);
-            reviveView.Panel2 = Text(p2, "Text", Story.RevivePanels[1], 32, new Vector2(0.5f, 0.5f), Vector2.zero);
+            reviveView.Panel2 = Text(p2, "Text", Story.RevivePanels[1], 36, new Vector2(0.5f, 0.5f), Vector2.zero);
             reviveView.DistanceLine = Text(revive, "DistanceLine", "0m and counting.", 34, new Vector2(0.5f, 1f), new Vector2(0, -810));
             var title = Text(revive, "Title", "TO BE\nCONTINUED...?", 110, new Vector2(0.5f, 0.5f), new Vector2(0, 40)); title.color = Red;
             reviveView.Countdown = Text(revive, "Countdown", "5", 80, new Vector2(0.5f, 0.5f), new Vector2(0, -150));
