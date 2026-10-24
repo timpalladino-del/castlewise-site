@@ -130,7 +130,7 @@ namespace InkRun.EditorTools
             var barrierModel = Model("Barrier");
             if (barrierModel != null)
             {
-                var root = new GameObject("Barrier"); barrierModel.transform.SetParent(root.transform, false);
+                var root = new GameObject("Barrier"); barrierModel.transform.SetParent(root.transform, false); Shadow(root, 1.8f, 0.7f);
                 var bc = root.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.size = new Vector3(1.6f, 0.8f, 0.4f); bc.center = new Vector3(0, 0.5f, 0);
                 root.AddComponent<Obstacle>().Kind = ObstacleKind.Barrier;
                 p.barrier = Save("Barrier", root);
@@ -165,7 +165,7 @@ namespace InkRun.EditorTools
             var trainModel = Model("Train");
             if (trainModel != null)
             {
-                var root = new GameObject("Train"); trainModel.transform.SetParent(root.transform, false);
+                var root = new GameObject("Train"); trainModel.transform.SetParent(root.transform, false); Shadow(root, 2.1f, 6.6f, 0, 3f);
                 var bc = root.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.size = new Vector3(1.9f, 2.6f, 6f); bc.center = new Vector3(0, 1.3f, 3f);
                 root.AddComponent<Obstacle>().Kind = ObstacleKind.Wall;
                 p.wall = Save("Train", root);
@@ -267,6 +267,18 @@ namespace InkRun.EditorTools
 
         // ---------- GLB models (Assets/InkRun/Models, imported by the glTFast package) ----------
 
+
+        // Flat contact shadow under a prefab: cheap, reads at gameplay size, and grounds props on the paper track.
+        static void Shadow(GameObject root, float sx, float sz, float x = 0, float z = 0)
+        {
+            var q = GameObject.CreatePrimitive(PrimitiveType.Quad); q.name = "Shadow";
+            Object.DestroyImmediate(q.GetComponent<Collider>());
+            q.transform.SetParent(root.transform, false);
+            q.transform.localPosition = new Vector3(x, 0.012f, z);
+            q.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            q.transform.localScale = new Vector3(sx, sz, 1f);
+            q.GetComponent<Renderer>().sharedMaterial = _tone;
+        }
         static GameObject Model(string name)
         {
             var asset = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "/Models/" + name + ".glb");

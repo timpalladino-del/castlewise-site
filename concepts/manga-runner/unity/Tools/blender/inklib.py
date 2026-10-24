@@ -191,6 +191,29 @@ def tube(name, points, radius, material='InkPaper', taper_to=None, resolution=12
     ob = bpy.data.objects.new(name, cu); link(ob)
     return ob
 
+def cone_sweep(name, pts, radii, material='Ink', n=10, steps=7):
+    """Closed, manifold tapered spike/lock along a quadratic bezier through 3 Unity points.
+    radii: (base, mid, tip) radius multipliers of the base radius; the tip collapses to one vertex."""
+    from mathutils import Vector as V
+    p0, p1, p2 = (V(U(p)) for p in pts)
+    path = [(1-t)**2*p0 + 2*(1-t)*t*p1 + t*t*p2 for t in [i/(steps-1) for i in range(steps)]]
+    bm = bmesh.new(); rings = []
+    for i, c in enumerate(path):
+        t = i/(steps-1)
+        tang = (path[min(i+1, steps-1)] - path[max(i-1, 0)]).normalized()
+        r = radii[0]*((1-t)**2) + radii[1]*2*(1-t)*t + radii[2]*t*t if len(radii) == 3 else radii[0]*(1-t)
+        if i == steps-1: r = max(r, 0.0005)
+        ref = V((0, 0, 1)) if abs(tang.z) < 0.9 else V((1, 0, 0))
+        u = tang.cross(ref).normalized(); v = u.cross(tang)
+        vs = [bm.verts.new(c + (u*math.cos(a) + v*math.sin(a))*r) for a in [2*math.pi*k/n for k in range(n)]]
+        rings.append([bm.edges.new((vs[k], vs[(k+1) % n])) for k in range(n)])
+    for a, b in zip(rings, rings[1:]): bmesh.ops.bridge_loops(bm, edges=a + b)
+    bmesh.ops.contextual_create(bm, geom=rings[0])
+    tipverts = list({v for e in rings[-1] for v in e.verts})
+    bmesh.ops.pointmerge(bm, verts=tipverts, merge_co=path[-1])
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    return new_mesh_object(name, bm, material, True, 60)
+
 def skin_chain(name, chains, material='InkSkin', subdiv=2, root=0):
     """Organic mass from joint chains [(x, y, z, r), ...] (Unity coords) or a dict of chains that
     share points by position. Skin + Subdivision gives smooth limbs with loops at every joint."""
@@ -263,6 +286,7 @@ def apply_all(ob):
         new.matrix_world = ob.matrix_world
         bpy.data.objects.remove(ob)
         new.name = new.name[:-2]
+        bm = bmesh.new(); bm.from_mesh(me); bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5); bm.to_mesh(me); bm.free()
         for p in me.polygons: p.use_smooth = True
         return new
     old = ob.data; ob.data = me; ob.modifiers.clear()

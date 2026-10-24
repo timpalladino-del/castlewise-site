@@ -8,7 +8,7 @@ const W = parseInt(q.get('w') || '1080'), H = parseInt(q.get('h') || '1920'), sh
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(W, H); renderer.setPixelRatio(1); document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene(); scene.background = new THREE.Color('#ffffff');
-const cam = new THREE.PerspectiveCamera(58, W / H, 0.1, 300);
+const cam = new THREE.PerspectiveCamera(60, W / H, 0.1, 400);
 const key = new THREE.DirectionalLight('#ffffff', 2.4); key.position.set(-4, 8, -3); scene.add(key);
 scene.add(new THREE.AmbientLight('#ffffff', 0.85));
 const ramp = new THREE.DataTexture(new Uint8Array([110, 110, 110, 255, 200, 200, 200, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat); ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true;
@@ -25,14 +25,16 @@ function inkify(root, outlineWidth) {
 }
 const loader = new GLTFLoader(); const cache = {};
 const load = (name) => cache[name] ||= new Promise((res, rej) => loader.load('models/' + name + '.glb', g => { inkify(g.scene, 0.008); res(g.scene); }, undefined, rej));
-async function place(name, x, y, z, { ry = 0, sx = 1, pose = '' } = {}) {
+async function place(name, x, y, z, { ry = 0, sx = 1, pose = '', sh = null } = {}) {
   const src = await load(name); const o = src.clone(true);
+  if (sh) shadow(x + (sh[2] || 0), z + (sh[3] || 0), sh[0], sh[1]);
   o.position.set(x, y, z); o.rotation.y = ry; o.scale.x = sx;
   if (pose) { const d = THREE.MathUtils.degToRad; const f = n => o.getObjectByName(n);
     if (pose === 'run') { f('LegL').rotation.x = d(42); f('LegR').rotation.x = d(-30); f('ArmL').rotation.x = d(-45); f('ArmR').rotation.x = d(40); o.rotation.x = d(7); }
     if (pose === 'jump') { f('LegL').rotation.x = d(60); f('LegR').rotation.x = d(20); f('ArmL').rotation.x = d(-160); f('ArmR').rotation.x = d(-150); o.rotation.x = d(-8); o.position.y += 1.2; } }
   scene.add(o); return o;
 }
+function shadow(x, z, rx, rz) { const m = new THREE.Mesh(new THREE.CircleGeometry(1, 32), new THREE.MeshBasicMaterial({ color: '#1a1a1a', transparent: true, opacity: 0.18 })); m.rotation.x = -Math.PI / 2; m.scale.set(rx, rz, 1); m.position.set(x, 0.012, z); scene.add(m); return m; }
 function box(w, h, d, x, y, z, hex, outline = true) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), toon(hex)); m.position.set(x, y, z); scene.add(m);
   if (outline) { const o = new THREE.Mesh(new THREE.BoxGeometry(w + 0.03, h + 0.03, d + 0.03), new THREE.MeshBasicMaterial({ color: '#111', side: THREE.BackSide })); m.add(o); }
@@ -48,18 +50,21 @@ function box(w, h, d, x, y, z, hex, outline = true) {
   const row = [['BuildingCity', 0], ['BuildingAlley', 4.5], ['Containers', 9], ['BuildingCity', 13.5], ['BuildingAlley', 18], ['BuildingCity', 22.5], ['Containers', 27], ['BuildingAlley', 31.5], ['BuildingCity', 36], ['BuildingAlley', 40.5], ['BuildingCity', 45], ['BuildingCity', 50], ['BuildingAlley', 55]];
   for (const [n, z] of row) { await place(n, 3.7, -0.3, z - 6); await place(n, -3.7, -0.3, z - 2, { sx: -1 }); }
   // obstacles and pickups ahead
-  await place('Barrier', -2, 0, 7); await place('Sign', 0, 0, 13); await place('Train', 2, 0, 9);
-  for (let i = 0; i < 6; i++) await place('Coin', 0, 0, 3.5 + i * 0.9, { ry: 0.4 * i });
-  for (let i = 0; i < 4; i++) await place('Coin', -2, 0, 16 + i * 0.9, { ry: 0.5 * i });
-  await place('Magnet', 2, 0, 20); await place('Barrier', 0, 0, 24); await place('Train', -2, 0, 28);
-  for (let i = 0; i < 5; i++) await place('Lantern', -2.4 + i * 1.2, 4.2 + Math.sin(i) * 0.15, 12, {});
+  await place('Barrier', -2, 0, 7, { sh: [0.95, 0.35] }); await place('Sign', 0, 0, 13); await place('Train', 2, 0, 9, { sh: [1.1, 3.4, 0, 3] });
+  for (let i = 0; i < 6; i++) await place('Coin', 0, 0, 3.5 + i * 0.9, { ry: 0.4 * i, sh: [0.3, 0.3] });
+  for (let i = 0; i < 4; i++) await place('Coin', -2, 0, 16 + i * 0.9, { ry: 0.5 * i, sh: [0.3, 0.3] });
+  await place('Magnet', 2, 0, 20, { sh: [0.5, 0.4] }); await place('Barrier', 0, 0, 24, { sh: [0.95, 0.35] }); await place('Train', -2, 0, 28, { sh: [1.1, 3.4, 0, 3] });
+  for (let i = 0; i < 3; i++) await place('Lantern', -2.0 + i * 2.0, 4.3 + Math.sin(i) * 0.15, 12, {});
   box(6.6, 0.02, 0.02, 0, 4.9, 12, '#121212', false);
+  // sky: light screentone band above the horizon so the far road does not melt into white
+  const sky = new THREE.Mesh(new THREE.PlaneGeometry(400, 60), new THREE.MeshBasicMaterial({ color: '#ededed' })); sky.position.set(0, 30, 120); scene.add(sky);
+  const hz = new THREE.Mesh(new THREE.PlaneGeometry(400, 0.3), new THREE.MeshBasicMaterial({ color: '#121212' })); hz.position.set(0, 0.2, 118); scene.add(hz);
   // hero + drop shadow
   const hero = await place('Hero', 0, 0, 0, { pose: shot === 'jump' ? 'jump' : 'run' });
-  const sh = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), new THREE.MeshBasicMaterial({ color: '#1a1a1a', transparent: true, opacity: 0.22 })); sh.rotation.x = -Math.PI / 2; sh.position.set(0, 0.012, 0.1); scene.add(sh);
+  shadow(0, 0.1, 0.45, 0.4);
   // sun disc in the sky
   const sun = new THREE.Mesh(new THREE.CircleGeometry(9, 64), new THREE.MeshBasicMaterial({ color: '#e0202a' })); sun.position.set(6, 16, 85); scene.add(sun);
-  cam.position.set(0, 3.1, -4.6); cam.lookAt(0, 1.3, 6);
+  cam.position.set(0, 3.4, -6.5); cam.lookAt(0, 1.2, 10);
   renderer.render(scene, cam); window.__done = true;
 })().catch(e => { console.error('scene error', e.message || e); window.__done = 'error'; });
 </script></body></html>

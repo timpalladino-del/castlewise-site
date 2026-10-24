@@ -40,36 +40,41 @@ def train():
     for z, ry, rx, cy in [(-0.42, 0.55, 0.52, 1.2), (-0.34, 0.86, 0.78, 1.28), (-0.2, 1.05, 0.9, 1.32), (0.0, 1.13, 0.95, 1.34),
                           (0.6, 1.15, 0.95, 1.35), (3.0, 1.15, 0.95, 1.35), (5.6, 1.15, 0.95, 1.35), (5.95, 1.12, 0.93, 1.35), (6.05, 0.95, 0.8, 1.35)]:
         rings.append(ring((0, cy, z), rx, ry, 32, 'xy', squircle=0.9))
-    body = loft('Body', rings, P, sharp_deg=90); K.subsurf(body, 1); parts.append(body)
-    for sx in (-1, 1): parts.append(box('Band', (sx*0.955, 1.05, 2.95), (0.05, 0.24, 5.9), A, 0.012))
-    nb = box('NoseBand', (0, 1.0, -0.36), (1.3, 0.22, 0.08), A, 0.012); K.transform(nb, (0, 1.0, -0.36), 'x', -14); parts.append(nb)
+    body = loft('Body', rings, P, sharp_deg=90); K.subsurf(body, 1)
+    # inset side windows and door recesses: boolean cuts into the hull, dark glass set back inside
     for z in [0.75, 1.75, 2.9, 3.6, 4.75, 5.6]:
+        w = 0.72 if z not in (1.75, 3.6) else 0.5
         for sx in (-1, 1):
-            parts.append(box('Window', (sx*0.955, 1.85, z), (0.06, 0.6, 0.72 if z not in (1.75, 3.6) else 0.5), I, 0.05, 3))
+            cz = box('Cut', (sx*0.96, 1.85, z), (0.14, 0.6, w), I, 0.03); K.boolean(body, cz)
+            parts.append(box('Glass', (sx*0.9, 1.85, z), (0.04, 0.58, w - 0.02), I))
     for z in [1.2, 4.15]:
         for sx in (-1, 1):
-            parts.append(box('Door', (sx*0.958, 1.15, z), (0.05, 1.6, 0.9), T, 0.03))
-            parts.append(box('DoorSplit', (sx*0.975, 1.15, z), (0.04, 1.55, 0.03), I, 0.005))
-            parts.append(box('DoorGlass', (sx*0.985, 1.85, z), (0.04, 0.45, 0.72), I, 0.04, 3))
-            for dz in (-0.12, 0.12): parts.append(box('Handle', (sx*0.99, 1.25, z+dz), (0.03, 0.35, 0.03), P, 0.01))
-    ws = box('Windshield', (0, 1.78, -0.36), (1.15, 0.58, 0.1), I, 0.06, 3); K.transform(ws, (0, 1.78, -0.36), 'x', -17); parts.append(ws)
+            cz = box('Cut', (sx*0.96, 1.1, z), (0.08, 1.75, 0.95), I, 0.02); K.boolean(body, cz)
+            parts.append(box('DoorLeaf', (sx*0.925, 1.1, z), (0.04, 1.72, 0.92), T))
+            parts.append(box('DoorSplit', (sx*0.95, 1.1, z), (0.02, 1.7, 0.025), I))
+            cz2 = box('Cut', (sx*0.96, 1.85, z), (0.14, 0.5, 0.7), I, 0.03); K.boolean(body, cz2)
+            parts.append(box('DoorGlass', (sx*0.9, 1.85, z), (0.04, 0.48, 0.68), I))
+    # wraparound cab window: one cut across the nose
+    cab = box('Cut', (0, 1.8, -0.4), (1.4, 0.62, 0.3), I, 0.1, 3); K.transform(cab, (0, 1.8, -0.4), 'x', -17); K.boolean(body, cab)
+    parts.append(box('CabGlass', (0, 1.78, -0.3), (1.3, 0.58, 0.12), I, 0.05, 3))
+    parts.append(body)
+    for sx in (-1, 1): parts.append(box('Band', (sx*0.955, 1.05, 2.95), (0.04, 0.16, 5.9), T, 0.01))
+    nb = box('NoseBand', (0, 1.0, -0.36), (1.3, 0.16, 0.08), T, 0.01); K.transform(nb, (0, 1.0, -0.36), 'x', -14); parts.append(nb)
     for sx in (-1, 1):
-        parts.append(tube('Wiper', [(sx*0.35, 1.52, -0.41), (sx*0.22, 1.72, -0.44), (sx*0.1, 1.9, -0.47)], 0.012, I))
-        parts.append(spin('Headlight', [(0, 0), (0.11, 0), (0.14, 0.03), (0.14, 0.06), (0, 0.06)], P, 24, (sx*0.52, 0.95, -0.46), 'z'))
-        parts.append(torus('HeadlightRim', (sx*0.52, 0.95, -0.44), 0.15, 0.02, I, 'z'))
-    db = box('DestBoard', (0, 2.28, -0.22), (0.9, 0.24, 0.12), A, 0.03); K.transform(db, (0, 2.28, -0.22), 'x', -11); parts.append(db)
-    dp = box('DestPlate', (0, 2.28, -0.285), (0.7, 0.14, 0.02), P, 0.005); K.transform(dp, (0, 2.28, -0.285), 'x', -11); parts.append(dp)
+        parts.append(box('HeadlightRim', (sx*0.5, 0.98, -0.45), (0.34, 0.2, 0.06), I, 0.02))
+        parts.append(box('Headlight', (sx*0.5, 0.98, -0.47), (0.28, 0.14, 0.04), P, 0.015))
+    db = box('DestBoard', (0, 2.28, -0.22), (0.9, 0.24, 0.12), I, 0.03); K.transform(db, (0, 2.28, -0.22), 'x', -11); parts.append(db)
+    dp = box('DestPlate', (0, 2.28, -0.285), (0.74, 0.16, 0.02), P, 0.005); K.transform(dp, (0, 2.28, -0.285), 'x', -11); parts.append(dp)
+    for x, w, h in [(-0.2, 0.08, 0.1), (-0.06, 0.08, 0.1), (0.1, 0.16, 0.025), (0.1, 0.025, 0.1)]:
+        g = box('DestGlyph', (x, 2.28, -0.3), (w, h, 0.01), I, 0.003); K.transform(g, (0, 2.28, -0.3), 'x', -11); parts.append(g)
     cow = loft('Cowcatcher', [ring((0, 0.42, -0.28), 0.9, 0.3, 24, 'xy', squircle=0.9), ring((0, 0.33, -0.52), 0.72, 0.14, 24, 'xy', squircle=0.9)], I, sharp_deg=90); K.subsurf(cow, 1); parts.append(cow)
-    for sx in (-1, 1):
-        s = box('CowStripe', (sx*0.35, 0.36, -0.5), (0.12, 0.2, 0.03), A, 0.01); K.transform(s, (sx*0.35, 0.36, -0.5), 'z', sx*23); parts.append(s)
     parts.append(box('Coupler', (0, 0.38, 6.12), (0.3, 0.2, 0.2), I, 0.03))
-    parts.append(box('Underframe', (0, 0.3, 2.9), (1.7, 0.3, 5.9), I, 0.04))
+    parts.append(box('Skirt', (0, 0.32, 2.9), (1.84, 0.34, 5.9), I, 0.05))
     for z in [1.0, 4.9]:
-        parts.append(box('Bogie', (0, 0.36, z), (1.5, 0.28, 1.3), I, 0.05))
         for sx in (-1, 1):
             for dz in (-0.42, 0.42):
-                parts.append(cylinder('Wheel', (sx*0.82, 0.3, z+dz), 0.3, 0.14, I, 'x', 24, bevel_w=0.03))
-                parts.append(cylinder('Hub', (sx*0.9, 0.3, z+dz), 0.1, 0.04, T, 'x', 16))
+                parts.append(cylinder('Wheel', (sx*0.8, 0.24, z+dz), 0.24, 0.12, I, 'x', 24, bevel_w=0.03))
+                parts.append(cylinder('Hub', (sx*0.87, 0.24, z+dz), 0.08, 0.03, T, 'x', 16))
     for z in [1.9, 3.4, 4.9]: parts.append(box('Vent', (0, 2.5, z), (0.7, 0.1, 0.9), T, 0.03))
     parts.append(box('PantoBase', (0, 2.5, 2.7), (0.8, 0.06, 0.8), I, 0.02))
     for sx in (-1, 1): parts.append(tube('PantoArm', [(sx*0.3, 2.5, 2.4), (0, 2.95, 2.7), (sx*0.3, 2.5, 3.0)], 0.025, I))
@@ -82,16 +87,16 @@ def barrier():
     for i in range(4):
         x = -0.51 + i*0.34
         for sz in (-1, 1):
-            s = box('Chevron', (x, 0.62, sz*0.045), (0.15, 0.5, 0.02), A, 0.008); K.transform(s, (x, 0.62, sz*0.045), 'z', sz*20); parts.append(s)
+            s = box('Chevron', (x, 0.62, sz*0.042), (0.15, 0.5, 0.012), I, 0.004); K.transform(s, (x, 0.62, sz*0.042), 'z', sz*20); parts.append(s)
     parts.append(tube('Rail', [(-0.84, 0.94, 0), (-0.3, 0.94, 0), (0.3, 0.94, 0), (0.84, 0.94, 0)], 0.055, P, bevel_res=8))
     for sx in (-1, 1):
         parts.append(sphere('RailCap', (sx*0.84, 0.94, 0), 0.055, I, (0.5, 1, 1)))
         parts.append(box('Leg', (sx*0.68, 0.3, 0), (0.09, 0.62, 0.09), I, 0.02))
         parts.append(box('Foot', (sx*0.68, 0.035, 0), (0.12, 0.07, 0.56), I, 0.02))
         for sz in (-1, 1): parts.append(cylinder('Bolt', (sx*0.7, 0.62, sz*0.05), 0.028, 0.02, I, 'z', 10))
-    parts.append(cylinder('LampBase', (0.55, 1.03, 0), 0.07, 0.08, I, 'y', 16))
-    parts.append(cylinder('LampRing', (0.55, 1.07, 0), 0.08, 0.02, I, 'y', 16))
-    dome = sphere('Lamp', (0.55, 1.07, 0), 0.075, A, (1, 1.1, 1)); parts.append(dome)
+    parts.append(cylinder('LampStem', (0.55, 1.04, 0), 0.035, 0.12, I, 'y', 12))
+    parts.append(cylinder('LampRing', (0.55, 1.1, 0), 0.08, 0.025, I, 'y', 16))
+    dome = sphere('Lamp', (0.55, 1.14, 0), 0.075, A, (1, 1.0, 1)); parts.append(dome)
     return K.join('Barrier', parts)
 
 def sign():
@@ -103,7 +108,7 @@ def sign():
     for y in (2.235, 1.325): parts.append(box('Frame', (0, y, 0), (1.8, 0.05, 0.11), I, 0.015))
     for sx in (-1, 1): parts.append(box('Frame', (sx*0.875, 1.78, 0), (0.05, 0.95, 0.11), I, 0.015))
     for sz in (-1, 1):
-        parts.append(box('TopBand', (0, 2.15, sz*0.047), (1.7, 0.1, 0.02), A, 0.006))
+        parts.append(box('TopBand', (0, 2.15, sz*0.047), (1.7, 0.1, 0.02), I, 0.006))
         for x, y, w, h in [(0, 1.74, 0.09, 0.62), (0.3*sz, 1.63, 0.09, 0.38), (-0.3*sz, 1.7, 0.09, 0.5), (0, 1.45, 0.95, 0.09), (-0.17*sz, 1.9, 0.36, 0.09)]:
             parts.append(box('Glyph', (x, y, sz*0.05), (w, h, 0.03), A, 0.008))
     parts.append(box('Brace', (0, 1.2, 0), (1.6, 0.05, 0.05), I, 0.012))
@@ -116,22 +121,23 @@ def building_city():
     parts = []
     block = box('Block', (1.5, 3.0, 2.0), (3.0, 6.0, 4.0), P)
     cuts = []
-    for r in range(4):
-        y = 1.1 + r*1.25
-        for z in [0.9, 2.0, 3.1]:
-            cuts.append(window_cut(block, (0, y, z), (0.66, 0.66), 0.12, '-x')); glass(parts, (0, y, z), (0.66, 0.66), '-x', 0.12)
-            parts.append(box('Sill', (-0.03, y-0.37, z), (0.1, 0.05, 0.78), P, 0.012))
-        for x in [0.7, 1.5, 2.3]:
-            if x == 1.5 and r == 0: continue
-            cuts.append(window_cut(block, (x, y, 0), (0.62, 0.66), 0.12, '-z')); glass(parts, (x, y, 0), (0.62, 0.66), '-z', 0.12)
-            cuts.append(window_cut(block, (x, y, 4.0), (0.62, 0.66), 0.12, '+z')); glass(parts, (x, y, 4.0), (0.62, 0.66), '+z', 0.12)
-    cuts.append(window_cut(block, (1.5, 1.05, 0), (1.0, 2.1), 0.15, '-z'))
-    parts.append(box('Door', (1.5, 1.05, 0.12), (0.95, 2.1, 0.04), I))
-    parts.append(box('DoorBar', (1.5, 1.05, 0.1), (0.04, 1.9, 0.04), P, 0.01))
+    for r in range(2):                       # 3 m storeys: sills at 0.9 m above each floor
+        y = 1.75 + r*3.0
+        for z in [0.75, 2.0, 3.25]:
+            cuts.append(window_cut(block, (0, y, z), (1.0, 1.5), 0.14, '-x')); glass(parts, (0, y, z), (1.0, 1.5), '-x', 0.14)
+            parts.append(box('Sill', (-0.04, y-0.8, z), (0.12, 0.06, 1.12), P, 0.014))
+        for x in [0.75, 2.25]:
+            cuts.append(window_cut(block, (x, y, 0), (1.0, 1.5), 0.14, '-z')); glass(parts, (x, y, 0), (1.0, 1.5), '-z', 0.14)
+            cuts.append(window_cut(block, (x, y, 4.0), (1.0, 1.5), 0.14, '+z')); glass(parts, (x, y, 4.0), (1.0, 1.5), '+z', 0.14)
+        parts.append(box('StringCourse', (1.5, 3.05 + r*3.0, 2.0), (3.06, 0.08, 4.06), I, 0.01)) if r == 0 else None
+    cuts.append(window_cut(block, (1.5, 1.1, 0), (1.1, 2.2), 0.15, '-z'))
+    parts.append(box('Door', (1.5, 1.1, 0.12), (1.05, 2.2, 0.04), I))
+    parts.append(box('DoorBar', (1.5, 1.1, 0.1), (0.04, 2.0, 0.04), P, 0.01))
     K.bevel(block, 0.035, 2, 30); K.shade_smooth(block, math.radians(35)); parts.append(block)
     parts.append(box('Plinth', (1.5, 0.3, 2.0), (3.08, 0.6, 4.08), T, 0.03))
     parts.append(box('Parapet', (1.5, 6.05, 2.0), (3.1, 0.16, 4.1), I, 0.03))
-    aw = box('Awning', (1.5, 2.3, -0.3), (1.3, 0.08, 0.6), A, 0.03); K.transform(aw, (1.5, 2.3, -0.3), 'x', -17); parts.append(aw)
+    aw = box('Awning', (1.5, 2.45, -0.3), (1.4, 0.08, 0.6), A, 0.03); K.transform(aw, (1.5, 2.45, -0.3), 'x', -17); parts.append(aw)
+    for sx in (-1, 1): parts.append(tube('AwningStrut', [(1.5 + sx*0.6, 2.2, -0.55), (1.5 + sx*0.6, 2.45, -0.3), (1.5 + sx*0.6, 2.55, -0.02)], 0.02, I))
     # roof
     parts.append(spin('Tank', [(0.0, 6.15), (0.45, 6.15), (0.5, 6.3), (0.5, 7.0), (0.46, 7.1), (0.0, 7.1)], P, 24, (1.9, 0, 2.5)))
     parts.append(spin('TankLid', [(0.0, 7.08), (0.52, 7.08), (0.3, 7.3), (0.05, 7.42), (0.0, 7.42)], I, 24, (1.9, 0, 2.5)))
@@ -143,10 +149,11 @@ def building_city():
     for y, w in [(7.5, 0.7), (7.2, 0.5)]: parts.append(box('AntennaBar', (0.6, y, 3.2), (w, 0.025, 0.025), I, 0.005))
     # billboard on the track face, banner on -z, drainpipe
     parts.append(box('Billboard', (-0.1, 3.6, 3.2), (0.12, 2.4, 0.95), P, 0.03))
-    parts.append(box('BillBand', (-0.17, 4.65, 3.2), (0.03, 0.32, 0.95), A, 0.008))
+    parts.append(box('BillBand', (-0.17, 4.65, 3.2), (0.03, 0.32, 0.95), I, 0.008))
     for y, w, h in [(3.85, 0.6, 0.09), (3.45, 0.6, 0.09), (3.62, 0.09, 0.7), (3.0, 0.09, 0.3), (2.7, 0.5, 0.09)]: parts.append(box('BillStroke', (-0.17, y, 3.2), (0.03, h, w), I, 0.006))
-    parts.append(box('Banner', (0.45, 4.6, -0.1), (0.7, 2.6, 0.14), A, 0.03))
-    for y, w, h in [(5.5, 0.4, 0.09), (5.1, 0.09, 0.5), (4.6, 0.4, 0.09), (4.1, 0.09, 0.5), (3.6, 0.4, 0.09)]: parts.append(box('BannerStroke', (0.45, y, -0.18), (w, h, 0.03), P, 0.006))
+    parts.append(box('Banner', (0.45, 4.6, -0.1), (0.7, 2.6, 0.14), P, 0.03))
+    parts.append(box('BannerBand', (0.45, 5.75, -0.18), (0.7, 0.3, 0.02), A, 0.006))
+    for y, w, h in [(5.3, 0.4, 0.09), (4.9, 0.09, 0.5), (4.4, 0.4, 0.09), (3.9, 0.09, 0.5), (3.45, 0.4, 0.09)]: parts.append(box('BannerStroke', (0.45, y, -0.18), (w, h, 0.03), I, 0.006))
     parts.append(tube('Drain', [(-0.08, 0.1, 0.12), (-0.08, 3.0, 0.12), (-0.08, 6.1, 0.12)], 0.06, I))
     return K.join('BuildingCity', parts)
 
@@ -184,18 +191,19 @@ def lantern_parts(parts, c):
     cx, cy, cz = c
     body = spin('Lantern', [(0.0, -0.4), (0.13, -0.4), (0.25, -0.3), (0.3, -0.12), (0.3, 0.12), (0.25, 0.3), (0.13, 0.4), (0.0, 0.4)], A, 24, c); K.subsurf(body, 1); parts.append(body)
     for y in (0.42, -0.42): parts.append(cylinder('Cap', (cx, cy+y, cz), 0.13, 0.07, I, 'y', 16))
-    for y, R in [(-0.3, 0.24), (-0.15, 0.29), (0.0, 0.3), (0.15, 0.29), (0.3, 0.24)]: parts.append(torus('Rib', (cx, cy+y, cz), R, 0.012, I, 'y', 24, 6))
+    for y, R in [(-0.3, 0.235), (-0.15, 0.282), (0.0, 0.292), (0.15, 0.282), (0.3, 0.235)]: parts.append(torus('Rib', (cx, cy+y, cz), R, 0.014, I, 'y', 28, 6))
     parts.append(tube('String', [(cx, cy+0.44, cz), (cx, cy+0.52, cz), (cx, cy+0.6, cz)], 0.012, I))
     parts.append(tube('Tassel', [(cx, cy-0.46, cz), (cx, cy-0.6, cz), (cx, cy-0.72, cz)], 0.03, A, radii=[0.6, 1.0, 0.4]))
 
 def building_alley():
     parts = []
     block = box('Block', (1.2, 4.5, 2.0), (2.4, 9.0, 4.0), P)
-    for r in range(6):
-        y = 1.6 + r*1.25
-        for z in (1.15, 2.85):
-            window_cut(block, (0, y, z), (1.1, 0.5), 0.12, '-x'); glass(parts, (0, y, z), (1.1, 0.5), '-x', 0.12)
-            parts.append(box('Sill', (-0.04, y-0.3, z), (0.14, 0.05, 1.22), P, 0.012))
+    for r in range(3):                       # 3 m storeys
+        y = 1.9 + r*3.0
+        for z in (1.1, 2.9):
+            window_cut(block, (0, y, z), (1.3, 1.3), 0.14, '-x'); glass(parts, (0, y, z), (1.3, 1.3), '-x', 0.14)
+            parts.append(box('Sill', (-0.05, y-0.7, z), (0.14, 0.06, 1.42), P, 0.014))
+        if r: parts.append(box('StringCourse', (1.2, 0.05 + r*3.0, 2.0), (2.46, 0.08, 4.06), I, 0.01))
     window_cut(block, (0, 1.1, 3.3), (0.9, 2.2), 0.15, '-x')
     parts.append(box('Door', (0.13, 1.1, 3.3), (0.04, 2.2, 0.9), I))
     parts.append(box('DoorBar', (0.1, 1.1, 3.3), (0.04, 2.0, 0.04), P, 0.01))
@@ -212,7 +220,7 @@ def building_alley():
     parts.append(torus('ACFan', (-0.58, 5.2, 0.8), 0.16, 0.025, I, 'x'))
     # vertical sign
     parts.append(box('SignBoard', (-0.25, 6.5, 3.2), (0.16, 2.6, 0.72), P, 0.03))
-    parts.append(box('SignBand', (-0.34, 7.6, 3.2), (0.03, 0.32, 0.72), A, 0.008))
+    parts.append(box('SignBand', (-0.34, 7.6, 3.2), (0.03, 0.32, 0.72), I, 0.008))
     for y, w, h in [(6.65, 0.45, 0.09), (6.2, 0.09, 0.5), (5.75, 0.45, 0.09), (5.4, 0.3, 0.09)]: parts.append(box('SignStroke', (-0.34, y, 3.2), (0.03, h, w), I, 0.006))
     for y in (7.75, 5.25): parts.append(box('Bracket', (-0.1, y, 3.2), (0.32, 0.05, 0.05), I, 0.012))
     # awning, struts, drainpipe, wire, lanterns
@@ -225,13 +233,13 @@ def building_alley():
 
 # ---------------------------------------------------------------- pickups
 def badge(parts):
-    parts.append(spin('Badge', [(0, 0), (0.5, 0), (0.52, 0.02), (0.52, 0.04), (0.5, 0.06), (0, 0.06)], P, 32, (0, 0.9, 0.13), 'z'))
-    parts.append(torus('BadgeRim', (0, 0.9, 0.14), 0.52, 0.035, I, 'z'))
+    parts.append(spin('Badge', [(0, 0), (0.5, 0), (0.52, 0.02), (0.52, 0.04), (0.5, 0.06), (0, 0.06)], P, 48, (0, 0.9, 0.13), 'z'))
+    parts.append(torus('BadgeRim', (0, 0.9, 0.14), 0.52, 0.035, I, 'z', 48, 12))
 
 def coin():
     parts = []
     parts.append(spin('Disc', [(0, 0), (0.32, 0), (0.35, 0.03), (0.35, 0.06), (0.32, 0.09), (0, 0.09)], A, 32, (0, 0.6, -0.045), 'z'))
-    parts.append(torus('Rim', (0, 0.6, 0), 0.35, 0.028, I, 'z'))
+    parts.append(torus('Rim', (0, 0.6, 0), 0.35, 0.028, I, 'z', 48, 10))
     for sz in (-1, 1):
         parts.append(torus('Inner', (0, 0.6, sz*0.045), 0.25, 0.02, P, 'z', 28, 8))
         zf = sz*0.053
@@ -246,7 +254,7 @@ def magnet():
     parts = []
     badge(parts)
     arc = torus('Arc', (0, 0.95, 0), 0.3, 0.1, A, 'z', 28, 14, angle=180); parts.append(arc)
-    for sx in (-1, 1): parts.append(box('Tip', (sx*0.3, 0.72, 0), (0.2, 0.24, 0.2), P, 0.03, 3))
+    for sx in (-1, 1): parts.append(box('Tip', (sx*0.3, 0.8, 0), (0.2, 0.34, 0.2), P, 0.03, 3))
     return K.join('Magnet', parts)
 
 def dash():

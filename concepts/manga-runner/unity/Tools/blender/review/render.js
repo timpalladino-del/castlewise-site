@@ -1,6 +1,6 @@
 const { chromium } = require('playwright');
 const views = [
-  ['Hero', 2.6, 0.25, 'hero-back'], ['Hero', 0.6, 0.25, 'hero-front'], ['Train', 2.5, 0.35, 'train'], ['Barrier', 2.6, 0.4, 'barrier'], ['Sign', 2.6, 0.3, 'sign'],
+  ['Hero', 2.6, 0.25, 'hero-back'], ['Hero', 0.6, 0.25, 'hero-front'], ['Train', 3.6, 0.3, 'train'], ['Barrier', 2.6, 0.4, 'barrier'], ['Sign', 2.6, 0.3, 'sign'],
   ['BuildingCity', -2.3, 0.35, 'building-city'], ['Containers', -2.3, 0.4, 'containers'], ['BuildingAlley', -2.3, 0.3, 'building-alley'],
   ['Coin', 2.7, 0.2, 'coin'], ['Magnet', 2.7, 0.2, 'magnet'], ['Dash', 2.7, 0.2, 'dash'], ['Lantern', 2.7, 0.3, 'lantern'],
 ];
