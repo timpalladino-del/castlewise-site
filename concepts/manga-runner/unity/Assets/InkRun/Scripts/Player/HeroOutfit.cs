@@ -22,8 +22,10 @@ namespace InkRun.Player
 
         public void Apply()
         {
-            if (PartsRoot == null) return;
             string id = SaveData.Current.Outfit;
+            // modeled parts sit on the joints they move with (cap on the head, box on the body)
+            foreach (var part in GetComponentsInChildren<OutfitPart>(true)) part.gameObject.SetActive(part.Outfit == id);
+            if (PartsRoot == null) return;
             for (int i = 0; i < PartsRoot.childCount; i++)
             {
                 var c = PartsRoot.GetChild(i);

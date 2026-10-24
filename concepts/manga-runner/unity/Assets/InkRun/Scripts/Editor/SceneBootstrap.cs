@@ -279,6 +279,23 @@ namespace InkRun.EditorTools
             q.transform.localScale = new Vector3(sx, sz, 1f);
             q.GetComponent<Renderer>().sharedMaterial = _tone;
         }
+
+        // Outfit GLBs carry 'Head' and 'Body' nodes with the same pivots as the hero's joints: parent each onto its joint.
+        static bool AttachOutfit(GameObject heroModel, string id)
+        {
+            var m = Model("Outfit_" + char.ToUpper(id[0]) + id.Substring(1));
+            if (m == null) return false;
+            bool any = false;
+            foreach (var jointName in new[] { "Head", "Body" })
+            {
+                var src = Find(m.transform, jointName); var joint = Find(heroModel.transform, jointName);
+                if (src == null || joint == null) continue;
+                src.SetParent(joint, false); src.localPosition = Vector3.zero; src.localRotation = Quaternion.identity; src.localScale = Vector3.one;
+                src.name = "Outfit_" + id + "_" + jointName; src.gameObject.AddComponent<OutfitPart>().Outfit = id; any = true;
+            }
+            Object.DestroyImmediate(m);
+            return any;
+        }
         static GameObject Model(string name)
         {
             var asset = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "/Models/" + name + ".glb");
@@ -357,8 +374,8 @@ namespace InkRun.EditorTools
                 heroAnim.ArmL = Find(heroModel.transform, "ArmL"); heroAnim.ArmR = Find(heroModel.transform, "ArmR");
                 var partsM = new GameObject("Parts"); partsM.transform.SetParent(heroModel.transform, false);
                 Part(partsM, "default", new Vector3(0.01f, 0.01f, 0.01f), new Vector3(0, -5f, 0), _accent);   // goggles are modeled; keep the node for the outfit swap
-                Part(partsM, "delivery", new Vector3(0.55f, 0.12f, 0.55f), new Vector3(0, 1.78f, 0), _accent);
-                Part(partsM, "ronin", new Vector3(0.56f, 0.06f, 0.56f), new Vector3(0, 1.64f, 0), _accent);
+                if (!AttachOutfit(heroModel, "delivery")) Part(partsM, "delivery", new Vector3(0.55f, 0.12f, 0.55f), new Vector3(0, 1.78f, 0), _accent);
+                if (!AttachOutfit(heroModel, "ronin")) Part(partsM, "ronin", new Vector3(0.56f, 0.06f, 0.56f), new Vector3(0, 1.64f, 0), _accent);
                 root.AddComponent<HeroOutfit>().PartsRoot = partsM.transform;
                 var pcM = root.AddComponent<PlayerController>(); pcM.Visual = heroModel.transform;
                 return root;

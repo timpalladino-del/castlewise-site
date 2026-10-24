@@ -33,6 +33,7 @@ namespace InkRun.FX
             _clips["revive"] = Synth("revive", 0.35f, 330f, 990f, Wave.Square, 0.45f);
             _clips["clear"] = Arpeggio("clear", new[] { 660f, 880f, 1320f }, 0.13f, Wave.Square, 0.45f);
             _clips["ui"] = Synth("ui", 0.06f, 900f, 1200f, Wave.Sine, 0.3f);
+            _clips["rumble"] = Synth("rumble", 0.9f, 70f, 28f, Wave.Saw, 0.6f);   // the Shadow passing overhead
             foreach (var o in Overrides) if (o.Clip != null) _clips[o.Id] = o.Clip;
         }
 
