@@ -453,6 +453,22 @@ namespace InkRun.EditorTools
             Object.DestroyImmediate(shadow.GetComponent<Collider>());
             shadow.GetComponent<Renderer>().sharedMaterial = _tone;
             shadow.AddComponent<GroundShadow>().Target = hero.transform;
+            var crewModel = Model("Crew");
+            if (crewModel != null)
+            {
+                var crew = new GameObject("Crew"); crewModel.name = "Visual"; crewModel.transform.SetParent(crew.transform, false);
+                var ch = crew.AddComponent<Chaser>();
+                ch.Body = Find(crewModel.transform, "Body"); ch.Head = Find(crewModel.transform, "Head");
+                ch.LegL = Find(crewModel.transform, "LegL"); ch.LegR = Find(crewModel.transform, "LegR");
+                ch.ArmL = Find(crewModel.transform, "ArmL"); ch.ArmR = Find(crewModel.transform, "ArmR");
+                crew.transform.position = new Vector3(0, 0, -2.4f);
+            }
+            var kaijuModel = Model("KaijuShadow");
+            if (kaijuModel != null)
+            {
+                var kaiju = new GameObject("KaijuShadow"); kaijuModel.transform.SetParent(kaiju.transform, false);
+                kaiju.AddComponent<KaijuShadow>();
+            }
             var input = new GameObject("Input").AddComponent<SwipeInput>();
             hero.GetComponent<PlayerController>().Input = input;
 

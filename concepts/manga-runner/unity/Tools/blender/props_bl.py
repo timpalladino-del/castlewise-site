@@ -274,7 +274,17 @@ def dash():
 def lantern():
     parts = []; lantern_parts(parts, (0, 0, 0)); return K.join('Lantern', parts)
 
-MODELS = {'Train': train, 'Barrier': barrier, 'Sign': sign, 'BuildingCity': building_city, 'Containers': containers,
+
+def kaiju_shadow():
+    """Flat silhouette of the unseen kaiju (about 1 unit long, scaled in Unity): hunched body, horned head, tail, claws."""
+    parts = []
+    outline = [(-0.52, -0.02), (-0.42, 0.04), (-0.3, 0.02), (-0.2, 0.08), (-0.12, 0.2), (-0.08, 0.34), (-0.02, 0.4), (0.02, 0.5), (0.08, 0.44),
+               (0.16, 0.46), (0.14, 0.36), (0.22, 0.3), (0.3, 0.22), (0.4, 0.2), (0.5, 0.12), (0.56, 0.0), (0.46, -0.02), (0.38, 0.06),
+               (0.3, 0.06), (0.26, -0.02), (0.14, -0.04), (0.04, -0.02), (-0.06, -0.04), (-0.16, -0.02), (-0.3, -0.04), (-0.44, -0.06)]
+    parts.append(extrude_profile('Shadow', outline, 0.01, (0, 0.005, 0), T, 'xz'))
+    return K.join('KaijuShadow', parts)
+
+MODELS = {'Train': train, 'KaijuShadow': kaiju_shadow, 'Barrier': barrier, 'Sign': sign, 'BuildingCity': building_city, 'Containers': containers,
           'BuildingAlley': building_alley, 'Coin': coin, 'Magnet': magnet, 'Dash': dash, 'Lantern': lantern}
 
 if __name__ == '__main__':

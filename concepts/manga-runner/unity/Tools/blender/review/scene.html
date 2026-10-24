@@ -61,6 +61,9 @@ function box(w, h, d, x, y, z, hex, outline = true) {
   const hz = new THREE.Mesh(new THREE.PlaneGeometry(400, 0.3), new THREE.MeshBasicMaterial({ color: '#121212' })); hz.position.set(0, 0.2, 118); scene.add(hz);
   // hero + drop shadow
   const hero = await place('Hero', 0, 0, 0, { pose: shot === 'jump' ? 'jump' : 'run' });
+  // the Smudge Crew runner on his heels, and the kaiju's shadow sweeping the rooftops ahead
+  const crew = await place('Crew', 0.6, 0, -2.4, { pose: 'run', sh: [0.5, 0.45] }); crew.getObjectByName('LegL').rotation.x *= -1; crew.getObjectByName('LegR').rotation.x *= -1;
+  const ks = await place('KaijuShadow', -3, 0.02, 22, {}); ks.scale.set(9, 9, 9); ks.traverse(o => { if (o.isMesh && o.material.color) { o.material.transparent = true; o.material.opacity = 0.35; } });
   shadow(0, 0.1, 0.45, 0.4);
   // sun disc in the sky
   const sun = new THREE.Mesh(new THREE.CircleGeometry(9, 64), new THREE.MeshBasicMaterial({ color: '#e0202a' })); sun.position.set(6, 16, 85); scene.add(sun);

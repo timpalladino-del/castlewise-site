@@ -58,9 +58,10 @@ and Night Alley can start as palette swaps and get real props after launch.
 ### Hero and chasers
 **Nozomi**, a street kid: spiky hair, hoodie (accent color), goggles on forehead, high-tops.
 Three outfits at launch: Default, Delivery, Ronin. Two chasers: a rival gang on
-the ground and a kaiju in the sky. At launch the kaiju is only a shadow on the
-revive screen and the gang shows up in chapter transitions; both get real
-appearances in later volumes.
+the ground and a kaiju in the sky. Build 12: the Smudge Crew runner chases on the track (`Chaser.cs`: on the hero's
+heels at the start, drifts back during a clean run, closes in after a revive, stands over
+the hero on a crash) and the kaiju's shadow sweeps the rooftops ahead every 18-40 s
+(`KaijuShadow.cs`). The kaiju itself stays unseen in Volume 1.
 
 ## 4. Meta and retention
 
