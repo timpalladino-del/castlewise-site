@@ -33,6 +33,7 @@ namespace InkRun.EditorTools
                 Debug.LogWarning("Ink Run: import TextMeshPro first (Window > TextMeshPro > Import TMP Essential Resources), then run this menu again.");
                 return;
             }
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);   // assets deleted outside the editor (e.g. Data/Tuning.asset to reset defaults) are otherwise still served stale
             Folders();
             Materials();
             PatternBootstrap.Create();

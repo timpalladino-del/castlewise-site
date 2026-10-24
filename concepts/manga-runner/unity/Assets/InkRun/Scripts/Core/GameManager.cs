@@ -60,6 +60,7 @@ namespace InkRun.Core
 
         public void StartRun()
         {
+            if (Tuning == null) { Debug.LogError("Ink Run: GameManager.Tuning is missing (Data/Tuning.asset). Run Ink Run > Build gray-box scene again."); return; }
             Run = new RunStats { Assist = SaveData.Current.ShouldAssist(Tuning) };
             RevivesUsed = 0;
             DashTimeLeft = MagnetTimeLeft = InvulnerableTimeLeft = 0f;

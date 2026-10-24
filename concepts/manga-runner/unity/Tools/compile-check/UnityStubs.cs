@@ -45,7 +45,7 @@ namespace UnityEngine
     public enum TouchPhase { Began, Moved, Stationary, Ended, Canceled }
     public struct Touch { public TouchPhase phase; public Vector2 position; }
     public static class Input { public static bool GetKeyDown(KeyCode k) => false; public static int touchCount; public static Touch GetTouch(int i) => default; public static bool GetMouseButtonDown(int b) => false; public static bool GetMouseButton(int b) => false; public static bool GetMouseButtonUp(int b) => false; public static Vector3 mousePosition; }
-    public static class Debug { public static void Log(object o) { } public static void LogWarning(object o) { } }
+    public static class Debug { public static void Log(object o) { } public static void LogWarning(object o) { } public static void LogError(object o) { } }
     public static class PlayerPrefs { public static void SetString(string k, string v) { } public static string GetString(string k, string d) => d; public static void Save() { } }
     public static class JsonUtility { public static string ToJson(object o) => ""; public static T FromJson<T>(string s) => default; }
     public class Camera : Behaviour { public static Camera main; public Color backgroundColor; public CameraClearFlags clearFlags; public float fieldOfView; }
@@ -104,7 +104,8 @@ namespace UnityEngine.EventSystems { public class EventSystem : MonoBehaviour { 
 namespace UnityEngine.SceneManagement { public struct Scene { } }
 namespace UnityEditor
 {
-    public static class AssetDatabase { public static bool IsValidFolder(string p) => true; public static string CreateFolder(string a, string b) => ""; public static T LoadAssetAtPath<T>(string p) where T : UnityEngine.Object => null; public static void CreateAsset(UnityEngine.Object o, string p) { } public static void SaveAssets() { } public static string[] FindAssets(string f, string[] folders) => new string[0]; public static string GUIDToAssetPath(string g) => ""; }
+    public enum ImportAssetOptions { Default, ForceUpdate }
+    public static class AssetDatabase { public static void Refresh(ImportAssetOptions o) { } public static bool IsValidFolder(string p) => true; public static string CreateFolder(string a, string b) => ""; public static T LoadAssetAtPath<T>(string p) where T : UnityEngine.Object => null; public static void CreateAsset(UnityEngine.Object o, string p) { } public static void SaveAssets() { } public static string[] FindAssets(string f, string[] folders) => new string[0]; public static string GUIDToAssetPath(string g) => ""; }
     public static class PrefabUtility { public static UnityEngine.GameObject SaveAsPrefabAsset(UnityEngine.GameObject g, string p) => g; public static UnityEngine.Object InstantiatePrefab(UnityEngine.Object o) => o; }
     public static class EditorBuildSettings { public static EditorBuildSettingsScene[] scenes; }
     public static class PlayerSettings { public static string productName; public static UnityEngine.UIOrientation defaultInterfaceOrientation; }

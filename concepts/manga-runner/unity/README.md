@@ -106,7 +106,8 @@ Lanes are at x = -2, 0, +2 (`Tuning.LaneWidth`). The track is a strip of 10 m pi
 
 - **Tuning**: one asset. Every number Remote Config can change. The menu creates it once and
   never overwrites it, so after changing a default in `Core/Tuning.cs` delete
-  `Data/Tuning.asset` and rerun the menu (or edit the asset by hand).
+  `Data/Tuning.asset` and rerun the menu (or edit the asset by hand). The menu refreshes the
+  asset database first, so deleting the file from Finder or a shell is fine.
 - **Area** × 3: City Rooftops (red `#E0202A`), The Harbor (blue `#1E6FE0`),
   Night Alley (purple `#7B2FE0`, Crescent Moon on). Assign side-prop prefabs.
 - **Pattern**: menu **Ink Run > Create default patterns** builds the seven starting patterns.
