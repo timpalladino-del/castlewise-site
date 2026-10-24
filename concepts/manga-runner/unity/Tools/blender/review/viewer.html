@@ -1,0 +1,53 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}canvas{display:block}</style></head><body>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const q = new URLSearchParams(location.search);
+const file = q.get('m'), yaw = parseFloat(q.get('yaw') || '0.6'), pitch = parseFloat(q.get('pitch') || '0.35'), size = parseInt(q.get('size') || '800');
+const accent = q.get('accent') || '#e0202a', pose = q.get('pose') || '', zoom = parseFloat(q.get('zoom') || '1');
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(size, size); renderer.setPixelRatio(1); document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#ffffff');
+const cam = new THREE.PerspectiveCamera(28, 1, 0.01, 200);
+const key = new THREE.DirectionalLight('#ffffff', 2.4); key.position.set(-2.5, 4, 3); scene.add(key);
+scene.add(new THREE.AmbientLight('#ffffff', 0.8));
+const ramp = new THREE.DataTexture(new Uint8Array([110, 110, 110, 255, 200, 200, 200, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat); ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true;
+const COLORS = { InkPaper: '#ffffff', InkAccent: accent, Ink: '#121212', InkTone: '#b8b8b8', InkSkin: '#fff4ea' };
+export function inkify(root, outlineWidth) {
+  const meshes = []; root.traverse(o => { if (o.isMesh) meshes.push(o); });
+  for (const o of meshes) {
+    const name = o.material.name; const col = new THREE.Color(COLORS[name] || '#ffffff');
+    o.material = new THREE.MeshToonMaterial({ color: col, gradientMap: ramp });
+    // inverted hull along vertex normals
+    const g = o.geometry.clone(); const p = g.attributes.position, n = g.attributes.normal;
+    for (let i = 0; i < p.count; i++) { p.setXYZ(i, p.getX(i) + n.getX(i) * outlineWidth, p.getY(i) + n.getY(i) * outlineWidth, p.getZ(i) + n.getZ(i) * outlineWidth); }
+    const outline = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: '#111111', side: THREE.BackSide }));
+    o.add(outline);
+  }
+}
+function applyPose(root, pose) {
+  const f = (name) => root.getObjectByName(name);
+  if (pose === 'run') {
+    const d = THREE.MathUtils.degToRad;
+    f('LegL') && (f('LegL').rotation.x = d(42)); f('LegR') && (f('LegR').rotation.x = d(-30));
+    f('ArmL') && (f('ArmL').rotation.x = d(-45)); f('ArmR') && (f('ArmR').rotation.x = d(40));
+    root.rotation.x = d(7);
+  } else if (pose === 'jump') {
+    const d = THREE.MathUtils.degToRad;
+    f('LegL') && (f('LegL').rotation.x = d(60)); f('LegR') && (f('LegR').rotation.x = d(20));
+    f('ArmL') && (f('ArmL').rotation.x = d(-160)); f('ArmR') && (f('ArmR').rotation.x = d(-150));
+    root.rotation.x = d(-8);
+  }
+}
+new GLTFLoader().load('models/' + file, (g) => {
+  const root = g.scene; applyPose(root, pose); inkify(root, 0.006);
+  scene.add(root);
+  const box = new THREE.Box3().setFromObject(root); const c = box.getCenter(new THREE.Vector3()); const s3 = box.getSize(new THREE.Vector3());
+  const r = Math.max(s3.x, s3.y, s3.z) * 2.1 / zoom;
+  cam.position.set(c.x + r * Math.sin(yaw) * Math.cos(pitch), c.y + r * Math.sin(pitch), c.z + r * Math.cos(yaw) * Math.cos(pitch)); cam.lookAt(c);
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(Math.max(s3.x, s3.z) * 0.55, 40), new THREE.MeshBasicMaterial({ color: '#e6e6e6' }));
+  disc.rotation.x = -Math.PI / 2; disc.position.set(c.x, box.min.y + 0.003, c.z); scene.add(disc);
+  renderer.render(scene, cam); window.__done = true;
+}, undefined, (e) => { console.error('load error', e.message || e); window.__done = 'error'; });
+</script></body></html>

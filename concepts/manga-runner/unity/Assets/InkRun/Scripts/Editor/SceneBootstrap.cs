@@ -23,7 +23,7 @@ namespace InkRun.EditorTools
     public static class SceneBootstrap
     {
         const string Root = "Assets/InkRun";
-        static Material _paper, _accent, _ink, _tone;
+        static Material _paper, _accent, _ink, _tone, _skin;
 
         [MenuItem("Ink Run/Build gray-box scene")]
         public static void Build()
@@ -83,6 +83,7 @@ namespace InkRun.EditorTools
             _accent = Mat("InkAccent", Color.white, true);
             _ink = Mat("InkBlack", new Color(0.07f, 0.07f, 0.07f), false);
             _tone = Mat("InkTone", new Color(0.75f, 0.75f, 0.75f), false);
+            _skin = Mat("InkSkin", new Color(1f, 0.95f, 0.9f), false);
         }
 
         static OutfitDefinition[] Outfits()
@@ -275,7 +276,7 @@ namespace InkRun.EditorTools
             return go;
         }
 
-        // GLB materials are named InkPaper / InkAccent / Ink / InkTone; swap them for the ink shader materials.
+        // GLB materials are named InkPaper / InkAccent / Ink / InkTone / InkSkin; swap them for the ink shader materials.
         static void RemapInk(GameObject go)
         {
             foreach (var r in go.GetComponentsInChildren<Renderer>(true))
@@ -286,6 +287,7 @@ namespace InkRun.EditorTools
                     string n = mats[i] != null ? mats[i].name : "";
                     if (n.StartsWith("InkAccent")) mats[i] = _accent;
                     else if (n.StartsWith("InkPaper")) mats[i] = _paper;
+                    else if (n.StartsWith("InkSkin")) mats[i] = _skin != null ? _skin : _paper;
                     else if (n.StartsWith("InkTone")) mats[i] = _tone;
                     else if (n.StartsWith("Ink")) mats[i] = _ink;
                 }

@@ -82,7 +82,7 @@ Lanes are at x = -2, 0, +2 (`Tuning.LaneWidth`). The track is a strip of 10 m pi
 
 ## 3b. Models
 
-`Assets/InkRun/Models/*.glb` are low-poly toon models built by `Tools/models/build_models.py`
+`Assets/InkRun/Models/*.glb` are low-poly toon models built by `Tools/blender/build_all.py` (Blender headless via `pip install bpy`; see `Tools/blender/README.md`)
 (hero with joint nodes for the procedural run cycle, train, barrier, sign, coin, magnet,
 dash, city block, container stack, alley building, lantern). Install the **glTFast**
 package (Window > Package Manager > Add by name > `com.unity.cloud.gltfast`) so Unity

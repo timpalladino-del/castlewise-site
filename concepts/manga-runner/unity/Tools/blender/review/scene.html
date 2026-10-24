@@ -1,0 +1,65 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#fff}canvas{display:block}</style></head><body>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const q = new URLSearchParams(location.search);
+const W = parseInt(q.get('w') || '1080'), H = parseInt(q.get('h') || '1920'), shot = q.get('shot') || 'run';
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H); renderer.setPixelRatio(1); document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#ffffff');
+const cam = new THREE.PerspectiveCamera(58, W / H, 0.1, 300);
+const key = new THREE.DirectionalLight('#ffffff', 2.4); key.position.set(-4, 8, -3); scene.add(key);
+scene.add(new THREE.AmbientLight('#ffffff', 0.85));
+const ramp = new THREE.DataTexture(new Uint8Array([110, 110, 110, 255, 200, 200, 200, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat); ramp.minFilter = ramp.magFilter = THREE.NearestFilter; ramp.needsUpdate = true;
+const COLORS = { InkPaper: '#ffffff', InkAccent: '#e0202a', Ink: '#121212', InkTone: '#b8b8b8', InkSkin: '#fff4ea' };
+function toon(hex) { return new THREE.MeshToonMaterial({ color: new THREE.Color(hex), gradientMap: ramp }); }
+function inkify(root, outlineWidth) {
+  const meshes = []; root.traverse(o => { if (o.isMesh) meshes.push(o); });
+  for (const o of meshes) {
+    const name = o.material.name; o.material = toon(COLORS[name] || '#ffffff');
+    const g = o.geometry.clone(); const p = g.attributes.position, n = g.attributes.normal;
+    for (let i = 0; i < p.count; i++) p.setXYZ(i, p.getX(i) + n.getX(i) * outlineWidth, p.getY(i) + n.getY(i) * outlineWidth, p.getZ(i) + n.getZ(i) * outlineWidth);
+    o.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: '#111111', side: THREE.BackSide })));
+  }
+}
+const loader = new GLTFLoader(); const cache = {};
+const load = (name) => cache[name] ||= new Promise((res, rej) => loader.load('models/' + name + '.glb', g => { inkify(g.scene, 0.008); res(g.scene); }, undefined, rej));
+async function place(name, x, y, z, { ry = 0, sx = 1, pose = '' } = {}) {
+  const src = await load(name); const o = src.clone(true);
+  o.position.set(x, y, z); o.rotation.y = ry; o.scale.x = sx;
+  if (pose) { const d = THREE.MathUtils.degToRad; const f = n => o.getObjectByName(n);
+    if (pose === 'run') { f('LegL').rotation.x = d(42); f('LegR').rotation.x = d(-30); f('ArmL').rotation.x = d(-45); f('ArmR').rotation.x = d(40); o.rotation.x = d(7); }
+    if (pose === 'jump') { f('LegL').rotation.x = d(60); f('LegR').rotation.x = d(20); f('ArmL').rotation.x = d(-160); f('ArmR').rotation.x = d(-150); o.rotation.x = d(-8); o.position.y += 1.2; } }
+  scene.add(o); return o;
+}
+function box(w, h, d, x, y, z, hex, outline = true) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), toon(hex)); m.position.set(x, y, z); scene.add(m);
+  if (outline) { const o = new THREE.Mesh(new THREE.BoxGeometry(w + 0.03, h + 0.03, d + 0.03), new THREE.MeshBasicMaterial({ color: '#111', side: THREE.BackSide })); m.add(o); }
+  return m;
+}
+(async () => {
+  // rooftop track: paper slab, ink edges, tick lines, lane dashes
+  box(6.6, 0.3, 90, 0, -0.15, 35, '#ffffff');
+  box(0.12, 0.25, 90, -3.3, 0.05, 35, '#121212', false); box(0.12, 0.25, 90, 3.3, 0.05, 35, '#121212', false);
+  for (let z = -4; z < 80; z += 2) box(6.6, 0.02, 0.07, 0, 0.01, z, '#121212', false);
+  for (let z = -4; z < 80; z += 1) for (const x of [-1, 1]) box(0.05, 0.015, 0.5, x, 0.012, z + 0.25, '#b8b8b8', false);
+  // skyline both sides
+  const row = [['BuildingCity', 0], ['BuildingAlley', 4.5], ['Containers', 9], ['BuildingCity', 13.5], ['BuildingAlley', 18], ['BuildingCity', 22.5], ['Containers', 27], ['BuildingAlley', 31.5], ['BuildingCity', 36], ['BuildingAlley', 40.5], ['BuildingCity', 45], ['BuildingCity', 50], ['BuildingAlley', 55]];
+  for (const [n, z] of row) { await place(n, 3.7, -0.3, z - 6); await place(n, -3.7, -0.3, z - 2, { sx: -1 }); }
+  // obstacles and pickups ahead
+  await place('Barrier', -2, 0, 7); await place('Sign', 0, 0, 13); await place('Train', 2, 0, 9);
+  for (let i = 0; i < 6; i++) await place('Coin', 0, 0, 3.5 + i * 0.9, { ry: 0.4 * i });
+  for (let i = 0; i < 4; i++) await place('Coin', -2, 0, 16 + i * 0.9, { ry: 0.5 * i });
+  await place('Magnet', 2, 0, 20); await place('Barrier', 0, 0, 24); await place('Train', -2, 0, 28);
+  for (let i = 0; i < 5; i++) await place('Lantern', -2.4 + i * 1.2, 4.2 + Math.sin(i) * 0.15, 12, {});
+  box(6.6, 0.02, 0.02, 0, 4.9, 12, '#121212', false);
+  // hero + drop shadow
+  const hero = await place('Hero', 0, 0, 0, { pose: shot === 'jump' ? 'jump' : 'run' });
+  const sh = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), new THREE.MeshBasicMaterial({ color: '#1a1a1a', transparent: true, opacity: 0.22 })); sh.rotation.x = -Math.PI / 2; sh.position.set(0, 0.012, 0.1); scene.add(sh);
+  // sun disc in the sky
+  const sun = new THREE.Mesh(new THREE.CircleGeometry(9, 64), new THREE.MeshBasicMaterial({ color: '#e0202a' })); sun.position.set(6, 16, 85); scene.add(sun);
+  cam.position.set(0, 3.1, -4.6); cam.lookAt(0, 1.3, 6);
+  renderer.render(scene, cam); window.__done = true;
+})().catch(e => { console.error('scene error', e.message || e); window.__done = 'error'; });
+</script></body></html>
