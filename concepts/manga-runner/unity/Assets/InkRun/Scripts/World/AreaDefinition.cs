@@ -10,6 +10,7 @@ namespace InkRun.World
         public string DisplayName = "CITY ROOFTOPS";
         public Color Accent = new Color(0.878f, 0.125f, 0.165f);   // #E0202A
         public GameObject[] SideProps;     // buildings, containers, lanterns; one picked per track piece per side
+        public float RoofHeight;           // walkable roof line of the side building (set by the scene builder from the mesh); the rival gang stands here
         public bool CrescentMoon;          // night alley draws the sun as a crescent
         public Color Sky = Color.white;    // camera clear color; dark for the night chapter
     }

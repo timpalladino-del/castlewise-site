@@ -31,8 +31,8 @@ namespace InkRun.World
         {
             var gm = GameManager.Instance; if (gm == null || gm.State != GameState.Running) return;
             // stand on the roof edge of this chapter's side building: its height comes from the prop prefab's meshes
-            float roofY = 0f;
-            if (a != null && a.SideProps != null)
+            float roofY = a != null ? a.RoofHeight : 0f;
+            if (roofY <= 0f && a != null && a.SideProps != null)
                 foreach (var prop in a.SideProps)
                 {
                     if (prop == null) continue;

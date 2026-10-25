@@ -114,10 +114,35 @@ namespace InkRun.EditorTools
                 Area("NightAlley", "CHAPTER 3", "NIGHT ALLEY", new Color(0.482f, 0.184f, 0.878f), true, p.alley),
             };
         }
+        /// <summary>The walkable roof line of a side prop: the highest half-metre band that holds at least a quarter of the
+        /// prop's largest horizontal-face area. Water tanks, aerials and crane masts above it are too small to count.</summary>
+        static float RoofLine(GameObject prop)
+        {
+            if (prop == null) return 0f;
+            var hist = new System.Collections.Generic.Dictionary<int, float>(); float top = 0f;
+            foreach (var mf in prop.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var mesh = mf.sharedMesh; if (mesh == null) continue;
+                var v = mesh.vertices; var t = mesh.triangles; float sy = Mathf.Abs(mf.transform.lossyScale.y); float oy = mf.transform.position.y;
+                for (int i = 0; i + 2 < t.Length; i += 3)
+                {
+                    Vector3 a = v[t[i]], b = v[t[i + 1]], c = v[t[i + 2]];
+                    var n = Vector3.Cross(b - a, c - a); float area = n.magnitude * 0.5f; if (area <= 0f) continue;
+                    if (Mathf.Abs(n.y / n.magnitude) < 0.8f) continue;                     // horizontal faces only (either way up: mirrored props flip winding)
+                    float y = (a.y + b.y + c.y) / 3f * sy + oy; top = Mathf.Max(top, y);
+                    int band = Mathf.FloorToInt(y / 0.5f); hist[band] = (hist.TryGetValue(band, out var acc) ? acc : 0f) + area;
+                }
+            }
+            float max = 0f; foreach (var kv in hist) max = Mathf.Max(max, kv.Value);
+            int best = -1; foreach (var kv in hist) if (kv.Value >= 0.25f * max && kv.Key > best) best = kv.Key;
+            return best < 0 ? top : (best + 1) * 0.5f;
+        }
+
         static AreaDefinition Area(string file, string chapter, string name, Color accent, bool moon, GameObject prop)
         {
             var a = Asset<AreaDefinition>("Data/Areas/" + file + ".asset");
             a.ChapterLabel = chapter; a.DisplayName = name; a.Accent = accent; a.CrescentMoon = moon; a.SideProps = new[] { prop };
+            a.RoofHeight = RoofLine(prop);
             a.Sky = moon ? new Color(0.11f, 0.10f, 0.15f) : Color.white;   // night alley: ink sky, white shapes
             EditorUtility.SetDirty(a);
             return a;
