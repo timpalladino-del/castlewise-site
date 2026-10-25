@@ -518,12 +518,6 @@ namespace InkRun.EditorTools
                 ch.LegL = Find(crewModel.transform, "LegL"); ch.LegR = Find(crewModel.transform, "LegR");
                 ch.ArmL = Find(crewModel.transform, "ArmL"); ch.ArmR = Find(crewModel.transform, "ArmR");
                 crew.transform.position = new Vector3(0, 0, -2.4f);
-                var crewLow = Model("Crew_LOD1");
-                if (crewLow != null)
-                {
-                    crewLow.name = "VisualLow"; crewLow.transform.SetParent(crew.transform, false); crewLow.SetActive(false);
-                    var qp = crew.AddComponent<QualityPicker>(); qp.Full = crewModel; qp.Low = crewLow;
-                }
             }
             var kaijuModel = Model("KaijuShadow");
             if (kaijuModel != null)
@@ -550,6 +544,8 @@ namespace InkRun.EditorTools
 
             var words = new GameObject("SfxWords").AddComponent<SfxWords>(); words.WordPrefab = p.word.GetComponent<TMP_Text>();
             var gang = new GameObject("RivalGang").AddComponent<RivalGang>(); gang.Ink = _ink; gang.Paper = _paper;
+            var thugModel = Model("Thug");
+            if (thugModel != null) { thugModel.name = "Thug"; gang.ThugPrefab = Save("Thug", thugModel); }
 
             UI(p);
 

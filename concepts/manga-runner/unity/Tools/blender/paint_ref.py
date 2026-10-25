@@ -77,11 +77,19 @@ def paint(ob, ref_path, joints):
     bm = bmesh.new(); bm.from_mesh(me); bm.faces.ensure_lookup_table()
     M = ob.matrix_world.copy()
     P = unity_verts(ob); minx, maxx = P[:, 0].min(), P[:, 0].max(); miny, maxy = P[:, 1].min(), P[:, 1].max()
-    HEAD, SH, HIP = joints['HEAD'], joints['SH'], joints['HIP']
+    figure = joints is not None                      # character rules (hair, hood, legs) only for a jointed figure
+    HEAD, SH, HIP = (joints['HEAD'], joints['SH'], joints['HIP']) if figure else (maxy + 1, maxy + 1, miny - 1)
     me.materials.clear()
     for n in NAMES: me.materials.append(K.mat(n))
     counts = {n: 0 for n in NAMES}
     R = max(3, int((right - left) * 0.012))      # sampling window half-size: about 1.2% of the figure width
+    # what colour is the upper torso in the drawing? the hood-from-behind rule only applies to a red hoodie
+    tx = (left + right)//2; ty0 = int(bottom - (SH - 0.28 - miny)/(maxy - miny + 1e-9)*(bottom - top)); ty1 = int(bottom - (SH - 0.06 - miny)/(maxy - miny + 1e-9)*(bottom - top))
+    tw = a[max(0, min(ty0, ty1)):max(ty0, ty1)+1, max(0, tx-R):tx+R+1].reshape(-1, 3)
+    tv = {}
+    for r, g, b in tw: k = classify(r, g, b); tv[k] = tv.get(k, 0) + 1
+    hoodie = max(tv, key=tv.get) == 'InkAccent' if tv else False
+    eye_line = HEAD + 0.5*(maxy - HEAD)                  # below this the side of the head is cheek and jaw, not hair
     assign = {}
     for f in bm.faces:
         c = f.calc_center_median(); cw = M @ c
@@ -101,9 +109,11 @@ def paint(ob, ref_path, joints):
         votes.pop('InkTone', None) if votes.get('InkTone', 0) < 0.5*total else None
         n = max(votes, key=votes.get) if votes else 'InkPaper'
         back = nz < -0.15
-        if uy > HEAD + 0.02:
-            if back or (nz < 0.1 and n in ('InkSkin', 'InkPaper')): n = 'Ink'
-        elif uy > SH - 0.12 and back and n in ('InkPaper', 'InkSkin'):
+        if not figure:
+            if (abs(nrm.x) > 0.5 or nz < -0.3) and n != 'InkAccent': n = 'InkPaper'   # a prop's side and rear faces are not in the drawing; keep them paper (outlines carry the form)
+        elif uy > HEAD + 0.02:
+            if back or (nz < 0.1 and uy > eye_line and n in ('InkSkin', 'InkPaper')): n = 'Ink'
+        elif hoodie and uy > SH - 0.12 and back and n in ('InkPaper', 'InkSkin'):
             n = 'InkAccent'            # the hood seen from behind is the hoodie's red, not its white lining
         elif uy < HIP and back and n == 'InkSkin':
             n = 'Ink'
@@ -151,6 +161,7 @@ def measure_joints_from_ref(ob, ref_path):
     for row in range(ankle, top, -1):
         if mask[row, gap_col]: crotch = row; break
     HIP = to_y(crotch) + 0.015*Hm if crotch else miny + 0.42*Hm
+    if not (miny + 0.36*Hm <= HIP <= miny + 0.52*Hm): HIP = miny + 0.44*Hm   # baggy trousers or crossed legs fool the gap scan; a hip outside 36-52% of the height is wrong
     # neck: narrowest row between 60% and 82% of the height (below the hair, above the shoulders)
     widths = [(runs(top+i)[0].max() - runs(top+i)[-1].min() if False else (max(r.max() for r in runs(top+i)) - min(r.min() for r in runs(top+i)))) if runs(top+i) else 10**9 for i in range(h)]
     lo_i, hi_i = int(h*(1-0.82)), int(h*(1-0.60))

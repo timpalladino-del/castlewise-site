@@ -282,9 +282,10 @@ def main():
     J = None
     if a.ref or a.auto_joints:
         import paint_ref as PR
-        J = PR.measure_joints_from_ref(ob, a.ref) if a.ref else PR.measure_joints(ob); print('joints', {k: round(v, 3) for k, v in J.items()})
+        J = (PR.measure_joints_from_ref(ob, a.ref) if a.ref else PR.measure_joints(ob)) if a.hero else None
+        if J: print('joints', {k: round(v, 3) for k, v in J.items()})
     if a.ref:
-        counts = PR.paint(ob, a.ref, J); print('painted faces per material', counts)
+        counts = PR.paint(ob, a.ref, J if a.hero else None); print('painted faces per material', counts)
     elif not a.keep_texture: quantize(ob)
     tris = decimate(ob, a.budget)
     K.shade_smooth(ob, math.radians(50))

@@ -11,6 +11,7 @@ namespace InkRun.World
     public class RivalGang : MonoBehaviour
     {
         public Material Ink, Paper;
+        public GameObject ThugPrefab;          // the generated thug mesh (Head/Body/ArmL/ArmR/LegL/LegR nodes); primitives when null
         public float SpawnZ = 30f, HideZ = -9f, EdgeX = -3.45f;
 
         Transform[] _guys; Transform[][] _arms; bool _live; float _phase;
@@ -40,6 +41,14 @@ namespace InkRun.World
                 var g = new GameObject("Thug" + i).transform; g.SetParent(transform, false);
                 g.localPosition = new Vector3(i == 1 ? -0.5f : 0f, 0f, i * 1.1f);
                 g.localRotation = Quaternion.Euler(0f, 90f, 0f);                                             // face the track
+                if (ThugPrefab != null)
+                {
+                    var model = Instantiate(ThugPrefab, g); model.name = "Model"; model.SetActive(true);
+                    var l = FindDeep(model.transform, "ArmL"); var r = FindDeep(model.transform, "ArmR");
+                    _arms[i] = new[] { l != null ? l : g, r != null ? r : g };
+                    _guys[i] = g;
+                    continue;
+                }
                 Prim(PrimitiveType.Capsule, g, new Vector3(0, 0.95f, 0), new Vector3(0.62f, 0.46f, 0.5f), Ink);
                 Prim(PrimitiveType.Sphere, g, new Vector3(0, 1.6f, 0), Vector3.one * 0.46f, Ink);
                 Prim(PrimitiveType.Cube, g, new Vector3(0, 1.66f, 0), new Vector3(0.5f, 0.07f, 0.5f), Paper);   // bandana
@@ -48,6 +57,12 @@ namespace InkRun.World
                 _arms[i] = new[] { Arm(g, -0.36f), Arm(g, 0.36f) };
                 _guys[i] = g;
             }
+        }
+        static Transform FindDeep(Transform t, string name)
+        {
+            if (t.name == name) return t;
+            for (int i = 0; i < t.childCount; i++) { var f = FindDeep(t.GetChild(i), name); if (f != null) return f; }
+            return null;
         }
         Transform Arm(Transform parent, float x)
         {
