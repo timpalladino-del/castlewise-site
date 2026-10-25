@@ -26,3 +26,15 @@ Save these into `unity/Assets/InkRun/Resources/Strips/` with exactly these names
 | gap | `Gap.png` | https://d2ol7oe51mr4n9.cloudfront.net/user_3FhoDFj8NgEBiXU1x0R0F1i91cM/d1d67747-da55-40b0-b26e-e9f70d59d105.png |
 
 Without the files the strip plays as ink text panels (approach line, red SFX word, aftermath line) with the same cuts.
+
+## Mesh references, round 2 (2026-10-25)
+
+Front three-quarter ink drawings for Tripo image-to-3D. Save the GLB with the file name in the first column.
+
+| make | drawing | url |
+|---|---|---|
+| `BuildingCity.glb` | chapter 1 shop-house facade | https://d2ol7oe51mr4n9.cloudfront.net/user_3FhoDFj8NgEBiXU1x0R0F1i91cM/27d5e44a-efa2-45ba-a9d7-3eefb93c5d52.png |
+| `Crew.glb` | Smudge Crew chaser, A-pose | https://d2ol7oe51mr4n9.cloudfront.net/user_3FhoDFj8NgEBiXU1x0R0F1i91cM/2938f557-3e64-4edd-8ddd-0052a9d00273.png |
+| `BuildingAlley.glb` | chapter 3 alley facade | https://d2ol7oe51mr4n9.cloudfront.net/user_3FhoDFj8NgEBiXU1x0R0F1i91cM/339861dc-a8e4-4d24-bbca-da4b2d6f6797.png |
+| `Containers.glb` | chapter 2 harbor stack | https://d2ol7oe51mr4n9.cloudfront.net/user_3FhoDFj8NgEBiXU1x0R0F1i91cM/edb41699-6f12-40b7-82eb-8f469f76d22b.png |
+| `Train.glb` | tram (from round 1) | https://d2ol7oe51mr4n9.cloudfront.net/user_3FhoDFj8NgEBiXU1x0R0F1i91cM/78ba66c9-4ac2-4abf-a30c-230814bd2334.png |
