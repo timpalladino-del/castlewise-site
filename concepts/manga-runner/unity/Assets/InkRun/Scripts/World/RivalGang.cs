@@ -28,7 +28,17 @@ namespace InkRun.World
         void OnChapter(AreaDefinition a)
         {
             var gm = GameManager.Instance; if (gm == null || gm.State != GameState.Running) return;
-            transform.position = new Vector3(EdgeX, 0f, SpawnZ);
+            // stand on the roof edge of this chapter's side building: its height comes from the prop prefab's meshes
+            float roofY = 0f;
+            if (a != null && a.SideProps != null)
+                foreach (var prop in a.SideProps)
+                {
+                    if (prop == null) continue;
+                    foreach (var mf in prop.GetComponentsInChildren<MeshFilter>(true))
+                        if (mf.sharedMesh != null) roofY = Mathf.Max(roofY, mf.transform.position.y + mf.sharedMesh.bounds.max.y * Mathf.Abs(mf.transform.lossyScale.y));
+                }
+            float x = roofY > 0.5f && gm.Tuning != null ? -(gm.Tuning.LaneWidth * 2.05f + 1.0f) : EdgeX;   // AreaController places props at 2.05 lane widths; a metre in from the edge
+            transform.position = new Vector3(x, roofY, SpawnZ);
             _live = true; SetVisible(true);
         }
         void OnState(GameState s) { if (s != GameState.Running) { _live = false; SetVisible(false); } }
