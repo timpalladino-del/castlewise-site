@@ -12,7 +12,9 @@ namespace InkRun.World
     {
         public Material Ink, Paper;
         public GameObject ThugPrefab;          // the generated thug mesh (Head/Body/ArmL/ArmR/LegL/LegR nodes); primitives when null
-        public float SpawnZ = 30f, HideZ = -9f, EdgeX = -3.45f;
+        public float SpawnZ = 70f, HideZ = -9f, EdgeX = -3.45f;
+        public float CardDelay = 2.6f;        // the chapter card covers the roofline; the cameo waits for it to fade
+        bool _pending; float _wait; Vector3 _spawn;
 
         Transform[] _guys; Transform[][] _arms; bool _live; float _phase;
 
@@ -37,11 +39,10 @@ namespace InkRun.World
                     foreach (var mf in prop.GetComponentsInChildren<MeshFilter>(true))
                         if (mf.sharedMesh != null) roofY = Mathf.Max(roofY, mf.transform.position.y + mf.sharedMesh.bounds.max.y * Mathf.Abs(mf.transform.lossyScale.y));
                 }
-            float x = roofY > 0.5f && gm.Tuning != null ? -(gm.Tuning.LaneWidth * 2.05f + 1.0f) : EdgeX;   // AreaController places props at 2.05 lane widths; a metre in from the edge
-            transform.position = new Vector3(x, roofY, SpawnZ);
-            _live = true; SetVisible(true);
+            float x = roofY > 0.5f && gm.Tuning != null ? -(gm.Tuning.LaneWidth * 2.05f + 0.35f) : EdgeX;   // AreaController places props at 2.05 lane widths; right on the roof edge so the portrait camera sees them
+            _spawn = new Vector3(x, roofY, SpawnZ); _pending = true; _wait = CardDelay; _live = false; SetVisible(false);
         }
-        void OnState(GameState s) { if (s != GameState.Running) { _live = false; SetVisible(false); } }
+        void OnState(GameState s) { if (s != GameState.Running) { _live = false; _pending = false; SetVisible(false); } }
 
         void Build()
         {
@@ -91,6 +92,12 @@ namespace InkRun.World
 
         void Update()
         {
+            if (_pending)
+            {
+                _wait -= Time.deltaTime;
+                if (_wait > 0f) return;
+                _pending = false; transform.position = _spawn; _live = true; SetVisible(true);
+            }
             if (!_live) return;
             var gm = GameManager.Instance; if (gm == null) return;
             transform.position -= new Vector3(0f, 0f, gm.Speed * Time.deltaTime);      // scroll with the world
