@@ -28,6 +28,7 @@ namespace InkRun.EditorTools
         [MenuItem("Ink Run/Build gray-box scene")]
         public static void Build()
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) { Debug.LogWarning("Ink Run: stop Play mode first, then run Ink Run > Build gray-box scene."); return; }
             if (TMP_Settings.instance == null)
             {
                 Debug.LogWarning("Ink Run: import TextMeshPro first (Window > TextMeshPro > Import TMP Essential Resources), then run this menu again.");

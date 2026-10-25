@@ -78,6 +78,16 @@ def normalize(ob, height, yaw, anchor='center'):
     ob.data.transform(Matrix.Diagonal((s, s, s, 1)))
     return s
 
+def orient(ob, yaw, anchor):
+    """Turn a painted prop to its gameplay facing and re-anchor it. Painting projects the drawing along the
+    facing the generator gave the mesh (+z), so for props this runs after paint, not before."""
+    if yaw: ob.data.transform(Matrix.Rotation(math.radians(yaw), 4, 'Z'))
+    xs = [v.co for v in ob.data.vertices]
+    lo = Vector((min(v.x for v in xs), min(v.y for v in xs), min(v.z for v in xs))); hi = Vector((max(v.x for v in xs), max(v.y for v in xs), max(v.z for v in xs)))
+    dx = -(lo.x + hi.x)/2 if anchor != 'corner' else -lo.x
+    dy = -(lo.y + hi.y)/2 if anchor == 'center' else -hi.y
+    ob.data.transform(Matrix.Translation((dx, dy, -lo.z)))
+
 def decimate(ob, budget):
     """Quadric edge-collapse to `budget` triangles, per material group so face materials survive
     (Blender's Decimate modifier segfaults in the bpy wheel on imported multi-material meshes)."""
@@ -278,7 +288,7 @@ def main():
     meshes = import_glb(a.src)
     name = a.name or os.path.splitext(os.path.basename(a.dst))[0]
     ob = join_all(meshes, name)
-    normalize(ob, a.height, a.yaw, a.anchor)
+    normalize(ob, a.height, a.yaw if a.hero else 0.0, 'center')   # props are turned and anchored after painting
     J = None
     if a.ref or a.auto_joints:
         import paint_ref as PR
@@ -288,6 +298,7 @@ def main():
         counts = PR.paint(ob, a.ref, J if a.hero else None); print('painted faces per material', counts)
     elif not a.keep_texture: quantize(ob)
     tris = decimate(ob, a.budget)
+    if not a.hero: orient(ob, a.yaw, a.anchor)
     K.shade_smooth(ob, math.radians(50))
     root = K.empty('_root')
     if a.hero:

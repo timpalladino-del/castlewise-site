@@ -120,7 +120,7 @@ namespace UnityEditor
     public class MenuItem : Attribute { public MenuItem(string s) { } }
     public class InitializeOnLoad : Attribute { }
     public delegate void CallbackFunction();
-    public static class EditorApplication { public static CallbackFunction update; }
+    public static class EditorApplication { public static CallbackFunction update; public static bool isPlayingOrWillChangePlaymode; }
     public static class SessionState { public static bool GetBool(string k, bool d) => d; public static void SetBool(string k, bool v) { } }
     namespace PackageManager
     {
