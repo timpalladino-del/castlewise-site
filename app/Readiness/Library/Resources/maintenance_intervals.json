@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "kinds": [
+    {"kind":"generator","name":"Portable generator","symbol":"bolt.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Exercise run, 15 to 20 minutes under light load","intervalDays":30,"note":"Keeps the carburetor clean and the battery charged. Outdoors only, 20 feet from the house.","source":"Generac; CPSC"},
+      {"title":"Oil change","intervalDays":365,"note":"Or every 100 hours of use, whichever comes first. First change after the first 20 to 30 hours.","source":"Generac; Honda EU series manuals"},
+      {"title":"Air filter and spark plug check","intervalDays":365,"source":"Generac"},
+      {"title":"Fuel check: stabilizer in, or rotate the gas","intervalDays":180,"source":"STA-BIL; US DOE"},
+      {"title":"Test the CO alarm nearest where the cord comes in","intervalDays":30,"source":"CPSC"}]},
+    {"kind":"powerStation","name":"Portable power station","symbol":"battery.100percent.bolt","lifetimeYears":null,
+     "tasks":[
+      {"title":"Top up to 60 to 80 percent","intervalDays":90,"note":"Lithium cells stored flat die early. Check every 3 months.","source":"Jackery; Bluetti; Anker"},
+      {"title":"Test an output and the flashlight","intervalDays":180,"source":"Manufacturer guidance"}]},
+    {"kind":"fireExtinguisher","name":"Fire extinguisher","symbol":"flame.fill","lifetimeYears":12,
+     "tasks":[
+      {"title":"Visual check: gauge in the green, pin in place, no damage","intervalDays":30,"source":"NFPA 10 via state fire marshal guidance"},
+      {"title":"Annual maintenance check","intervalDays":365,"note":"Shake dry-chemical units to loosen powder. Replace disposable units 12 years after the manufacture date.","source":"NFPA 10"}]},
+    {"kind":"smokeAlarm","name":"Smoke alarm","symbol":"smoke.fill","lifetimeYears":10,
+     "tasks":[
+      {"title":"Press the test button","intervalDays":30,"source":"NFPA; US Fire Administration"},
+      {"title":"Replace the battery","intervalDays":365,"note":"Skip if it is a sealed 10-year unit.","source":"NFPA"}]},
+    {"kind":"coAlarm","name":"Carbon monoxide alarm","symbol":"wind","lifetimeYears":7,
+     "tasks":[
+      {"title":"Press the test button","intervalDays":30,"source":"NFPA"},
+      {"title":"Replace the battery","intervalDays":365,"source":"NFPA"}]},
+    {"kind":"firstAidKit","name":"First aid kit","symbol":"cross.case.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Open it, replace used and expired items","intervalDays":180,"note":"The kit's date is the first item to expire.","source":"American Red Cross"}]},
+    {"kind":"goBag","name":"Go-bag","symbol":"backpack.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Review contents, swap seasonal clothes, test lights","intervalDays":180,"note":"Tie it to the clock change in spring and fall.","source":"Ready.gov"}]},
+    {"kind":"vehicleKit","name":"Vehicle kit","symbol":"car.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Seasonal swap: blankets and scraper in, water out of the heat","intervalDays":180,"source":"State emergency management guidance"},
+      {"title":"Test the jump pack and flashlight","intervalDays":90,"source":"Manufacturer guidance"}]},
+    {"kind":"waterFilter","name":"Water filter (home or pitcher)","symbol":"drop.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Replace the filter element","intervalDays":180,"note":"Follow the manufacturer's gallon rating if you track it.","source":"Manufacturer guidance"}]},
+    {"kind":"propaneCylinder","name":"Propane cylinder","symbol":"cylinder.fill","lifetimeYears":12,
+     "tasks":[
+      {"title":"Check the requalification stamp and valve for rust","intervalDays":365,"note":"20 lb cylinders need requalification 12 years after manufacture, then every 5 years.","source":"49 CFR 180.209"}]},
+    {"kind":"fuelCan","name":"Fuel can","symbol":"fuelpump.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Rotate the fuel into a vehicle and refill fresh","intervalDays":365,"note":"Every 6 months if untreated.","source":"US DOE; STA-BIL"}]},
+    {"kind":"sumpPump","name":"Sump pump","symbol":"arrow.down.to.line","lifetimeYears":10,
+     "tasks":[
+      {"title":"Bucket test: pour water in until it kicks on","intervalDays":90,"source":"Insurer maintenance guidance"},
+      {"title":"Replace the backup battery","intervalDays":912,"note":"Every 2 to 3 years.","source":"Battery manufacturer guidance"}]},
+    {"kind":"flashlight","name":"Flashlight or lantern","symbol":"flashlight.on.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Switch it on, check for corroded batteries","intervalDays":180,"source":"General guidance"}]},
+    {"kind":"radio","name":"Emergency radio","symbol":"radio.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Tune to the weather band, crank or charge it","intervalDays":180,"source":"NOAA Weather Radio guidance"}]},
+    {"kind":"chainsaw","name":"Chainsaw","symbol":"wrench.and.screwdriver.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Start it, check chain tension and bar oil","intervalDays":90,"source":"STIHL storage guidance"},
+      {"title":"Storage prep: drain fuel, clean and oil the chain","intervalDays":365,"source":"STIHL storage guidance"}]},
+    {"kind":"heater","name":"Indoor-safe heater","symbol":"heater.vertical.fill","lifetimeYears":null,
+     "tasks":[
+      {"title":"Test start, check the tip-over and low-oxygen shutoff","intervalDays":180,"source":"Manufacturer guidance"}]},
+    {"kind":"other","name":"Other equipment","symbol":"shippingbox.fill","lifetimeYears":null,"tasks":[]}
+  ]
+}
