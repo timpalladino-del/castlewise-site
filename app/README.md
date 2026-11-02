@@ -1,22 +1,24 @@
-# Household preparedness app (working title: Readiness)
+# Lantern
+
+The thing you reach for when the power dies. A calm supplies-and-gear tracker for ordinary households.
 
 iPhone app for ordinary households that keep extra food, water, medicine and gear for a bad week.
 Separate product from CastleWise; shares the model (local-first, no account, one-time price, honest
-reference library, camera assist), not the branding. The product plan is in `../prepared-app-plan.md`.
+reference library, camera assist), not the branding. The product plan is in `docs/plan.md`.
 
-The folder name, target name and bundle identifier are placeholders until a name is chosen.
+Bundle identifier: `io.kismetstudio.lantern`. Visual identity is still to be designed.
 
 ## Status: MVP scaffold, written without a compiler
 
 This code was written in a Linux environment with no Xcode. It follows standard SwiftUI, SwiftData and
 VisionKit APIs for iOS 17, but it has not been compiled. Expect a handful of small fixes on first build.
-The Xcode project uses Xcode 16's synchronized folders, so new files dropped into `Readiness/` or
-`ReadinessTests/` are picked up automatically.
+The Xcode project uses Xcode 16's synchronized folders, so new files dropped into `Lantern/` or
+`LanternTests/` are picked up automatically.
 
 ## Open it
 
-1. Xcode 16 or later. Open `Readiness.xcodeproj`.
-2. Select the Readiness target, set your team under Signing & Capabilities.
+1. Xcode 16 or later. Open `Lantern.xcodeproj`.
+2. Select the Lantern target, set your team under Signing & Capabilities.
 3. Run on a device for scanning. The simulator cannot run the VisionKit scanner; the app shows a
    manual barcode field there instead.
 4. Press Cmd-U to run the unit tests (date parser, shelf-life library, readiness math).
@@ -51,7 +53,7 @@ onboarding flow, app icon, Pro purchase. See the plan for phases.
 
 ## Data
 
-- `Readiness/Library/Resources/shelf_life.json`: hand-curated. To add the full USDA FoodKeeper table
+- `Lantern/Library/Resources/shelf_life.json`: hand-curated. To add the full USDA FoodKeeper table
   (public domain), download it from data.gov and run `Scripts/import_foodkeeper.py`.
 - `maintenance_intervals.json`: equipment kinds and default tasks.
 - `starter_packs.json`: starter lists.

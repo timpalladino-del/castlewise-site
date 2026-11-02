@@ -1,6 +1,6 @@
 import XCTest
 import SwiftData
-@testable import Readiness
+@testable import Lantern
 
 @MainActor
 final class ReadinessCalculatorTests: XCTestCase {

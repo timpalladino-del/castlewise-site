@@ -16,7 +16,7 @@ final class OpenFoodFactsClient {
     static let termsURL = URL(string: "https://world.openfoodfacts.org/terms-of-use")!
 
     private let session: URLSession
-    private let userAgent = "Readiness/0.1 (iOS; features@castlewise.app)"
+    private let userAgent = "Lantern/0.1 (iOS; features@castlewise.app)"
 
     init(session: URLSession = .shared) { self.session = session }
 

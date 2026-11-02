@@ -1,5 +1,5 @@
 import XCTest
-@testable import Readiness
+@testable import Lantern
 
 final class ShelfLifeLibraryTests: XCTestCase {
     private var library: ShelfLifeLibrary { ShelfLifeLibrary(bundle: Bundle(for: ShelfLifeLibrary.self)) }

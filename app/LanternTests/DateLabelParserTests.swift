@@ -1,5 +1,5 @@
 import XCTest
-@testable import Readiness
+@testable import Lantern
 
 final class DateLabelParserTests: XCTestCase {
     private var calendar: Calendar {

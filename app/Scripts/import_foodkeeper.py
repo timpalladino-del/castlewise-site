@@ -3,7 +3,7 @@
 
 Usage:
   1. Download foodkeeper.json (English) from https://catalog.data.gov/dataset/fsis-foodkeeper-data
-  2. python3 Scripts/import_foodkeeper.py path/to/foodkeeper.json Readiness/Library/Resources/shelf_life.json
+  2. python3 Scripts/import_foodkeeper.py path/to/foodkeeper.json Lantern/Library/Resources/shelf_life.json
 
 FoodKeeper is public domain (CC0). Rows become entries keyed "fk_<ID>" and are appended after the
 hand-curated entries, which keep priority in search. Re-running replaces earlier fk_ entries.
