@@ -328,3 +328,26 @@ Branding, name and visual identity are deferred. Voice should still be decided e
 - https://openfoodfacts.github.io/documentation/docs/Product-Opener/api/tutorials/license-be-on-the-legal-side/
 - https://support.openfoodfacts.org/help/en-gb/12-api-data-reuse/94-are-there-conditions-to-use-the-api
 - https://nonstrict.eu/wwdcindex/wwdc2022/10025/
+
+---
+
+## 17. Name candidates (added November 2, 2026)
+
+Brief: calm, mainstream, household. Says "get through a bad week," never "survive the end." Should be easy to say
+and spell, work as an App Store title with a subtitle, and sit comfortably next to a Costco receipt rather than a
+bunker. Web search was used to check for same-name apps in this category; apps.apple.com and USPTO were not
+reachable from this environment, so every finalist still needs a store search and a trademark search.
+
+| Name | Why it fits | Tagline sketch | Conflicts found |
+|---|---|---|---|
+| **Tide Over** (recommended) | "Enough to tide you over" is the exact promise: get through, not survive. Gentle idiom everyone knows. Zero tactical energy. | Enough to tide you over. | None in apps or trademarks. "Tide" detergent and Tide banking are unrelated classes; still check. |
+| **Lantern** | The object you reach for when the lights go out. Warm, protective, domestic. Reads well as an icon. | Ready for the dark. | No preparedness or pantry app. A defunct 2014 DoE Android app "Lantern Live." Common word; expect other Lanterns in unrelated categories. |
+| **Just in Case** | The phrase non-preppers already use to explain the extra case of water. States the whole philosophy. | Keep a little extra, just in case. | No preparedness app found. Generic phrase, weak trademark, poorer search discoverability. |
+| **Backstock** | Retail term for the extra inventory in the back room. Precise: this audience has a backstock, not a bunker. Distinctive and ownable. | Know what's in the back. | None found. Slightly insider; less warm than the others. |
+| **Rainy Day** | "Saving for a rainy day." Planning without fear, fully mainstream. | For a rainy day. | Several unrelated apps named Rainy Day (sleep sounds, a finance game). Crowded word, discoverability cost. |
+| **Tuesday** (wildcard) | From the community's own line, "prep for Tuesday, not doomsday." Opaque alone, memorable with a subtitle. | Ready for Tuesday. | None found in category. Generic word, weak trademark. |
+| **StockWise** (in-family option) | Sibling to CastleWise if you ever want a family of "-Wise" apps. | The stocked-up house. | "Stock" leans financial. Only worth it if the family brand matters. |
+
+Rejected after checking: Larder (two pantry apps), Squirrel (direct competitor "Squirrel: Home Inventory"),
+Kept (home inventory app), Shelf Life (four apps), Provisions ("PROvisions: Expiry Tracker" exists),
+Stocked and Stockpile (existing competitors), anything with Prep, Ready, Survival or Shield in it.
